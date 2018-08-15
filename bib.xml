@@ -1,0 +1,16 @@
+<dblp>
+<inproceedings key="conf/icml/WeissGY18" mdate="2018-07-13">
+<author>Gail Weiss</author>
+<author>Yoav Goldberg</author>
+<author>Eran Yahav</author>
+<title>
+Extracting Automata from Recurrent Neural Networks Using Queries and Counterexamples.
+</title>
+<pages>5244-5253</pages>
+<year>2018</year>
+<booktitle>ICML</booktitle>
+<ee>http://proceedings.mlr.press/v80/weiss18a.html</ee>
+<crossref>conf/icml/2018</crossref>
+<url>db/conf/icml/icml2018.html#WeissGY18</url>
+</inproceedings>
+</dblp>
