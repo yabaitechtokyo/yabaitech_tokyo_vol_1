@@ -2,3 +2,5 @@
 
 let-inline ctx \sample-command it =
   read-inline (ctx |> set-text-color Color.red) it
+
+let-math \alphabet = ${\mathrm{\Sigma}}
