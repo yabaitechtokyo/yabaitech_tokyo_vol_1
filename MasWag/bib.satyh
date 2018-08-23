@@ -1,9 +1,7 @@
 @import: local
 
 let bibliography = [
-  
-
-  (`conf/icml/WeissGY18`, InProceedings (|
+  (`conf/icml/WeissGY18`, InProceedings(|
     author = {|Gail Weiss, Yoav Goldberg, Eran Yahav|};
     title = {Extracting Automata from Recurrent Neural Networks Using Queries and Counterexamples.};
     booktitle = {ICML};
@@ -13,6 +11,4 @@ let bibliography = [
     pages = (5244,5253);
     year = 2018;
   |));
-
-
 ]
