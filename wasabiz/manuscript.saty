@@ -1,0 +1,27 @@
+@require: stdja
+
+document (|
+  title = {"Schemeの実装におけるスタックフレーム(Draft)" を実装する};
+  author = {wasabiz};
+  show-title = true;
+  show-toc = true;
+|) '<
+   +section {目標}<
+   >
+   +section {背景: Schemeの実装におけるスタックフレーム(Draft)}<
+   >
+   +section {Cheney on the M.T.A.}<
+   >
+   +section {C言語でガベージコレクション (gc.h)}<
+   >
+   +section {C言語でany型 (any.h)}<
+   >
+   +section {C言語で動的プログラミング (vm.h)}<
+   >
+   +section {実装} <
+   >
+   +section {評価} <
+   >
+   +section {まとめ} <
+   >
+>
