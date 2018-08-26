@@ -1,3 +1,3 @@
 
 all:
-	satysfi -b src/template.saty
+	satysfi -b src/template.saty -o template.pdf
