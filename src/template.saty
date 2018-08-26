@@ -4,6 +4,10 @@
 @import: bib
 @import: introduction
 @import: preliminaries
+@import: MasWag/article
+@import: pohe/article
+@import: wasabiz/article
+@import: zpt/article
 
 document (|
   title-en = {Title in English};
@@ -31,4 +35,8 @@ document (|
 |) '<
   +chapter?:(`introduction`){Introduction}< #introduction; >
   +chapter?:(`preliminaries`){Preliminaries}< #preliminaries; >
+  #maswag-article;
+  #pohe-article;
+  #wasabiz-article;
+  #zpt-article;
 >

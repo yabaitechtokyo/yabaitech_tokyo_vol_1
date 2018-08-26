@@ -1,0 +1,7 @@
+@import: ../cs-thesis
+
+let pohe-article = '<
+  +chapter ?:(`pohe-article`) {Title} <
+    +p {Hello}
+  >
+>

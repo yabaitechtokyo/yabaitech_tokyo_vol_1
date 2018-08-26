@@ -1,0 +1,7 @@
+@import: ../cs-thesis
+
+let zpt-article = '<
+  +chapter ?:(`zpt-article`) {Title} <
+    +p {Hello}
+  >
+>
