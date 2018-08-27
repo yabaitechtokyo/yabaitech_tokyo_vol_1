@@ -1,7 +1,20 @@
 @import: ../main/cs-thesis
 
 let zpt-article = '<
-  +chapter ?:(`zpt-article`) {Title} <
-    +p {Hello}
+  +chapter ?:(`zpt-article`) {型付き${\lambda}計算をつくろう} <
+    +section {はじめに} <
+    >
+    +section {直観主義論理と単純型付き${\lambda}計算} <
+    >
+    +section {ハーモニーと簡約} <
+    >
+    +section {二つの階層の論理} <
+    >
+    +section {行って戻るとS4様相} <
+    >
+    +section {階層の対称性と二つのK様相} <
+    >
+    +section {おわりに} <
+    >
   >
 >
