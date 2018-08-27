@@ -1,4 +1,4 @@
-@import: ../cs-thesis
+@import: ../main/cs-thesis
 
 let wasabiz-article = '<
   +chapter ?:(`wasabiz-article`) {Title} <

@@ -1,4 +1,4 @@
-@import: ../cs-thesis
+@import: ../main/cs-thesis
 
 let zpt-article = '<
   +chapter ?:(`zpt-article`) {Title} <

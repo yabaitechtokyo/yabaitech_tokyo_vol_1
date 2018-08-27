@@ -4,10 +4,10 @@
 @import: bib
 @import: introduction
 @import: preliminaries
-@import: MasWag/article
-@import: pohe/article
-@import: wasabiz/article
-@import: zpt/article
+@import: ../MasWag/article
+@import: ../pohe/article
+@import: ../wasabiz/article
+@import: ../zpt/article
 
 document (|
   title-en = {Title in English};
