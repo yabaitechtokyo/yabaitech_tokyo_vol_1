@@ -57,9 +57,6 @@ module CSThesis : sig
       supervisor-ja : inline-text;
       supervisor-title : inline-text;
       date : inline-text;
-      abstract-en : block-text;
-      abstract-ja : block-text;
-      acknowledgements : block-text;
       bibliography : (string * bib-item) list;
     |)
 
@@ -290,28 +287,6 @@ end = struct
     let n = round (w /' wdot) in
       inline-fil ++ (repeat-inline n ib)
 
-
-  let-block ctx +abstract bt-abs-en bt-abs-ja =
-    let bb-title-en =
-      line-break false false ctx
-        (inline-fil ++ read-inline (ctx |> set-latin-font font-latin-bold) {ABSTRACT} ++ inline-fil)
-    in
-    let bb-title-ja =
-      line-break false false ctx
-        (inline-fil ++ read-inline (ctx |> set-cjk-font font-cjk-gothic) {論文概要} ++ inline-fil)
-    in
-    let bb-abs-en = read-block ctx bt-abs-en in
-    let bb-abs-ja = read-block ctx bt-abs-ja in
-       [
-         bb-title-en;
-         bb-abs-en;
-         block-skip 18pt;
-         bb-title-ja;
-         bb-abs-ja;
-         clear-page;
-       ] |> List.fold-left (+++) block-nil
-
-
   let-mutable needs-indentation-ref <- true
   let-mutable show-page-number-ref <- None
 
@@ -439,23 +414,6 @@ end = struct
         centerf {#spvs-title; of Computer Science};
         clear-page;
       ] |> List.fold-left (+++) block-nil
-    in
-
-    % -- abstract --
-    let bb-abs =
-      let () = needs-indentation-ref <- true in
-      read-block ctx-doc '<+abstract(record#abstract-en)(record#abstract-ja);>
-    in
-
-    % -- acknowledgements --
-    let bb-ackn =
-      let () = needs-indentation-ref <- false in
-      let ib-ackn-title =
-        read-inline (make-chapter-title ctx-doc) {Acknowledgements} ++ inline-fil
-      in
-        (chapter-heading ctx-doc None ib-ackn-title)
-          +++ read-block ctx-doc record#acknowledgements
-            +++ clear-page
     in
 
     % -- main --
@@ -629,7 +587,7 @@ end = struct
           footer-content = footer;
         |)
     in
-      page-break page pagecontf pagepartsf (bb-title +++ bb-abs +++ bb-ackn +++ bb-toc +++ bb-main +++ bb-bib)
+      page-break page pagecontf pagepartsf (bb-title +++ bb-toc +++ bb-main +++ bb-bib)
 
 
   let paragraph-indent =
