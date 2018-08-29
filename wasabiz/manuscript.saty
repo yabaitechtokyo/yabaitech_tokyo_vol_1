@@ -6,7 +6,7 @@ document (|
   show-title = true;
   show-toc = true;
 |) '<
-   +section {目標}<
+   +section {はじめに}<
    >
    +section {背景: Schemeの実装におけるスタックフレーム(Draft)}<
    >
