@@ -5,3 +5,15 @@ let-inline ctx \sample-command it =
 
 let-math \alphabet = ${\mathrm{\Sigma}}
 let-math \cdot = ${\bullet}
+let-math \colon = ${:}
+let-math \triangle = ${\text!{△}}
+let-math \iff = ${\Leftrightarrow}
+
+let-block ctx +frame content =
+  let pads = (10pt, 10pt, 10pt, 10pt) in
+  let decoset = VDecoSet.simple-frame-stroke 1pt (Color.gray 0.75) in
+    block-frame-breakable ctx pads decoset (fun ctx -> read-block ctx content)
+
+let-block ctx +centering it =
+  line-break true true ctx (inline-fil ++ read-inline ctx it ++ inline-fil)
+

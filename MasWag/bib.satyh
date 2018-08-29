@@ -1,6 +1,16 @@
 @import: local
 
 let bibliography = [
+  
+
+  (`HopcroftMU2003`, Book(|
+    author = {|J. ホップクロフト, R. モトワニ, J. ウルマン|};
+    title = {オートマトン言語理論計算論 I};
+    publisher = {サイエンス社};
+    year = 2003;
+  |));
+
+
   (`conf/icml/WeissGY18`, InProceedings(|
     author = {|Gail Weiss, Yoav Goldberg, Eran Yahav|};
     title = {Extracting Automata from Recurrent Neural Networks Using Queries and Counterexamples.};
@@ -11,4 +21,6 @@ let bibliography = [
     pages = (5244,5253);
     year = 2018;
   |));
+
+
 ]

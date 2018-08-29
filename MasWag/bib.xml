@@ -1,4 +1,12 @@
 <dblp>
+<book key="HopcroftMU2003">
+<author>J. ホップクロフト</author>
+<author>R. モトワニ</author>
+<author>J. ウルマン</author>
+<title>オートマトン言語理論計算論 I</title>
+<publisher>サイエンス社</publisher>
+<year>2003</year>
+</book>
 <inproceedings key="conf/icml/WeissGY18" mdate="2018-07-13">
 <author>Gail Weiss</author>
 <author>Yoav Goldberg</author>
