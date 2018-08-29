@@ -1,7 +1,7 @@
 @import: ../main/cs-thesis
 
 let wasabiz-article = '<
-  +chapter ?:(`wasabiz-article`) {Title} <
+  +chapter ?:(`wasabiz-article`) {Title} {wasabiz} <
     +p {Hello}
   >
 >

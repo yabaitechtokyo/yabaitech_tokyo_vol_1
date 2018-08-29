@@ -85,7 +85,7 @@ module CSThesis : sig
   direct +p : [inline-text] block-cmd
   direct +pn : [inline-text] block-cmd
   direct +p-ja : [inline-text] block-cmd
-  direct +chapter : [string?; inline-text; block-text] block-cmd
+  direct +chapter : [string?; inline-text; inline-text; block-text] block-cmd
   direct +section : [string?; inline-text; block-text] block-cmd
   direct +subsection : [string?; inline-text; block-text] block-cmd
   direct +definition : [inline-text?; string?; inline-text] block-cmd
@@ -154,6 +154,7 @@ end = struct
   let font-size-title   = 32pt
   let font-size-author  = 16pt
   let font-size-chapter = 24pt
+  let font-size-chapter-author = 18pt
   let font-size-section = 18pt
   let font-size-subsection = 16pt
 
@@ -229,6 +230,10 @@ end = struct
         |> set-font Latin font-latin-bold
         |> set-cjk-font font-cjk-gothic
 
+  let make-chapter-author ctx =
+    ctx |> set-font-size font-size-chapter-author
+        |> set-font Latin font-latin-bold
+        |> set-cjk-font font-cjk-gothic
 
   let make-section-title ctx =
     ctx |> set-font-size font-size-section
@@ -256,15 +261,23 @@ end = struct
     | None    -> `?`
     | Some(s) -> s
 
-
   let chapter-heading ctx ib-num-opt ib-title =
     let bb =
       match ib-num-opt with
       | None         -> block-nil
       | Some(ib-num) -> line-break false false ctx (ib-num ++ inline-fil)
     in
-      bb +++ line-break false false ctx (ib-title ++ inline-fil) +++ block-skip 36pt
+      bb +++ line-break false false ctx (ib-title ++ inline-fil) +++ block-skip 18pt
 
+  let chapter-heading-with-author ctx ib-num-opt ib-title ib-author =
+    let bb-num-opt =
+      match ib-num-opt with
+      | None         -> block-nil
+      | Some(ib-num) -> line-break false false ctx (ib-num ++ inline-fil)
+    in
+    let bb-title = line-break false false ctx (ib-title ++ inline-fil) in
+    let bb-author = line-break false false ctx (inline-fil ++ ib-author) in
+      bb-num-opt +++ bb-title +++ bb-author +++ block-skip 18pt
 
   let section-heading ctx ib-heading =
     line-break false false (ctx |> set-paragraph-margin section-top-margin section-bottom-margin) ib-heading
@@ -659,7 +672,7 @@ end = struct
     figure-scheme ctx labelopt `table:` {Table} caption inner
 
 
-  let chapter-scheme ctx label title inner =
+  let chapter-scheme ctx label author title inner =
     let () = increment num-chapter in
     let () = num-section <- 0 in
     let () = num-subsection <- 0 in
@@ -669,13 +682,15 @@ end = struct
     let () = register-cross-reference (`chapter:` ^ label ^ `:num`) s-num in
     let () = toc-acc-ref <- (TOCElementChapter(label, title)) :: !toc-acc-ref in
     let ctx-title = make-chapter-title ctx in
+    let ctx-author = make-chapter-author ctx in
     let ib-num =
       read-inline ctx-title (embed-string (`Chapter `# ^ s-num))
         ++ hook-page-break (fun pbinfo _ ->
              register-cross-reference (`chapter:` ^ label ^ `:page`) (arabic pbinfo#page-number))
     in
     let ib-title = read-inline ctx-title title in
-    let bb-title = chapter-heading ctx (Some(ib-num)) ib-title in
+    let ib-author = read-inline ctx-author author in
+    let bb-title = chapter-heading-with-author ctx (Some(ib-num)) ib-title ib-author in
     let bb-inner = read-block ctx inner in
       bb-title +++ bb-inner +++ clear-page
 
@@ -721,13 +736,13 @@ end = struct
       bb-title +++ bb-inner
 
 
-  let-block ctx +chapter ?:labelopt title inner =
+  let-block ctx +chapter ?:labelopt title author inner =
     let label =
       match labelopt with
       | None        -> generate-fresh-label ()
       | Some(label) -> label
     in
-      chapter-scheme ctx label title inner
+      chapter-scheme ctx label author title inner
 
 
   let-block ctx +section ?:labelopt title inner =

@@ -1,7 +1,7 @@
 @import: ../main/cs-thesis
 
 let maswag-article = '<
-  +chapter ?:(`maswag-article`) {Title} <
+  +chapter ?:(`maswag-article`) {Title} {MasWag} <
     +p {Hello}
   >
 >

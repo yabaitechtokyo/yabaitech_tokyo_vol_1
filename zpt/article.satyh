@@ -1,7 +1,7 @@
 @import: ../main/cs-thesis
 
 let zpt-article = '<
-  +chapter ?:(`zpt-article`) {型付き${\lambda}計算をつくろう} <
+  +chapter ?:(`zpt-article`) {型付き${\lambda}計算をつくろう} {zeptometer} <
     +section {はじめに} <
     +p{(間違ってる部分があるかもしれんからあったら指摘しくれなみたいなexcuseを入れる)}
     +p{(適当な挨拶が入る)}
