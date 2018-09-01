@@ -1,4 +1,4 @@
-main.pdf: main.saty bib.satyh local.satyh introduction.satyh automata.satyh lstar.satyh
+main.pdf: main.saty bib.satyh local.satyh introduction.satyh automata.satyh lstar.satyh figs/mustHaveAA.pdf figs/evenDFA.pdf
 	satysfi $<
 
 bib.satyh: bib.xml
@@ -16,3 +16,6 @@ clean:
 	$(RM) main.pdf introduction.satyh automata.satyh lstar.satyh ./pandoc/introduction.template ./pandoc/automata.template ./pandoc/lstar.template
 
 .PHONY: clean
+
+figs/%.pdf: figs/%.tex
+	pdflatex $<

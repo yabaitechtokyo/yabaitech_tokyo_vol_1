@@ -17,3 +17,15 @@ let-block ctx +frame content =
 let-block ctx +centering it =
   line-break true true ctx (inline-fil ++ read-inline ctx it ++ inline-fil)
 
+let-block ctx +image-frame content =
+  let pads = (10pt, 10pt, 10pt, 10pt) in
+  let decoset = VDecoSet.simple-frame-stroke 1pt Color.black in
+    block-frame-breakable ctx pads decoset (fun ctx -> read-block ctx '<+centering{#content;}>)
+
+let-inline ctx \insert-image w path =
+  let img = load-image path in
+    use-image-by-width img w
+
+let-inline ctx \insert-pdf-image w path page =
+  let img = load-pdf-image path page in
+    use-image-by-width img w
