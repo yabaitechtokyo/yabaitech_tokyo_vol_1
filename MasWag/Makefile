@@ -18,4 +18,4 @@ clean:
 .PHONY: clean
 
 figs/%.pdf: figs/%.tex
-	pdflatex $<
+	cd $(dir $<) && pdflatex $(notdir $<)
