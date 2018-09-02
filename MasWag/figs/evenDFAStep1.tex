@@ -1,0 +1,13 @@
+\documentclass{standalone}
+\usepackage{amssymb,amsmath}
+\usepackage{tikz}
+\usetikzlibrary{automata,positioning}
+\begin{document}
+\begin{tikzpicture}[shorten >=1pt,node distance=2cm,on grid,auto] 
+ \node[state,initial,accepting] (s_0) {$\varepsilon$};
+ \node[state] (s_a)[right=of s_0] {a};
+ \path[->] 
+ (s_0) edge [bend right,below] node {a,b} (s_a)
+ (s_a) edge [bend right,above] node {a,b} (s_0);
+\end{tikzpicture} 
+ \end{document}
