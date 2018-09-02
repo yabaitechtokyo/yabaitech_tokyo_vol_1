@@ -229,6 +229,9 @@ function Header(lev, s, attr)
   elseif attr.class == "theorem" then
     no_para = true
     return "+theorem ?:({" .. s .. "}) ?:(`" .. attr.id .."`)"
+  elseif attr.class == "corollary" then
+    no_para = true
+    return "+corollary ?:({" .. s .. "}) ?:(`" .. attr.id .."`)"
   end
   no_para = false
   close_paren = ''
