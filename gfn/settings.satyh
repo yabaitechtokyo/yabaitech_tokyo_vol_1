@@ -43,3 +43,19 @@ let-inline ctx \twitter it =
 
 let-inline \person-github itn itg =
   {#itn; (\github{#itg;})}
+
+
+let-inline ctx \d-code s =
+  let bb =
+    let decoset =
+      let back-color = Gray(0.875) in
+      let deco (x, y) w h d =
+        [
+          fill back-color (Gr.rectangle (x, y -' d) (x +' w, y +' h));
+        ]
+      in
+      (deco, deco, deco, deco)
+    in
+      Code.scheme decoset Color.black ctx s
+  in
+    inline-fil ++ embed-block-breakable ctx bb

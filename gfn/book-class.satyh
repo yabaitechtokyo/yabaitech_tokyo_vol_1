@@ -427,18 +427,29 @@ end = struct
       bb-title +++ bb-inner
 
 
+  let paper-size = UserDefinedPaper(182mm, 257mm)
+  let text-origin = (16mm, 30mm)
+  let text-width = 150mm
+  let text-height = 200mm
+  let header-origin = (16mm, 15mm)
+  let header-width = text-width
+  let footer-origin = (16mm, 240mm)
+  let footer-width = text-width
+  let footnote-indent = 6mm
+
+
   let document record inner =
     % -- constants --
     let title = record#title in
     let author = record#author in
-    let page = UserDefinedPaper(182mm, 257mm) in
-    let txtorg = (16mm, 30mm) in
-    let txtwid = 150mm in
-    let txthgt = 200mm in
-    let hdrorg = (16mm, 15mm) in
-    let ftrorg = (16mm, 240mm) in
-    let hdrwid = 150mm in
-    let ftrwid = 150mm in
+    let page = paper-size in
+    let txtorg = text-origin in
+    let txtwid = text-width in
+    let txthgt = text-height in
+    let hdrorg = header-origin in
+    let ftrorg = footer-origin in
+    let hdrwid = header-width in
+    let ftrwid = footer-width in
     let thickness = header-line-thickness in
 
     let ctx-doc =
@@ -841,24 +852,35 @@ end = struct
 
 
   let-inline ctx \footnote it =
-    let size = get-font-size ctx in
     let ibf num =
       let it-num = embed-string (arabic num) in
       let ctx =
-        ctx |> set-font-size (size *' 0.75)
-            |> set-manual-rising (size *' 0.25)
+        let size = get-font-size ctx in
+          ctx |> set-font-size (size *' 0.75)
+              |> set-manual-rising (size *' 0.25)
       in
         read-inline ctx {\*#it-num;}
     in
     let bbf num =
-      let it-num = embed-string (arabic num) in
+      let ib-num = read-inline ctx (embed-string (arabic num)) in
       let ctx =
-        ctx |> set-font-size (size *' 0.9)
+        let size = 12pt in
+          get-standard-context text-width
+            |> set-font-size (size *' 0.9)
             |> set-leading (size *' 1.2)
             |> set-paragraph-margin (size *' 0.5) (size *' 0.5)
-          %temporary
       in
-        line-break false false ctx (read-inline ctx {#it-num; #it;} ++ inline-fil)
+      let len =
+        let (w, _, _) = get-natural-metrics ib-num in
+          footnote-indent -' w
+      in
+      let ib =
+        ib-num ++ inline-skip len ++
+          embed-block-top ctx (text-width -' footnote-indent) (fun ctx -> (
+            line-break false false ctx (read-inline ctx it ++ inline-fil)
+          ))
+      in
+        line-break false false ctx (ib ++ inline-fil)
     in
       FootnoteScheme.main ctx ibf bbf
 
