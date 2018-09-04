@@ -1,4 +1,18 @@
 <dblp>
+<article key="journals/iandc/Angluin87" mdate="2017-05-18">
+<author>Dana Angluin</author>
+<title>
+Learning Regular Sets from Queries and Counterexamples
+</title>
+<pages>87-106</pages>
+<journal>Inf. Comput.</journal>
+<month>November</month>
+<year>1987</year>
+<volume>75</volume>
+<number>2</number>
+<url>db/journals/iandc/iandc75.html#Angluin87</url>
+<ee>https://doi.org/10.1016/0890-5401(87)90052-6</ee>
+</article>
 <book key="HopcroftMU2003">
 <author>J. ホップクロフト</author>
 <author>R. モトワニ</author>

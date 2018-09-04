@@ -3,6 +3,17 @@
 let bibliography = [
   
 
+  (`journals/iandc/Angluin87`, Article(|
+    author = {|Dana Angluin|};
+    title = {Learning Regular Sets from Queries and Counterexamples};
+    journal = {Inf. Comput.};
+    volume = Some(75);
+    number = Some({2});
+    pages = (87,106);
+    year = 1987;
+  |));
+
+
   (`HopcroftMU2003`, Book(|
     author = {|J. ホップクロフト, R. モトワニ, J. ウルマン|};
     title = {オートマトン言語理論計算論 I};
