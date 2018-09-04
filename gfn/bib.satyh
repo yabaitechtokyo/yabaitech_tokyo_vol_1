@@ -1,0 +1,10 @@
+@import: settings
+
+let bibliography = [
+  (`LyX`, WebSite(|
+    author = {| Matthias Ettrich |};
+    title = {LyX – The Document Processor};
+    url = `https://www.lyx.org`;
+    year = 1995;
+  |));
+]

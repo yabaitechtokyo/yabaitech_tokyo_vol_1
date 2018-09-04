@@ -1,0 +1,61 @@
+% -*- coding: utf-8 -*-
+@require: deco
+@require: code
+@require: color
+@require: itemize
+@import: book-class
+
+
+let-inline ctx \REMAINS msg =
+  let pads = (2pt, 2pt, 2pt, 2pt) in
+  let ctx =
+    ctx |> Book.set-cjk-font Book.font-cjk-gothic
+        |> set-text-color Color.red
+  in
+    inline-frame-inner pads (Deco.simple-frame 1pt Color.red Color.yellow)
+      (read-inline ctx {要加筆： #msg;})
+
+
+let set-mono-font ctx =
+  ctx |> set-font Latin (`lmmono`, 1., 0.)
+      |> set-hyphen-penalty 100000
+
+
+let-inline ctx \pkg it =
+  read-inline (ctx |> set-mono-font) it
+
+
+let-inline ctx \path it =
+  read-inline (ctx |> set-mono-font) it
+
+
+let-inline ctx \codem it =
+  read-inline (ctx |> set-mono-font) it
+
+
+let-inline ctx \github it =
+  read-inline (ctx |> set-mono-font) it
+
+
+let-inline ctx \twitter it =
+  read-inline (ctx |> set-mono-font) it
+
+
+let-inline \person-github itn itg =
+  {#itn; (\github{#itg;})}
+
+
+let-inline ctx \d-code s =
+  let bb =
+    let decoset =
+      let back-color = Gray(0.875) in
+      let deco (x, y) w h d =
+        [
+          fill back-color (Gr.rectangle (x, y -' d) (x +' w, y +' h));
+        ]
+      in
+      (deco, deco, deco, deco)
+    in
+      Code.scheme decoset Color.black ctx s
+  in
+    inline-fil ++ embed-block-breakable ctx bb
