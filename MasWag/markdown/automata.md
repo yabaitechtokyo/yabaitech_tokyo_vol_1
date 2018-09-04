@@ -32,7 +32,7 @@ DFAの形式的な定義は以下の様になります。
 
 文字集合$\Sigma$上の決定的有限オートマトン$\mathcal{A}$は5つ組$(\Sigma,Q,q\_0,Q\_F,\Delta)$である。但し$\Sigma$は有限の文字集合、$Q$は有限の状態集合、$q_0\in Q$は初期状態、$Q_F\subseteq Q$は受理状態の集合、$\Delta\colon Q\times\Sigma\to Q$は状態遷移関数である。
 
-文字列 $w=a_1a_2\cdots a_n\in\Sigma^\ast$ に対して、q_iを各$i\in\{1,2,\ldots,n\}$について帰納的に$q_i=\Delta(q_{i-1},a_i)$と定める。$q_n\in F$が成り立つとき、$\mathcal{A}$は$w$を*受理する*という。また、$\mathcal{A}$が受理する文字列の集合を$\mathcal{A}$の*受理言語*といい、$L(\mathcal{A})$と表記する。言い換えると$L(\mathcal{A})=\{a_1a_2\cdots a_n\mid q_n\in F \,\text{where ${q_i=\Delta(q_{i-1},a_i)}}\}$である。また、DFA$\mathcal{A}$が言語$L(\mathcal{A})$を*認識する*、という。DFAによって受理される言語を*正規言語* (regular language)という。
+文字列 $w=a_1a_2\cdots a_n\in\Sigma^\ast$ に対して、q_iを各$i\in\{1,2,\ldots,n\}$について帰納的に$q_i=\Delta(q_{i-1},a_i)$と定める。$q_n\in F$が成り立つとき、$\mathcal{A}$は$w$を*受理する*という。また、$\mathcal{A}$が受理する文字列の集合を$\mathcal{A}$の*受理言語*といい、$L(\mathcal{A})$と表記する。言い換えると$L(\mathcal{A})=\{a_1a_2\cdots a_n\mid q_n\in F \,\text{where ${q_i=\Delta(q_{i-1},a_i)}}\}$である。また、DFA$\mathcal{A}$が言語$L(\mathcal{A})$を*認識する*、という。DFAによって受理される言語を*正規言語* (regular language)という。以後文字列$w=a_1a_2\cdots a_n$について、$\Delta(q,w)=\Delta(\Delta(\cdots\Delta(q,a_1),\cdots,a_{n-1}),a_{n})$と定める。
 
 ## 余談
 

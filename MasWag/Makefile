@@ -1,4 +1,4 @@
-main.pdf: main.saty bib.satyh local.satyh introduction.satyh automata.satyh lstar.satyh figs/mustHaveAA.pdf figs/evenDFA.pdf figs/evenDFAStep1.pdf figs/evenDFAStep2.pdf figs/evenTree.pdf figs/evenTreeMerged.pdf
+main.pdf: main.saty bib.satyh local.satyh introduction.satyh automata.satyh lstar.satyh rnnlstar.satyh conclusion.satyh figs/mustHaveAA.pdf figs/evenDFA.pdf figs/evenDFAStep1.pdf figs/evenDFAStep2.pdf figs/evenTree.pdf figs/evenTreeMerged.pdf
 	satysfi $<
 
 bib.satyh: bib.xml

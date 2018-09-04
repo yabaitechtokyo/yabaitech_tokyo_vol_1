@@ -45,7 +45,7 @@ DFAではまず始めに初期状態${q_0}にいるところから始めて、�
   文字集合${\alphabet}上の決定的有限オートマトン${\mathcal{A}}は5つ組${\(\alphabet,Q,q_0,Q_F,\mathrm{\Delta}\)}である。但し${\alphabet}は有限の文字集合、${Q}は有限の状態集合、${q_0\in Q}は初期状態、${Q_F\subseteq Q}は受理状態の集合、${\mathrm{\Delta}\colon Q\times\alphabet\to Q}は状態遷移関数である。
 }
 +p {
-  文字列 ${w=a_1a_2\cdots a_n\in\alphabet^\ast} に対して、q_iを各${i\in\{1,2,\ldots,n\}}について帰納的に${q_i=\mathrm{\Delta}\(q_{i-1},a_i\)}と定める。${q_n\in F}が成り立つとき、${\mathcal{A}}は${w}を\emph{受理する}という。また、${\mathcal{A}}が受理する文字列の集合を${\mathcal{A}}の\emph{受理言語}といい、${L\(\mathcal{A}\)}と表記する。言い換えると${L\(\mathcal{A}\)=\{a_1a_2\cdots a_n\mid q_n\in F \,\text!{where ${q_i=\mathrm{\Delta}\(q_{i-1},a_i\)}}\}}である。また、DFA${\mathcal{A}}が言語${L\(\mathcal{A}\)}を\emph{認識する}、という。DFAによって受理される言語を\emph{正規言語} (regular language)という。
+  文字列 ${w=a_1a_2\cdots a_n\in\alphabet^\ast} に対して、q_iを各${i\in\{1,2,\ldots,n\}}について帰納的に${q_i=\mathrm{\Delta}\(q_{i-1},a_i\)}と定める。${q_n\in F}が成り立つとき、${\mathcal{A}}は${w}を\emph{受理する}という。また、${\mathcal{A}}が受理する文字列の集合を${\mathcal{A}}の\emph{受理言語}といい、${L\(\mathcal{A}\)}と表記する。言い換えると${L\(\mathcal{A}\)=\{a_1a_2\cdots a_n\mid q_n\in F \,\text!{where ${q_i=\mathrm{\Delta}\(q_{i-1},a_i\)}}\}}である。また、DFA${\mathcal{A}}が言語${L\(\mathcal{A}\)}を\emph{認識する}、という。DFAによって受理される言語を\emph{正規言語} (regular language)という。以後文字列${w=a_1a_2\cdots a_n}について、${\mathrm{\Delta}\(q,w\)=\mathrm{\Delta}\(\mathrm{\Delta}\(\cdots\mathrm{\Delta}\(q,a_1\),\cdots,a_{n-1}\),a_{n}\)}と定める。
 }
 +subsection{余談} <
 +p {
