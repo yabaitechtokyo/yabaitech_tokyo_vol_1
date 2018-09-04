@@ -8,7 +8,7 @@
 
 *決定的有限オートマトン* (Deterministic Finite Automata, DFA)は、様々な言語の中でも*正規言語*と呼ばれる言語を表現する方法の中の一つです。DFAは例えば図\\ref(\`fig:mustHaveAA\`);にある、$\mathcal{A}$のような状態遷移図を用いて表されます。
 DFA$\mathcal{A}$が表現する言語を$L(\mathcal{A})$と表記することとし、文字列$w\in\Sigma^\ast$が$L(\mathcal{A})$に含まれるとき、$\mathcal{A}$が$w$を*受理する*と言います。
-図\\ref(\`fig:mustHaveAA\`);にあるDFA$\mathcal{A}$は、文字集合$\{\text{a,b}\}$の上で定義されたDFAで、"abという部分列が存在する文字列"を受理します。
+図\\ref(\`fig:mustHaveAA\`);にあるDFA$\mathcal{A}$は、文字集合$\{\text{a,b}\}$の上で定義されたDFAで、「abという部分列が存在する文字列」を受理します。
 このDFAには状態が$q_0,q_1,q_2$の3つありますがその中にも特別な役割をする状態が二種類あります。
 一つめは*初期状態*と呼ばれる状態で、一つのDFAにつき常に一つ存在します。
 本章では初期状態は"start"と書かれた矢印で外から指すことで表すこととします。
@@ -24,15 +24,15 @@ DFAではまず始めに初期状態$q_0$にいるところから始めて、一
 最後に四文字目のbを読むと、$q_2$が始点でbのラベルが付いている辺の終点は$q_2$なので、最後の状態も$q_2$となります。
 全ての文字を読み込んだ後で、現在居る状態が受理状態であるかどうかを調べます。
 今回の最後にいる状態$q_2$は二重丸の付いている受理状態なので、DFA$\mathcal{A}$は$w=\text{baab}$を受理する、ということがわかります。
-同様の手順を踏むことで、任意の文字列$w'\in\{\text{a,b}\}$について$\mathcal{A}$が$w'$を受理するかどうかを調べることができます。
+同様の手順を踏むことで、任意の文字列$w'\in\{\text{a,b}\}^\ast$について$\mathcal{A}$が$w'$を受理するかどうかを調べることができます。
 
 DFAの形式的な定義は以下の様になります。
 
 ## 決定的有限オートマトン {.definition #def:DFA}
 
-文字集合$\Sigma$上の決定的有限オートマトン$\mathcal{A}$は5つ組$(\Sigma,Q,q\_0,Q\_F,\Delta)$である。但し$\Sigma$は有限の文字集合、$Q$は有限の状態集合、$q_0\in Q$は初期状態、$Q_F\subseteq Q$は受理状態の集合、$\Delta\colon Q\times\Sigma\to Q$は状態遷移関数である。
+文字集合$\Sigma$上の決定的有限オートマトン$\mathcal{A}$は5つ組$(\Sigma,Q,q_0,Q_F,\Delta)$である。但し$\Sigma$は有限の文字集合、$Q$は有限の状態集合、$q_0\in Q$は初期状態、$Q_F\subseteq Q$は受理状態の集合、$\Delta\colon Q\times\Sigma\to Q$は状態遷移関数である。
 
-文字列 $w=a_1a_2\cdots a_n\in\Sigma^\ast$ に対して、q_iを各$i\in\{1,2,\ldots,n\}$について帰納的に$q_i=\Delta(q_{i-1},a_i)$と定める。$q_n\in F$が成り立つとき、$\mathcal{A}$は$w$を*受理する*という。また、$\mathcal{A}$が受理する文字列の集合を$\mathcal{A}$の*受理言語*といい、$L(\mathcal{A})$と表記する。言い換えると$L(\mathcal{A})=\{a_1a_2\cdots a_n\mid q_n\in F \,\text{where ${q_i=\Delta(q_{i-1},a_i)}}\}$である。また、DFA$\mathcal{A}$が言語$L(\mathcal{A})$を*認識する*、という。DFAによって受理される言語を*正規言語* (regular language)という。以後文字列$w=a_1a_2\cdots a_n$について、$\Delta(q,w)=\Delta(\Delta(\cdots\Delta(q,a_1),\cdots,a_{n-1}),a_{n})$と定める。
+文字列 $w=a_1a_2\cdots a_n\in\Sigma^\ast$ に対して、$q_i$を各$i\in\{1,2,\ldots,n\}$について帰納的に$q_i=\Delta(q_{i-1},a_i)$と定める。$q_n\in F$が成り立つとき、$\mathcal{A}$は$w$を*受理する*という。また、$\mathcal{A}$が受理する文字列の集合を$\mathcal{A}$の*受理言語*といい、$L(\mathcal{A})$と表記する。言い換えると$L(\mathcal{A})=\{a_1a_2\cdots a_n\mid q_n\in F \,\text{where ${q_i=\Delta(q_{i-1},a_i)}}\}$である。また、DFA$\mathcal{A}$が言語$L(\mathcal{A})$を*認識する*、という。DFAによって受理される言語を*正規言語* (regular language)という。以後文字列$w=a_1a_2\cdots a_n$について、$\Delta(q,w)=\Delta(\Delta(\cdots\Delta(q,a_1),\cdots,a_{n-1}),a_{n})$と定める。
 
 ## 余談
 

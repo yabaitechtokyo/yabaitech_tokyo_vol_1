@@ -21,7 +21,7 @@
 クラスタリング$p$は任意の$h\in\mathbb{R}^N$について$p(h)=0$となるように、次に調べる文字列のキュー $W_{\mathrm{new}}$に$\varepsilon$をpushした状態で初期化し、訪問済の文字列の集合 $W_{\mathrm{seen}}\in\mathcal{P}(\mathbb{N})$及びクラスタの集合$P_{\mathrm{seen}}\in\mathcal{P}(\mathbb{N})$ は 共に$\emptyset$で初期化します。
 
 
-## Step 1.: 矛盾かどうかの確認
+## Step 1: 矛盾かどうかの確認
 
 まず始めに次に調べる文字列のキュー$W_{\mathrm{new}}$から文字列$w$をpopします。ここで既にキュー$W_{\mathrm{new}}$が空であった場合、入力のRNN$R$とDFA$\mathcal{A}$は十分似ているということで、等価であるという返答を返します。
 
