@@ -13,7 +13,7 @@ let lstar = '<+section{L\*アルゴリズム} <
 }
 }
 +p {
-  本節では例として ${L = \{ a \in \{\text!{a,b}\} \mid \text!{a, bの個数が共に偶数}\}} を用います。例えば図\ref(`fig:evenDFA`);のDFAがこの言語を認識します。
+  本節では例として ${L = \{ a \in \{\text!{a,b}\} \mid \text!{a, bの個数が共に偶数}\}} を用います。例えば図\ref-figure(`fig:evenDFA`);のDFAがこの言語を認識します。
 
   \figure ?:(`fig:evenDFA`){a, bの個数が共に偶数の文字列の言語を認識するDFAの例。}<
      +image-frame{\insert-pdf-image(7cm)(`figs/evenDFA.pdf`)(1);}
@@ -21,7 +21,7 @@ let lstar = '<+section{L\*アルゴリズム} <
 }
 +subsection{観察表} <
 +p {
-  L\* アルゴリズムでは \emph{観察表} (observation table) と呼ばれる表${T}に、各質問の結果を随時記入していくことで学習を進めていきます。観察表は図\ref(`fig:observationTable`);にある様に行、列が共に${\alphabet}上の文字列で添字付けされている表です。観察表の各セルには所属性質問の結果が記入されます。例えばセル${T\[w,w'\]}には文字列${w\cdot w'}の所属性質問の結果が記入されます。また、観察表には水平線より上側と下側の区別があります。水平線より上側の行の添字集合を${P\subseteq \alphabet^\ast},下側の添字集合を${P'\subseteq\alphabet^\ast},また、列の添字集合を${S\subseteq\alphabet^\ast}と呼びます。水平線より下側の各行ベクトルが水平線より上側に表われているとき、つまり各${w'\in P'}について${T\[w,\text!{-}\]=T\[w',\text!{-}\]}を充たす${w\in P}が存在するとき、その観察表を\emph{閉じている}と言います。
+  L\* アルゴリズムでは \emph{観察表} (observation table) と呼ばれる表${T}に、各質問の結果を随時記入していくことで学習を進めていきます。観察表は図\ref-figure(`fig:observationTable`);にある様に行、列が共に${\alphabet}上の文字列で添字付けされている表です。観察表の各セルには所属性質問の結果が記入されます。例えばセル${T\[w,w'\]}には文字列${w\cdot w'}の所属性質問の結果が記入されます。また、観察表には水平線より上側と下側の区別があります。水平線より上側の行の添字集合を${P\subseteq \alphabet^\ast},下側の添字集合を${P'\subseteq\alphabet^\ast},また、列の添字集合を${S\subseteq\alphabet^\ast}と呼びます。水平線より下側の各行ベクトルが水平線より上側に表われているとき、つまり各${w'\in P'}について${T\[w,\text!{-}\]=T\[w',\text!{-}\]}を充たす${w\in P}が存在するとき、その観察表を\emph{閉じている}と言います。
 
   \figure ?:(`fig:observationTable`){観察表の例。${P=\{\epsilon,\text!{a,b}\},P'=\{\text!{aa,ab,ba,bb}\},S=\{\epsilon,\text!{a}\}}}<
 +centering{
@@ -125,7 +125,7 @@ cellf {};
 }
 >
 
-  L\*アルゴリズムではまず始めに図\ref(`fig:initObservationTable`);の観察表から始めます。最初に空欄になっているセル${T\[\epsilon, \epsilon\]}を所属性質問を用いて埋め、同時に${P'}にa,bを追加し、同様に埋めます (図\ref(`ref:observationTable1`); 。
+  L\*アルゴリズムではまず始めに図\ref-figure(`fig:initObservationTable`);の観察表から始めます。最初に空欄になっているセル${T\[\epsilon, \epsilon\]}を所属性質問を用いて埋め、同時に${P'}にa,bを追加し、同様に埋めます (図\ref-figure(`ref:observationTable1`); 。
 
   \figure ?:(`fig:observationTable1`){${\epsilon}、a、bについて埋めた観察表}<
 +centering{
@@ -171,7 +171,7 @@ cellf {F};
 >
 }
 +p {
-  ここで図\ref(`ref:observationTable1`);の観察表が閉じているかを判定します。今回は行aの行ベクトルが水平線の上側の何れの行ベクトルとも一致しないので閉じていません。そこで閉じていない原因の行aを水平線の上側に移動します。このとき各${\{\text!{a} \cdot a \mid a \in \alphabet\}}を添字とする列が${P}と${P'}のどちらにもに存在しない場合、その存在しない添字を${P'}に追加します (図\ref(`fig:observationTable2`);) 。
+  ここで図\ref-figure(`ref:observationTable1`);の観察表が閉じているかを判定します。今回は行aの行ベクトルが水平線の上側の何れの行ベクトルとも一致しないので閉じていません。そこで閉じていない原因の行aを水平線の上側に移動します。このとき各${\{\text!{a} \cdot a \mid a \in \alphabet\}}を添字とする列が${P}と${P'}のどちらにもに存在しない場合、その存在しない添字を${P'}に追加します (図\ref-figure(`fig:observationTable2`);) 。
 
 \figure ?:(`fig:observationTable2`){${\epsilon}、a、bについて埋めた後、閉じるまで操作を続けた観察表}<
 +centering{
@@ -236,14 +236,14 @@ cellf {F};
 }
 }
 +p {
-  例えば図\ref(`fig:observationTable2`);の観察表からは図\ref(`fig:evenDFAStep1`);のDFA${\mathcal{A}_1}が生成されます。
+  例えば図\ref-figure(`fig:observationTable2`);の観察表からは図\ref-figure(`fig:evenDFAStep1`);のDFA${\mathcal{A}_1}が生成されます。
 
-  \figure ?:(`fig:evenDFAStep1`){図\ref(`fig:observationTable2`);の観察表に対応するDFA${\mathcal{A}_1}}<
+  \figure ?:(`fig:evenDFAStep1`){図\ref-figure(`fig:observationTable2`);の観察表に対応するDFA${\mathcal{A}_1}}<
      +image-frame{\insert-pdf-image(7cm)(`figs/evenDFAStep1.pdf`)(1);}
   >
 }
 +p {
-  DFAを一つ生成することができたので等価性質問によってこのDFAが正解の正規言語を認識するかどうかを調べてみます。今回、DFA${\mathcal{A}_1}は言語${L}を認識しないので、最短の反例 ba が返ります。次に反例 baがどの位置から表の水平線より上側と食い違ったかを見てみます。今回は${T\[\text!{b,-}\]= T\[\text!{a,-}\]}で、実際${b\nin L}と${a\nin L}が成り立ちますが、${ba\nin L}、${aa \in L}となるので末尾のaでと表食い違いました。これはつまり現在の状態の受理・非受理のみではなく、現在の状態からaを読んだときの受理・非受理も考慮する必要があるということになります。これを表わすために${S}にaを加え、先と同様に観察表が閉じるまで所属性質問を繰り返します (図\ref(`fig:observationTable3`);) 。
+  DFAを一つ生成することができたので等価性質問によってこのDFAが正解の正規言語を認識するかどうかを調べてみます。今回、DFA${\mathcal{A}_1}は言語${L}を認識しないので、最短の反例 ba が返ります。次に反例 baがどの位置から表の水平線より上側と食い違ったかを見てみます。今回は${T\[\text!{b,-}\]= T\[\text!{a,-}\]}で、実際${b\nin L}と${a\nin L}が成り立ちますが、${ba\nin L}、${aa \in L}となるので末尾のaでと表食い違いました。これはつまり現在の状態の受理・非受理のみではなく、現在の状態からaを読んだときの受理・非受理も考慮する必要があるということになります。これを表わすために${S}にaを加え、先と同様に観察表が閉じるまで所属性質問を繰り返します (図\ref-figure(`fig:observationTable3`);) 。
 
   \figure ?:(`fig:observationTable3`){操作を更に続けた観察表}<
 +centering{
@@ -400,12 +400,12 @@ cellf {F};
 >
 }
 +p {
-  \figure ?:(`fig:evenDFAStep2`){図\ref(`fig:observationTable3`);の観察表に対応するDFA${\mathcal{A}_2}}<
+  \figure ?:(`fig:evenDFAStep2`){図\ref-figure(`fig:observationTable3`);の観察表に対応するDFA${\mathcal{A}_2}}<
      +image-frame{\insert-pdf-image(7cm)(`figs/evenDFAStep2.pdf`)(1);}
      +image-frame{\insert-pdf-image(7cm)(`figs/evenDFA.pdf`)(1);}
   >
   
-  図\ref(`fig:observationTable3`);の下側の観察表から生成されるDFAについて等価性質問を問い合わせると学習したい言語と一致するので、今回の学習はここで終了となります。ここまでの流れだけを見ると今回たまたま上手く行っただけで、この学習が有限回で停止しない場合もあるのではないかと疑問に思うと思われますが、実は常に有限回 (より正確には多項式回)で停止しますし、更にはこの方法で生成されるDFAは与えられた言語を認識するDFAのなかで状態数が最小となることもわかります。これらの点について次に説明していきます。
+  \ref-figure(`fig:observationTable3`);の下側の観察表から生成されるDFAについて等価性質問を問い合わせると学習したい言語と一致するので、今回の学習はここで終了となります。ここまでの流れだけを見ると今回たまたま上手く行っただけで、この学習が有限回で停止しない場合もあるのではないかと疑問に思うと思われますが、実は常に有限回 (より正確には多項式回)で停止しますし、更にはこの方法で生成されるDFAは与えられた言語を認識するDFAのなかで状態数が最小となることもわかります。これらの点について次に説明していきます。
 }
 >
 +subsection{Myhill-Nerodeの定理とDFAの最小性} <
