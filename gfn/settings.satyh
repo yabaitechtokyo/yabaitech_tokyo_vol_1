@@ -21,6 +21,10 @@ let-inline ctx \quad =
     inline-skip sz
 
 
+let-inline ctx \size sz it =
+  read-inline (ctx |> set-font-size sz) it
+
+
 let-inline ctx \italic it =
   read-inline (ctx |> Book.set-latin-font Book.font-latin-italic) it
 
@@ -74,7 +78,7 @@ let-inline ctx \d-code s =
     inline-fil ++ embed-block-breakable ctx bb
 
 
-let-inline ctx \metric-roman it =
+let-inline ctx \metric-roman its =
   let ctx =
     ctx |> Book.set-latin-font Book.font-latin-roman
         |> set-font-size 10mm
@@ -87,7 +91,9 @@ let-inline ctx \metric-roman it =
       stroke 0.5pt Color.black rect;
     ]
   in
-    inline-frame-inner pads deco (read-inline ctx it)
+    its |> List.map (fun it ->
+      inline-frame-inner pads deco (read-inline ctx it)
+    ) |> List.fold-left (++) inline-nil
 
 
 let-inline ctx \matric-glue =
@@ -99,8 +105,26 @@ let-inline ctx \matric-glue =
       stroke 0.5pt Color.black rect;
     ]
   in
-  let w = 0.75cm in
+  let w = 0.4cm in
   let h = 0.5cm in
   let d = 0cm in
     inline-frame-inner pads deco
       (inline-graphics w h d (fun (x, y) -> []))
+
+
+let make-graphics ctx grf =
+  grf (|
+    text-centering = (fun pt it ->
+      Gr.text-centering pt (read-inline ctx it)
+    );
+  |)
+
+
+let-block ctx +centered-graphics w h grf =
+  let ib-gr =
+    inline-graphics w h 0pt (fun pt ->
+      List.map (shift-graphics pt) (make-graphics ctx grf)
+    )
+  in
+  line-break true true (ctx |> set-paragraph-margin 0pt 0pt)
+    (inline-fil ++ ib-gr ++ inline-fil)

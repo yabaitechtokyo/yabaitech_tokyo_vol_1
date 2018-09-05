@@ -136,11 +136,33 @@ let overall = '<
         \ref-figure(`conversion-to-inline-boxes`);のように表すことができる．
         「ボックス列」という命名は，この図のような直観から来ている．
         \figure?:(`conversion-to-inline-boxes`){インラインボックス列への変換}<
-          +p{ \REMAINS{図} }
-          +p{
-            \metric-roman{T}\metric-roman{h}\metric-roman{e}%
-            \matric-glue;%
-          }
+          +centered-graphics(15cm)(6.5cm)(fun r ->
+            List.concat [
+              [
+                stroke 0.5pt Color.black (Gr.rectangle (0cm, 0cm) (15cm, 6.5cm));
+                r#text-centering (7.5cm, 5.25cm) {インラインテキスト};
+                r#text-centering (7.5cm, 4.5cm) {
+                  \size(20pt){\codem{\{The quick brown fox jumps ${\cdots}\}}}
+                };
+              ];
+              Gr.arrow 2pt Color.black 12pt 10pt 3pt (7.5cm, 4cm) (7.5cm, 2.5cm);
+              [
+                r#text-centering (7.5cm, 1.75cm) {
+                  \metric-roman{|T|h|e|}%
+                  \matric-glue;%
+                  \metric-roman{|q|u|i|c|k|}%
+                  \matric-glue;%
+                  \metric-roman{|b|r|o|w|n|}%
+                  \matric-glue;%
+                  \metric-roman{|f|o|x|}%
+                  \matric-glue;%
+                  \metric-roman{|j|u|m|p|s|}%
+                  \ \size(20pt){${\cdots}}
+                };
+                r#text-centering (7.5cm, 1cm) {インラインボックス列};
+              ];
+            ]
+          );
         >
       }
     >
@@ -150,8 +172,8 @@ let overall = '<
         もう組版処理を達成したも同然だろうか？\quad;
         勿論そんなことはない．
         古今東西を問わず，長い文章が書かれる際に
-        1行がひたすら切れることなく細長く連なっていることはまずなく，
-        少なくとも装飾性が実用性に圧倒的に優先されるような媒体ではない限り，
+        1行がひたすら切れずに細長く連なっていることはまずなく，
+        装飾性が実用性に圧倒的に優先されるような媒体ではない限り，
         基本的には適切に行として切り分けた単位で文字が排列されている．
         すなわち，今度の相手は紙面の幅である．
         文字の排列を適切に行単位に切り分けて紙面の所望の幅に収める処理を
@@ -163,15 +185,39 @@ let overall = '<
         行分割処理がインラインボックス列を受け取ってブロックボックス列を返す処理として
         定式化されていることは，\ref-figure(`line-breaking`);のような直観による．
         \figure?:(`line-breaking`){行分割処理の直観}<
-          +p{ \REMAINS{} }
+          +centered-graphics(15cm)(7cm)(fun r ->
+            List.concat [
+              [
+                stroke 0.5pt Color.black (Gr.rectangle (0cm, 0cm) (15cm, 7cm));
+                r#text-centering (7.5cm, 5cm) {
+                  \metric-roman{|T|h|e|}%
+                  \matric-glue;%
+                  \metric-roman{|q|u|i|c|k|}%
+                  \matric-glue;%
+                  \metric-roman{|b|r|o|w|n|}%
+                  \matric-glue;%
+                  \metric-roman{|f|o|x|}%
+                  \matric-glue;%
+                  \metric-roman{|j|u|m|p|s|}%
+                  \ \size(20pt){${\cdots}}
+                };
+              ];
+            ]
+          );
         >
       }
       +p{
-        行方向に連なった内容をどの箇所で段落の各行に切り分けるかを決めるのは決して自明な処理ではない．
+        行方向に連なった内容をどの箇所で段落の各行に切り分けるかを決めるのは
+        それほど自明な処理ではない．
         欧文なら単語中で切り分けることは（ハイフネーションしてよい箇所でない限り）できないし，
         和文なら鉤括弧の直後や句点の直前といった行頭・行末禁則といった制約がある．
-        そして何より，
-        “詰められるだけ前から順に詰めていく” という処理では見栄えのよい段落になるとは限らない．
+        両端揃えで段落を組む場合は欧文の単語間の空白や和文の字間を
+        （あらかじめ定めた許容範囲内で）適切に伸ばしたり縮めたりして調整する必要があり，
+        \ref-figure(`conversion-to-inline-boxes`);でいえば
+        濃い灰色で示された部分のボックスが横方向に伸縮することになる．
+        そして何より
+        “詰められるだけ前から順に詰めていく” という処理では
+        一般に見栄えのよい段落になるとは限らない．
         行分割処理がどのように行なわれているかの詳細については
         \ref-chapter(`line-breaking`);で述べる．
       }
