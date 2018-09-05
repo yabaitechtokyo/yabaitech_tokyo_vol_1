@@ -16,6 +16,19 @@ let-inline ctx \REMAINS msg =
       (read-inline ctx {要加筆： #msg;})
 
 
+let-inline ctx \quad =
+  let sz = Book.get-cjk-font-size ctx in
+    inline-skip sz
+
+
+let-inline ctx \italic it =
+  read-inline (ctx |> Book.set-latin-font Book.font-latin-italic) it
+
+
+let-inline \dfnje itj ite =
+  {\dfn{#itj;}(\italic{#ite;})}
+
+
 let set-mono-font ctx =
   ctx |> set-font Latin (`lmmono`, 1., 0.)
       |> set-hyphen-penalty 100000
@@ -59,3 +72,35 @@ let-inline ctx \d-code s =
       Code.scheme decoset Color.black ctx s
   in
     inline-fil ++ embed-block-breakable ctx bb
+
+
+let-inline ctx \metric-roman it =
+  let ctx =
+    ctx |> Book.set-latin-font Book.font-latin-roman
+        |> set-font-size 10mm
+  in
+  let pads = (0pt, 0pt, 0pt, 0pt) in
+  let deco (x, y) w h d =
+    let rect = Gr.rectangle (x, y -' d) (x +' w, y +' h) in
+    [
+      fill (Gray(0.875)) rect;
+      stroke 0.5pt Color.black rect;
+    ]
+  in
+    inline-frame-inner pads deco (read-inline ctx it)
+
+
+let-inline ctx \matric-glue =
+  let pads = (0pt, 0pt, 0pt, 0pt) in
+  let deco (x, y) w h d =
+    let rect = Gr.rectangle (x, y -' d) (x +' w, y +' h) in
+    [
+      fill (Gray(0.5)) rect;
+      stroke 0.5pt Color.black rect;
+    ]
+  in
+  let w = 0.75cm in
+  let h = 0.5cm in
+  let d = 0cm in
+    inline-frame-inner pads deco
+      (inline-graphics w h d (fun (x, y) -> []))

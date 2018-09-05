@@ -73,6 +73,8 @@ module Book : sig
   val font-cjk-gothic   : string * float * float
   val set-latin-font : (string * float * float) -> context -> context
   val set-cjk-font   : (string * float * float) -> context -> context
+  val get-latin-font-size : context -> length
+  val get-cjk-font-size : context -> length
   direct \ref : [string] inline-cmd
   direct \ref-page : [string] inline-cmd
   direct \ref-chapter : [string] inline-cmd
@@ -194,6 +196,14 @@ end = struct
   let set-cjk-font font ctx =
     ctx |> set-font HanIdeographic font
         |> set-font Kana           font
+
+
+  let get-latin-font-size ctx =
+    get-font-size ctx *' font-ratio-latin
+
+
+  let get-cjk-font-size ctx =
+    get-font-size ctx *' font-ratio-cjk
 
 
   let-inline ctx \roman inner =
