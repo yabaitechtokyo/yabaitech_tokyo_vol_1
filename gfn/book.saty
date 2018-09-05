@@ -71,7 +71,7 @@ document (|
       これらの前提知識を把握した下で，この章ではようやくフォントや文字色，行送りといった，
       “組版上の装飾的な視覚情報” にも関わる処理を行なうコマンドの実装方法を習得する．
     }
-    +section{テキスト処理文脈}<
+    +section?:(`text-processing-context`){テキスト処理文脈}<
       +p{
         \ref-chapter(`overall-structure`);でも既に述べたが，
         組版処理はインラインテキスト・ブロックテキストといった
@@ -80,7 +80,8 @@ document (|
         といった情報が “テキストの情報” に加えて必要である．
         これらの
         “テキストには表れていないが組版処理上必要な情報”
-        を，\SATySFi;は\dfn{テキスト処理文脈}という機構に保持させて扱う．
+        を，\SATySFi;は\dfnje{テキスト処理文脈}{text-processing context}
+        という機構に保持させて扱う．
         \REMAINS{文脈}
       }
     >
@@ -91,9 +92,7 @@ document (|
   +chapter?:(`type-system`){型システム}<
     +p{
       既に\ref-chapter(`introduction`);で述べたとおり，
-      \SATySFi;の最大の特徴は型検査器\footnote{
-        型推論も行なうので，より正確には型推論器である．
-      }を備えているおかげで
+      \SATySFi;の最大の特徴は型検査器を備えているおかげで
       或る種の入力の誤りを実際に組版処理を始めるよりも前に検出してすばやく報告できることにある．
       本章では，この型検査器を実現している型システムについて見ていくことにしよう．
     }
@@ -131,11 +130,15 @@ document (|
       かつ構文木も一切構築せずパターンマッチでトークン列を書き換えていくのに対し，
       \SATySFi;は静的に構文解析して数式を構文木の形で保持している．
     }
+    +p{ \REMAINS{} }
   >
   +chapter?:(`cross-reference`){相互参照}<
     +p{ \REMAINS{} }
   >
-  +chapter?:(`page-breaking`){ページ分割}<
+  +chapter?:(`line-breaking`){行分割処理}<
+    +p{ \REMAINS{} }
+  >
+  +chapter?:(`page-breaking`){ページ分割処理}<
     +p{ \REMAINS{} }
   >
   +chapter?:(`text-mode`){テキストモード}<
