@@ -7,4 +7,34 @@ let bibliography = [
     url = `https://www.lyx.org`;
     year = 1995;
   |));
+  (`satysfi-online`, WebSite(|
+    author = {| \twitter{miettal} |};
+    title = {\SATySFi;がWebで動くやつを作った — 暇な女子高専生のブログ};
+    url = `http://miettal.hatenablog.com/entry/2018/02/15/133623`;
+    year = 2018;
+  |));
+  (`satysfi-playground`, WebSite(|
+    author = {| \github{pandaman64} |};
+    title = {\SATySFi; Playground};
+    url = `http://satysfi-playground.tech/`;
+    year = 2018;
+  |));
+  (`satysfi-cross-windows`, WebSite(|
+    author = {| Masaki Hara |};
+    title = {satysfi-cross-windows};
+    url = `https://github.com/qnighy/satysfi-cross-windows`;
+    year = 2018;
+  |));
+  (`satysfi-syntax-memo`, WebSite(|
+    author = {| Masaki Hara |};
+    title = {\SATySFi;構文メモ (2018/02/23)};
+    url = `https://gist.github.com/qnighy/951d1ee5a7ee7c8f95bb323e881eaf8a`;
+    year = 2018;
+  |));
+  (`satysfi-steamer`, WebSite(|
+    author = {| Hiromi Ishii |};
+    title = {Steamer: presentation in \SATySFi;};
+    url = `https://github.com/konn/satysfi-steamer`;
+    year = 2018;
+  |));
 ]

@@ -148,19 +148,21 @@ let preface = '<
     \listing{
       * スタックマシンへのコンパイル機能，パターンマッチの網羅性検証，未定義変数名のエラーに対する修正候補のサジェスト機能など，
         処理系に種々のきわめて重要な拡張を施していただいた
-        \person-github{Daiki MATSUNAGA}{matsud224}さん，
+        \person-github{Daiki Matsunaga}{matsud224}さん，
 
-      * 字句解析器・構文解析器を整頓し，かつWindows版へのクロスコンパイルを整備していただいた
-        \person-github{Masaki HARA}{qnighy}さん，
+      * 字句解析器・構文解析器を整頓し \cite[`satysfi-syntax-memo`];，
+        かつWindows版へのクロスコンパイル \cite[`satysfi-cross-windows`];を整備していただいた
+        \person-github{Masaki Hara}{qnighy}さん，
 
-      * 仕様書のない状態から\SATySFi;でのスライド作成用クラスファイルSteamerを実装され，
+      * 仕様書のない状態から\SATySFi;でのスライド作成用クラスファイル
+        Steamer \cite[`satysfi-steamer`];を実装され，
         かつそれに伴い種々のプリミティヴの追加を提案していただいた
-        \person-github{Hiromi ISHII}{konn}さん，
+        \person-github{Hiromi Ishii}{konn}さん，
 
-      * \SATySFi; Onlineを実装された
+      * \SATySFi; Online \cite[`satysfi-online`];を実装された
         \twitter{miettal}さん，
 
-      * \SATySFi; Playgroundを実装された
+      * \SATySFi; Playground \cite[`satysfi-playground`];を実装された
         \github{pandaman64}さん，
 
       * ocamlbuildからduneへの移行などOCamlでの開発に関して種々の改善を頂いた

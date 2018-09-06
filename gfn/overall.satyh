@@ -148,15 +148,15 @@ let overall = '<
               Gr.arrow 2pt Color.black 12pt 10pt 3pt (7.5cm, 4cm) (7.5cm, 2.5cm);
               [
                 r#text-centering (7.5cm, 1.75cm) {
-                  \metric-roman{|T|h|e|}%
-                  \matric-glue;%
-                  \metric-roman{|q|u|i|c|k|}%
-                  \matric-glue;%
-                  \metric-roman{|b|r|o|w|n|}%
-                  \matric-glue;%
-                  \metric-roman{|f|o|x|}%
-                  \matric-glue;%
-                  \metric-roman{|j|u|m|p|s|}%
+                  \BoxGraphics.roman{|T|h|e|}%
+                  \BoxGraphics.space;%
+                  \BoxGraphics.roman{|q|u|i|c|k|}%
+                  \BoxGraphics.space;%
+                  \BoxGraphics.roman{|b|r|o|w|n|}%
+                  \BoxGraphics.space;%
+                  \BoxGraphics.roman{|f|o|x|}%
+                  \BoxGraphics.space;%
+                  \BoxGraphics.roman{|j|u|m|p|s|}%
                   \ \size(20pt){${\cdots}}
                 };
                 r#text-centering (7.5cm, 1cm) {インラインボックス列};
@@ -184,23 +184,52 @@ let overall = '<
         ブロックボックス列とは，段落が連なる方向に並んだ（おおよそ行単位の）ボックス列である．
         行分割処理がインラインボックス列を受け取ってブロックボックス列を返す処理として
         定式化されていることは，\ref-figure(`line-breaking`);のような直観による．
+        図の下側の1行にあたる横に細長い枠がいわば “ひとつのボックス” であり，
+        それが段落の進む方向に積み重なっているので行分割された後の内容は
+        ブロックボックス列なのである．
         \figure?:(`line-breaking`){行分割処理の直観}<
-          +centered-graphics(15cm)(7cm)(fun r ->
+          +centered-graphics(15cm)(8cm)(fun r ->
             List.concat [
               [
-                stroke 0.5pt Color.black (Gr.rectangle (0cm, 0cm) (15cm, 7cm));
-                r#text-centering (7.5cm, 5cm) {
-                  \metric-roman{|T|h|e|}%
-                  \matric-glue;%
-                  \metric-roman{|q|u|i|c|k|}%
-                  \matric-glue;%
-                  \metric-roman{|b|r|o|w|n|}%
-                  \matric-glue;%
-                  \metric-roman{|f|o|x|}%
-                  \matric-glue;%
-                  \metric-roman{|j|u|m|p|s|}%
+                stroke 0.5pt Color.black (Gr.rectangle (0cm, 0cm) (15cm, 8cm));
+                r#text-centering (7.5cm, 6.5cm) {
+                  \BoxGraphics.roman{|T|h|e|}%
+                  \BoxGraphics.space;%
+                  \BoxGraphics.roman{|q|u|i|c|k|}%
+                  \BoxGraphics.space;%
+                  \BoxGraphics.roman{|b|r|o|w|n|}%
+                  \BoxGraphics.space;%
+                  \BoxGraphics.roman{|f|o|x|}%
+                  \BoxGraphics.space;%
+                  \BoxGraphics.roman{|j|u|m|p|s|}%
                   \ \size(20pt){${\cdots}}
                 };
+              ];
+              Gr.arrow 2pt Color.black 12pt 10pt 3pt (7.5cm, 6cm) (7.5cm, 4cm);
+              [
+                r#text-centering (7.5cm, 3cm) {
+                  \BoxGraphics.justify(8cm){|
+                    \BoxGraphics.line{
+                      \BoxGraphics.roman{|T|h|e|}%
+                      \BoxGraphics.glue;%
+                      \BoxGraphics.roman{|q|u|i|c|k|}%
+                      \BoxGraphics.glue;%
+                      \BoxGraphics.roman{|b|r|o|w|n|}%
+                      \BoxGraphics.glue;%
+                      \BoxGraphics.roman{|f|o|x|}%
+                    }
+                  |
+                    \BoxGraphics.line{
+                      \BoxGraphics.roman{|j|u|m|p|s|}%
+                      \BoxGraphics.glue;%
+                      \BoxGraphics.roman{|o|v|e|r|}%
+                      \BoxGraphics.glue;%
+                      \BoxGraphics.roman{|t|h|e|}%
+                      \BoxGraphics.glue;%
+                      \BoxGraphics.roman{|l|a|z|y|}%
+                    }
+                  |}
+                }
               ];
             ]
           );
@@ -209,8 +238,9 @@ let overall = '<
       +p{
         行方向に連なった内容をどの箇所で段落の各行に切り分けるかを決めるのは
         それほど自明な処理ではない．
-        欧文なら単語中で切り分けることは（ハイフネーションしてよい箇所でない限り）できないし，
-        和文なら鉤括弧の直後や句点の直前といった行頭・行末禁則といった制約がある．
+        例えば欧文なら単語中で切り分けることは（ハイフネーションしてよい箇所でない限り）できないし，
+        和文なら鉤括弧の直後や句点の直前といった箇所での行分割を禁止する
+        \dfn{行頭禁則}・\dfn{行末禁則}という制約がある．
         両端揃えで段落を組む場合は欧文の単語間の空白や和文の字間を
         （あらかじめ定めた許容範囲内で）適切に伸ばしたり縮めたりして調整する必要があり，
         \ref-figure(`conversion-to-inline-boxes`);でいえば
