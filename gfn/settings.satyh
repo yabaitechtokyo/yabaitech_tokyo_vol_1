@@ -62,8 +62,7 @@ let-inline \person-github itn itg =
   {#itn; (\github{#itg;})}
 
 
-let-inline ctx \d-code s =
-  let bb =
+let display-code-scheme ctx s =
     let decoset =
       let back-color = Gray(0.875) in
       let deco (x, y) w h d =
@@ -74,42 +73,92 @@ let-inline ctx \d-code s =
       (deco, deco, deco, deco)
     in
       Code.scheme decoset Color.black ctx s
-  in
+
+
+let-inline ctx \d-code s =
+  let bb = display-code-scheme ctx s in
     inline-fil ++ embed-block-breakable ctx bb
 
 
-let-inline ctx \metric-roman its =
-  let ctx =
-    ctx |> Book.set-latin-font Book.font-latin-roman
-        |> set-font-size 10mm
-  in
-  let pads = (0pt, 0pt, 0pt, 0pt) in
-  let deco (x, y) w h d =
-    let rect = Gr.rectangle (x, y -' d) (x +' w, y +' h) in
-    [
-      fill (Gray(0.875)) rect;
-      stroke 0.5pt Color.black rect;
-    ]
-  in
-    its |> List.map (fun it ->
-      inline-frame-inner pads deco (read-inline ctx it)
-    ) |> List.fold-left (++) inline-nil
+module BoxGraphics = struct
+
+  let-inline ctx \roman its =
+    let ctx =
+      ctx |> Book.set-latin-font Book.font-latin-roman
+          |> set-font-size 10mm
+    in
+    let pads = (0pt, 0pt, 0pt, 0pt) in
+    let deco (x, y) w h d =
+      let rect = Gr.rectangle (x, y -' d) (x +' w, y +' h) in
+      [
+        fill (Gray(0.875)) rect;
+        stroke 0.5pt Color.black rect;
+      ]
+    in
+      its |> List.map (fun it ->
+        inline-frame-inner pads deco (read-inline ctx it)
+      ) |> List.fold-left (++) inline-nil
 
 
-let-inline ctx \matric-glue =
-  let pads = (0pt, 0pt, 0pt, 0pt) in
-  let deco (x, y) w h d =
-    let rect = Gr.rectangle (x, y -' d) (x +' w, y +' h) in
-    [
-      fill (Gray(0.5)) rect;
-      stroke 0.5pt Color.black rect;
-    ]
-  in
-  let w = 0.4cm in
-  let h = 0.5cm in
-  let d = 0cm in
-    inline-frame-inner pads deco
-      (inline-graphics w h d (fun (x, y) -> []))
+  let-inline ctx \space =
+    let pads = (0pt, 0pt, 0pt, 0pt) in
+    let deco (x, y) w h d =
+      let rect = Gr.rectangle (x, y -' d) (x +' w, y +' h) in
+      [
+        fill (Gray(0.5)) rect;
+        stroke 0.5pt Color.black rect;
+      ]
+    in
+    let w = 0.4cm in
+    let h = 0.5cm in
+    let d = 0cm in
+      inline-frame-inner pads deco
+        (inline-graphics w h d (fun (x, y) -> []))
+
+
+  let-inline ctx \glue =
+    let h = 0.5cm in
+    let d = 0cm in
+      (inline-graphics-outer h d (fun w (x, y) -> (
+        let rect = Gr.rectangle (x, y -' d) (x +' w, y +' h) in
+        [
+          fill (Gray(0.5)) rect;
+          stroke 0.5pt Color.black rect;
+        ]
+      )))
+
+
+  let-inline ctx \line it =
+    let pads = (0pt, 0pt, 0pt, 0pt) in
+    let deco (x, y) w h d =
+      let rect = Gr.rectangle (x, y -' d) (x +' w, y +' h) in
+      [
+        fill (Gray(0.75)) rect;
+        stroke 0.5pt Color.black rect;
+      ]
+    in
+      inline-frame-outer pads deco (read-inline ctx it)
+
+
+  let-inline ctx \justify wid its =
+    let pads = (0pt, 0pt, 0pt, 0pt) in
+    let l = 0.5cm in
+    let deco (x, y) w h d =
+      [
+        stroke 1pt Color.black (Gr.line (x     , y -' d -' l) (x     , y +' h +' l));
+        stroke 1pt Color.black (Gr.line (x +' w, y -' d -' l) (x +' w, y +' h +' l));
+      ]
+    in
+    let decoset = (deco, deco, deco, deco) in
+      embed-block-top ctx wid (fun ctx ->
+        block-frame-breakable ctx pads decoset (fun ctx ->
+          its |> List.map (fun it ->
+            line-break false false ctx (read-inline ctx it)
+          ) |> List.fold-left (+++) block-nil
+        )
+      )
+
+end
 
 
 let make-graphics ctx grf =
@@ -128,3 +177,15 @@ let-block ctx +centered-graphics w h grf =
   in
   line-break true true (ctx |> set-paragraph-margin 0pt 0pt)
     (inline-fil ++ ib-gr ++ inline-fil)
+
+
+let-inline ctx \d-code-and-block s bt =
+  let pads = (5pt, 5pt, 5pt, 5pt) in
+  let wid = get-text-width ctx in
+  let bb =
+    display-code-scheme ctx s +++
+      block-frame-breakable ctx pads VDecoSet.paper (fun ctx ->
+        read-block ctx bt
+      )
+  in
+    inline-fil ++ embed-block-breakable ctx bb

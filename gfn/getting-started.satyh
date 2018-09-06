@@ -155,11 +155,15 @@ let getting-started = '<
       インラインテキストを引数にとってブロックを返すコマンドで定式化されている．
       以下のように\code(`+p`);コマンドでブロックテキスト内に記述する：
 
-      \d-code(```
+      \d-code-and-block(```
         +p{
           明日は明日の風が吹く
         }
-      ```);%
+      ```)<
+        +p{
+          明日は明日の風が吹く
+        }
+      >%
 
       上で「ブロック」と書いたものは正確には「ブロックテキスト」ではないが，
       ひとまずはブロックテキストとおおよそ同じものだと考えて差し支えない．
@@ -200,18 +204,27 @@ let getting-started = '<
       新たに定義される名称や言い回しは，インラインコマンド\code(`\dfn`);で囲む．
       インラインテキスト中で以下のように使う：
 
-      \d-code(```
-        \dfn{Typesetting} is the composition of text
-        by means of arranging types.
-      ```);%
+      \d-code-and-block(```
+        +p{
+          原稿とデザインにしたがって活字や図版を配置して
+          版面を構成することを総称して\dfn{組版処理}と呼ぶ．
+        }
+      ```)<
+        +p{
+          原稿とデザインにしたがって活字や図版を配置して
+          版面を構成することを総称して\dfn{組版処理}と呼ぶ．
+        }
+      >%
 
       引数として囲まれた部分のラテン文字がイタリック体になる．
       このように，インラインコマンドとは “（何らかの加工が施された）文字の連なり” を返すコマンドなのである．
       なお，引数のないインラインコマンドはセミコロンをつける：
 
-      \d-code(```
-        \SATySFi; is a new typesetting system.
-      ```);%
+      \d-code-and-block(```
+        +p{ \SATySFi; is a new typesetting system. }
+      ```)<
+        +p{ \SATySFi; is a new typesetting system. }
+      >%
     }
   >
   +section{文中数式}<
@@ -220,15 +233,23 @@ let getting-started = '<
       記法はかなり\LaTeX;に近く，以下のような例だと
       \codem{\$\{ ${\cdots} \}}の中身は見かけ上\LaTeX;コードと完全に一致する：
 
-      \d-code(```
-        We can write formulae like
-        ${E = m c^2}, ${F = G \frac{m_1 m_2}{r^2}},
-        ${x^x = e^{x \log x}}, and so on.
-      ```);%
+      \d-code-and-block(```
+        +p{
+          数式は\LaTeX;と同様に
+          ${E = m c^2}，${F = G \frac{m_1 m_2}{r^2}}，
+          ${x^x = e^{x \log x}}
+          といった要領で書くことができます．
+        }
+      ```)<
+        +p{
+          数式は\LaTeX;と同様に
+          ${E = m c^2}，${F = G \frac{m_1 m_2}{r^2}}，
+          ${x^x = e^{x \log x}}
+          といった要領で書くことができます．
+        }
+      >%
 
-      \REMAINS{組んだ結果}
-
-      数式中のコマンド（\dfnje{数式コマンド}{math command}）は
+      数式中のコマンドである\dfnje{数式コマンド}{math command}は
       インラインコマンドと同様に\code(`\`);から名前が始まる．
       同一の名前をインラインコマンドと数式コマンドの両方で
       使うことはできない（つまり，名前空間は分かれていない）．
@@ -331,15 +352,25 @@ let getting-started = '<
       ```);
       などと書く．環境中で改段落することは想定されていないので，内容はインラインテキストで与える．
       オプション引数としてタイトルを与えることができる：
-      \d-code(```
-        +theorem ?:({Progress}){
+
+      \d-code-and-block(```
+        +theorem?:({Progress}){
           If ${t} is well-typed, then one of the following holds:
           \listing{
             * ${t} is a value.
             * ${t \to t'} for some ${t'}.
           }%
         }
-      ```);
+      ```)<
+        +theorem?:({Progress}){
+          If ${t} is well-typed, then one of the following holds:
+          \listing{
+            * ${t} is a value.
+            * ${t \to t'} for some ${t'}.
+          }%
+        }
+      >%
+
       \codem{?:( ${\cdots} )}がオプション引数を与える構文である．
     }
   >
