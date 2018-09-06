@@ -392,16 +392,24 @@ let getting-started = '<
       }：
 
       \d-code(```
-        \chapter?:(`introduction`){はじめに}<
+        +chapter?:(`introduction`){はじめに}<
           （中略）
         >
       ```);%
 
       そして，章番号を使いたい箇所で\codem{\\ref-chapter}を用いて挿入する：
 
-      \d-code(```
-        既に\ref-chapter(`introduction`);で述べたように，
-      ```);
+      \d-code-and-block(```
+        +p{
+          既に\ref-chapter(`introduction`);で述べたように，
+          （以下略）
+        }
+      ```)<
+        +p{
+          既に\ref-chapter(`introduction`);で述べたように，
+          （以下略）
+        }
+      >%
     }
   >
   +p{ \REMAINS{wikiをたたき台にして書く} }
