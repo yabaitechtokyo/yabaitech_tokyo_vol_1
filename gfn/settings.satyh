@@ -207,46 +207,81 @@ module Type : sig
   type t
   val to-math : t -> math
   val (-->) : t -> t -> t
+  val unit : t
+  val bool : t
   val int : t
   val float : t
   val length : t
   val context : t
+  val inline-text : t
+  val inline-boxes : t
+  val block-text : t
+  val block-boxes : t
+  val list : t -> t
+  val option : t -> t
 end = struct
 
   type t =
-    | Base of inline-text
+    | Ctr  of inline-text * t list
     | Func of t * t
+
+
+  type paren-mode =
+    | Normal
+    | Domain
+    | Single
 
 
   let to-math =
     let-rec aux
-      | is-dom (Base(it)) =
-          text-in-math MathOrd (fun ctx -> read-inline ctx it)
+      | mode (Ctr(it, tyargs)) =
+          let marg =
+            tyargs |> List.map (fun ty -> (
+              let m = aux Single ty in
+              ${#m\ }
+            )) |> List.fold-left math-concat ${}
+          in
+          let mctr = text-in-math MathOrd (fun ctx -> read-inline ctx it) in
+          let m = ${#marg#mctr} in
+          ( match (mode, tyargs) with
+            | (Single, _ :: _) -> ${\paren{#m}}
+            | _                -> m
+          )
 
-      | is-dom (Func(ty1, ty2)) =
-          let m1 = aux true ty1 in
-          let m2 = aux false ty2 in
+      | mode (Func(ty1, ty2)) =
+          let m1 = aux Domain ty1 in
+          let m2 = aux Normal ty2 in
           let m = ${#m1 \to #m2} in
-            if is-dom then
-              ${\paren{#m}}
-            else
-              m
+          ( match mode with
+            | Normal -> m
+            | _      -> ${\paren{#m}}
+          )
     in
-    aux false
+    aux Normal
 
 
   let base-type it =
-    Base(it)
+    Ctr(it, [])
 
 
   let (-->) ty1 ty2 =
     Func(ty1, ty2)
 
 
-  let int     = base-type {int}
-  let float   = base-type {float}
-  let length  = base-type {length}
-  let context = base-type {context}
+  let unit         = base-type {unit}
+  let bool         = base-type {bool}
+  let int          = base-type {int}
+  let float        = base-type {float}
+  let length       = base-type {length}
+  let context      = base-type {context}
+  let inline-text  = base-type {inline-text}
+  let inline-boxes = base-type {inline-boxes}
+  let block-text   = base-type {block-text}
+  let block-boxes  = base-type {block-boxes}
+
+
+  let list ty = Ctr({list}, [ty])
+  let option ty = Ctr({option}, [ty])
 
 end
 
@@ -268,3 +303,10 @@ let-inline ctx \val it-cmd ty =
 
 let-inline ctx \type ty =
   embed-math ctx (Type.to-math ty)
+
+
+let-inline ctx \meta it =
+  let ctx =
+    ctx |> Book.set-latin-font Book.font-latin-italic
+  in
+    read-inline ctx it
