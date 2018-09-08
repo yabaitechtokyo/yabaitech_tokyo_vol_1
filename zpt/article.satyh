@@ -27,6 +27,11 @@ let zpt-article = '<
     +section {行って戻るとS4様相} <
     >
     +section {階層の対称性と二つのK様相} <
+      +p {
+      \repeat(500){this\ }
+      #modalm-symbols;}
+      +p {#modalm-structure;}
+      +p {#modalm-rules;}
     >
     +section {おわりに} <
     >

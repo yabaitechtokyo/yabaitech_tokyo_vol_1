@@ -1,13 +1,24 @@
 @require: math
 
 module ZptMath : sig
+  direct \cdot : [] math-cmd
   direct \imp : [] math-cmd
   direct \imp2 : [] math-cmd
   direct \semicolon : [] math-cmd
   direct \adj1 : [math; math; math] math-cmd
   direct \adj2 : [math; math] math-cmd
+  direct \adj-up : [math] math-cmd
+  direct \adj-down : [math] math-cmd
+  direct \modalm : [math list; math] math-cmd
+  direct \repeat : [int; inline-text] inline-cmd
+  direct \fmodal : [math] math-cmd
+  direct \dmodal : [math] math-cmd
 
 end = struct
+  let bin = math-char MathBin
+
+  let-math \cdot = bin `⋅`
+
   let-math \imp = ${\rightarrow}
   let-math \imp2 = ${\Rightarrow}
   let-math \semicolon = math-char MathBin `;`
@@ -19,4 +30,28 @@ end = struct
   let-math \adj2 ant succ = ${
     #ant \vdash_2 #succ
   }
+
+  let-rec make-modal-judgment
+    | [] succ = ${\vdash #succ}
+    | (x :: []) succ = ${#x \vdash #succ}
+    | (x :: xs) succ = let rest = make-modal-judgment xs succ in
+                           ${#x \semicolon #rest}
+
+  let-math \modalm andl succ = make-modal-judgment andl succ
+
+  let-rec repeat-inline ibacc n ib =
+    if n <= 0 then ibacc else
+      repeat-inline (ibacc ++ ib) (n - 1) ib
+
+  let-inline ctx \repeat n inner =
+    let ib = read-inline ctx inner in
+      repeat-inline inline-nil n ib
+
+  let-math \adj-up p = ${\uparrow #p}
+
+  let-math \adj-down p = ${\downarrow #p}
+
+  let-math \fmodal p = let box = bin `□` in ${#box #p}
+  let-math \dmodal p = let box = bin `■` in ${#box #p}
+  
 end

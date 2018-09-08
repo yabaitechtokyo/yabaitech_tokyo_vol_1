@@ -112,6 +112,7 @@ let adj-rules =
                   |}
                  { \adj1{\Delta}{\Gamma}{B} }
         |});
+
         \math-list (
         ${
         | \derive{| \adj2{\Delta, \alpha}{\beta} |}
@@ -121,6 +122,97 @@ let adj-rules =
                   |}
                  { \adj2{\Delta}{\beta} }
         |});
+
+        \math-list (
+        ${
+        | \derive{| \adj1{\Delta}{\cdot}{A} |}
+                 { \adj2{\Delta}{\adj-up{A}} }
+        | \derive{| \adj2{\Delta}{\adj-up{A}}
+                  |}
+                 { \adj1{\Delta}{\Gamma}{A} }
+        |});
+
+        \math-list (
+        ${
+        | \derive{| \adj2{\Delta}{\alpha} |}
+                 { \adj1{\Delta}{\Gamma}{\adj-down{\alpha}} }
+        | \derive{| \adj1{\Delta}{\Gamma}{\adj-down{\alpha}}
+                  | \adj1{\Delta, \alpha}{\Gamma}{A}
+                  |}
+                 { \adj1{\Delta}{\Gamma}{A} }
+        |});
+        }
+      >
+    }
+
+let modalm-symbols =
+    {
+      \figure {Fitch-styleの様相論理の記号} <
+        +p{ふぃっくすみー}
+      >
+    }
+
+let modalm-structure =
+    {
+      \figure {Fitch-styleの様相論理の構造} <
+      +p {
+        仮定の使用
+        \math-list (
+        ${
+        | \derive{| A \in \Gamma|}
+                 { \modalm{| \Psi | \Gamma |}{A}}
+        |});
       }
+      +p {
+        構造規則
+        \math-list (
+        ${
+        | \derive{| \modalm{| \Psi | \Gamma, A | \Phi |}{B} |
+                  | \modalm{| \Psi | \Gamma |}{A}
+                  |}
+                 { \modalm{| \Psi | \Gamma | \Phi |}{B} }
+        | \derive{| \modalm{| \Psi |}{A} |}
+                 { \modalm{|| \Psi |}{A} }
+        | \derive{| \modalm{|| \Psi |}{A} |}
+                 { \modalm{| \Psi |}{A} }
+        |});
+
+        \math-list (
+        ${
+        | \derive{| \modalm{| \Psi | \Gamma | \Phi |}{B} |}
+                 { \modalm{| \Psi | \Gamma, A | \Phi |}{B} }
+        | \derive{| \modalm{| \Psi | \Gamma, A, A | \Phi |}{B} |}
+                 { \modalm{| \Psi | \Gamma, A | \Phi |}{B} }
+        | \derive{| \modalm{| \Psi | \Gamma_1, A, B, \Gamma_2 | \Phi |}{C} |}
+                 { \modalm{| \Psi | \Gamma_1, B, A, \Gamma_2 | \Phi |}{C} }
+        |});
+      }
+      >
+    }
+
+let modalm-rules =
+    {
+      \figure {Fitch-styleのK様相論理の導出規則} <
+      +p {
+        \math-list (
+        ${
+        | \derive{| \modalm{| \Psi | \Gamma, A |}{B}
+                  |}
+                 { \modalm{| \Psi | \Gamma |}{A \imp B} }
+        | \derive{| \modalm{| \Psi |}{ A \imp B }
+                  | \modalm{| \Psi |}{ A }
+                  |}
+                 { \modalm{| \Psi |}{ B } }
+        |});
+
+        \math-list (
+        ${
+        | \derive{| \modalm{| \Psi | \cdot |}{A}
+                  |}
+                 { \modalm{| \Psi |}{ \fmodal{A} } }
+        | \derive{| \modalm{| \Psi |}{ \fmodal{A} } |}
+                 { \modalm{| \Psi | \Gamma |}{ A } }
+        |});
+        }
       >
     }
