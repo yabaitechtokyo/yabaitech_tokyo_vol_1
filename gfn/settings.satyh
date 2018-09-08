@@ -189,3 +189,82 @@ let-inline ctx \d-code-and-block s bt =
       )
   in
     inline-fil ++ embed-block-breakable ctx bb
+
+
+
+module Sample = struct
+
+  let-inline ctx \enlarge it =
+    let size = get-font-size ctx in
+    let ctx-enlarge = set-font-size (size *' 1.5) ctx in
+      read-inline ctx-enlarge it
+
+end
+
+
+module Type : sig
+
+  type t
+  val to-math : t -> math
+  val (-->) : t -> t -> t
+  val int : t
+  val float : t
+  val length : t
+  val context : t
+end = struct
+
+  type t =
+    | Base of inline-text
+    | Func of t * t
+
+
+  let to-math =
+    let-rec aux
+      | is-dom (Base(it)) =
+          text-in-math MathOrd (fun ctx -> read-inline ctx it)
+
+      | is-dom (Func(ty1, ty2)) =
+          let m1 = aux true ty1 in
+          let m2 = aux false ty2 in
+          let m = ${#m1 \to #m2} in
+            if is-dom then
+              ${\paren{#m}}
+            else
+              m
+    in
+    aux false
+
+
+  let base-type it =
+    Base(it)
+
+
+  let (-->) ty1 ty2 =
+    Func(ty1, ty2)
+
+
+  let int     = base-type {int}
+  let float   = base-type {float}
+  let length  = base-type {length}
+  let context = base-type {context}
+
+end
+
+
+let quote-indent = 24pt
+
+
+let-inline ctx \val it-cmd ty =
+  let m = Type.to-math ty in
+  let ib =
+    inline-skip quote-indent ++
+      read-inline ctx {\codem{#it-cmd;} : ${#m}} ++
+        inline-fil
+  in
+    inline-fil ++
+      embed-block-breakable ctx
+        (line-break true true ctx ib)
+
+
+let-inline ctx \type ty =
+  embed-math ctx (Type.to-math ty)
