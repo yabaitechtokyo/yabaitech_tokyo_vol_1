@@ -1,0 +1,126 @@
+@require: math
+@require: proof
+@import: ../main/cs-thesis
+@import: zpt-math
+
+let-math \colon = ${:}
+
+let-math \tonk = ${\text!{\ tonk\ }}
+
+let tonk-deriv =
+    {
+      \figure {tonkの導入則と除去則(らしきもの)} <
+      +p{
+      \math-list (
+      ${| \derive{| \vdash A |}{\vdash A \tonk B}
+           | \derive{| \vdash A \tonk B |}{\vdash B}
+        |});
+        }
+      >
+    }
+
+
+let ipc-deriv =
+    {
+      \figure {直観主義命題論理の${\rightarrow}断片} <
+      +p{
+      \math-list (
+      ${| \derive{| A \in \Gamma |}{\Gamma \vdash A}
+           | \derive{| \Gamma, A \vdash B |}{\Gamma \vdash A \rightarrow B}
+           | \derive{| \Gamma \vdash A \rightarrow B | \Gamma \vdash A |}{\Gamma \vdash B}
+        |});
+        }
+      >
+    }
+
+let adj-symbols =
+    {
+      \figure {二階層の論理の記号} <
+        +p{ふぃっくすみー}
+      >
+    }
+
+let adj-structure =
+    {
+      \figure {二階層の論理の構造} <
+      +p {
+        仮定の使用
+        \math-list (
+        ${
+        | \derive{| A \in \Gamma|}
+                 { \adj1{\Delta}{\Gamma}{A}}
+        | \derive{| \alpha \in \Delta |}
+                 { \adj2{\Delta}{A}}
+        |});
+      }
+
+      +p {
+        構造規則
+        \math-list (
+        ${
+        | \derive{| \adj1{\Delta}{\Gamma, A}{B}
+                  | \adj1{\Delta}{\Gamma}{A}
+                  |}
+                 { \adj1{\Delta}{\Gamma}{B}}
+        |});
+        
+
+        \math-list (
+        ${
+        | \derive{| \adj1{\Delta}{\Gamma}{B} |}
+                 {\adj1{\Delta}{\Gamma, A}{B}}
+        | \derive{| \adj1{\Delta}{\Gamma, A, A}{B} |}
+                 { \adj1{\Delta}{\Gamma, A}{B}}
+        | \derive{| \adj1{\Delta}{\Gamma_1, A, B, \Gamma_2}{C} |}
+                 { \adj1{\Delta}{\Gamma_1, B, A, \Gamma_2}{C}}
+        |});
+
+        \math-list (
+        ${
+        | \derive{| \adj2{\Delta, \alpha}{\beta}
+                  | \adj2{\Delta}{\alpha}
+                  |}
+                 { \adj2{\Delta}{\beta} }
+        | \derive{| \adj1{\Delta, \alpha}{\Gamma}{A}
+                  | \adj2{\Delta}{\alpha}
+                  |}
+                  { \adj1{\Delta}{\Gamma}{A}}
+        |});
+
+        \math-list (
+        ${
+        | \derive{| \adj2{\Delta}{\beta} |}{ \adj2{\Delta, \alpha}{\beta} }
+        | \derive{| \adj2{\Delta, \alpha, \alpha}{\beta} |}
+                 { \adj2{\Delta, \alpha}{\beta} }
+        | \derive{| \adj2{\Delta_1, \alpha, \beta, \Delta_2}{\beta} |}
+                 {\adj2{\Delta_1, \alpha, \beta, \Delta_2}{\beta} }
+        |});
+      }
+      >
+    }
+
+let adj-rules =
+    {
+      \figure {二階層の論理の導出規則} <
+      +p {
+        \math-list (
+        ${
+        | \derive{| \adj1{\Delta}{\Gamma, A}{B} |}
+                 { \adj1{\Delta}{\Gamma}{A \imp B} }
+        | \derive{| \adj1{\Delta}{\Gamma}{A \imp B}
+                  | \adj1{\Delta}{\Gamma}{A}
+                  |}
+                 { \adj1{\Delta}{\Gamma}{B} }
+        |});
+        \math-list (
+        ${
+        | \derive{| \adj2{\Delta, \alpha}{\beta} |}
+                 { \adj2{\Delta}{\alpha \imp2 \beta} }
+        | \derive{| \adj2{\Delta}{\alpha \imp2 \beta}
+                  | \adj2{\Delta}{\alpha}
+                  |}
+                 { \adj2{\Delta}{\beta} }
+        |});
+      }
+      >
+    }

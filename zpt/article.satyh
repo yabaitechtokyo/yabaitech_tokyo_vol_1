@@ -1,7 +1,8 @@
 @import: ../main/cs-thesis
+@import: derivation-rules
 
 let zpt-article = '<
-  +chapter ?:(`zpt-article`) {型付き${\lambda}計算をつくろう} {zeptometer} <
+  +chapter ?:(`zpt-article`) {自然な様相論理をつくる} {zeptometer} <
     +section {はじめに} <
     +p{(間違ってる部分があるかもしれんからあったら指摘しくれなみたいなexcuseを入れる)}
     +p{(適当な挨拶が入る)}
@@ -13,10 +14,15 @@ let zpt-article = '<
     }
     >
     +section {直観主義論理と単純型付き${\lambda}計算} <
+      +p {#tonk-deriv;}
+      +p {#ipc-deriv;}
     >
     +section {ハーモニーと簡約} <
     >
     +section {二つの階層の論理} <
+      +p {#adj-symbols;}
+      +p {#adj-structure;}
+      +p {#adj-rules;}
     >
     +section {行って戻るとS4様相} <
     >

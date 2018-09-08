@@ -1,0 +1,22 @@
+@require: math
+
+module ZptMath : sig
+  direct \imp : [] math-cmd
+  direct \imp2 : [] math-cmd
+  direct \semicolon : [] math-cmd
+  direct \adj1 : [math; math; math] math-cmd
+  direct \adj2 : [math; math] math-cmd
+
+end = struct
+  let-math \imp = ${\rightarrow}
+  let-math \imp2 = ${\Rightarrow}
+  let-math \semicolon = math-char MathBin `;`
+
+  let-math \adj1 ant1 ant2 succ = ${
+    #ant1 \semicolon #ant2 \vdash_1 #succ
+  }
+
+  let-math \adj2 ant succ = ${
+    #ant \vdash_2 #succ
+  }
+end
