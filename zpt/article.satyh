@@ -32,6 +32,11 @@ let zpt-article = '<
       #modalm-symbols;}
       +p {#modalm-structure;}
       +p {#modalm-rules;}
+      +p {
+      \repeat(500){this\ }
+      #modald-symbols;}
+      +p {#modald-structure;}
+      +p {#modald-rules;}
     >
     +section {おわりに} <
     >

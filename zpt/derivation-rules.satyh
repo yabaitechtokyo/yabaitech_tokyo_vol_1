@@ -216,3 +216,68 @@ let modalm-rules =
         }
       >
     }
+
+let modald-symbols =
+    {
+      \figure {Dual-Contextの様相論理の記号} <
+        +p{ふぃっくすみー}
+      >
+    }
+
+let modald-structure =
+    {
+      \figure {Dual-Contextの様相論理の構造} <
+      +p {
+        仮定の使用
+        \math-list (
+        ${| \derive{| A \in \Gamma |}
+                   { \modald{ \Delta }{ \Gamma }{A}}
+        |});
+      }
+      +p {
+        構造規則
+        \math-list (
+        ${
+        | \derive{| \modald{\Delta}{\Gamma, A}{B}
+                  | \modald{\Delta}{\Gamma}{A}
+                  |}
+                 { \modald{\Delta}{\Gamma}{B}}
+        | \derive{| \modald{\Delta, A}{\Gamma}{B}
+                  | \modald{\cdot}{\Delta}{A}
+                  |}
+                  { \modald{\Delta}{\Gamma}{B}}
+
+        |});
+        (それぞれの仮定について弱化、縮約、交換が入る)
+      }
+      >
+    }
+
+let modald-rules =
+    {
+      \figure {Dual-ContextのK様相論理の導出規則} <
+      +p {
+        \math-list (
+        ${
+        | \derive{| \modald{\Delta}{\Gamma, A}{B}
+                  |}
+                 { \modald{ \Delta }{ \Gamma }{ A \imp B } }
+        | \derive{| \modald{ \Delta }{ \Gamma }{ A \imp B }
+                  | \modald{ \Delta }{ \Gamma }{ A }
+                  |}
+                 { \modald{ \Delta }{ \Gamma }{ B } }
+        |});
+
+        \math-list (
+        ${
+        | \derive{| \modald{ \cdot }{ \Gamma }{ A }
+                  |}
+                 { \modald{ \Gamma }{ \Delta }{ \dmodal{A} } }
+        | \derive{| \modald{\Delta}{\Gamma}{ \dmodal{A} }
+                  | \modald{\Delta, A}{\Gamma}{ B }
+                  |}
+                 { \modald{\Delta}{\Gamma}{ B } }
+        |});
+        }
+      >
+    }
