@@ -90,14 +90,6 @@ let preface = '<
     どんな処理に対応しているのかを理解するのに把握しておくことが必須となる．
   }
   +p{
-    \ref-chapter(`advanced-command-definition`);では
-    \SATySFi;の各部分の機能を読者が把握している前提で，
-    組版処理そのものに手を加えるような高度なコマンド定義の方法について解説する．
-    文字サイズ，フォント指定，文字色，行送りといった文字組版に関する基礎的設定をいじったり，
-    行分割に関する制御などについても触れる．
-    この章で\SATySFi;でコマンドを定義する方法の直観がほぼ獲得できるだろう．
-  }
-  +p{
     \ref-chapter(`type-system`);では，\SATySFi;の組版処理システムとしての最大の特徴である型システムについて解説する．
     すなわち，どのような文書やパッケージの記述を型がつく整合したものとして組版処理に渡し，
     一方でどのような記述を何らかの不整合を含むものとして拒否するのかを規定した仕組みである型検査器について説明する．
@@ -110,8 +102,23 @@ let preface = '<
     既に\SATySFi;をほとんど支障なく使えるどころか，パッケージの制作や改良にも手をつけられるようになっているだろう．
   }
   +p{
-    \ref-chapter(`typography`);から\ref-chapter(`page-breaking`);までは各論的で，
-    それぞれ文字組版，数式組版，グラフィックス，相互参照，ページ分割について，
+    \ref-chapter(`advanced-command-definition`);では
+    \SATySFi;の各部分の機能を読者が把握している前提で，
+    組版処理そのものに手を加えるような高度なコマンド定義の方法について解説する．
+    文字サイズ，フォント指定，文字色，行送りといった文字組版に関する基礎的設定をいじったり，
+    行分割に関する制御などについても触れる．
+    この章で\SATySFi;でコマンドを定義する方法の直観がほぼ獲得できるだろう．
+  }
+  +p{
+    \ref-chapter(`line-breaking`);から\ref-chapter(`page-breaking`);までは各論的で，
+    それぞれ
+    行分割処理，
+    文字組版，
+    グラフィックス，
+    数式組版，
+    相互参照，
+    ページ分割処理
+    について，
     かなり詳細な解説を提供する．各章で関連するいくつものプリミティヴが紹介され，
     ユーザやパッケージ開発者はこれを用いてより柔軟に組版処理を制御するコマンドを定義することができる．
   }
@@ -166,21 +173,21 @@ let preface = '<
         \github{pandaman64}さん，
 
       * ocamlbuildからduneへの移行などOCamlでの開発に関して種々の改善を頂いた
-        \person-github{Daichi OOHASHI}{leque}さん，
+        \person-github{Daichi Oohashi}{leque}さん，
 
       * インストール手順の整備，処理系の動作の整頓等に多大に協力してくださった
-        \person-github{Takuma ISHIKAWA}{nekketsuuu}さん，
-        \person-github{Yuichi NISHIWAKI}{nyuichi}さん，
+        \person-github{Takuma Ishikawa}{nekketsuuu}さん，
+        \person-github{Yuichi Nishiwaki}{nyuichi}さん，
         \github{sakas--}さん，
         \github{objmagic}さん，
-        \person-github{Masanori OGINO}{omasanori}さん，
-        \person-github{Noriaki SAKAMOTO}{na4zagin3}さん，
+        \person-github{Masanori Ogino}{omasanori}さん，
+        \person-github{Noriaki Sakamoto}{na4zagin3}さん，
 
       * 数式用パッケージを拡張していただいた
         \github{ToruNiina}さん，
         \github{forestaa}さん，
 
-      * \SATySFi;の前身であるMacrodownの時代にTravis CIを導入していただいた
+      * \SATySFi;の前身であるMacrodownにTravis CIを導入していただいた
         \person-github{YOSHIMURA Yuu}{y-yu}さん，
 
       * その他注意深い観察により修正を提示いただいた

@@ -47,8 +47,17 @@ let-inline ctx \path it =
   read-inline (ctx |> set-mono-font) it
 
 
+let strut h d =
+  inline-graphics 0pt h d (fun _ -> [])
+
+
 let-inline ctx \codem it =
-  read-inline (ctx |> set-mono-font) it
+  let ib =
+    strut 8pt 3pt ++ read-inline (ctx |> set-mono-font) it
+  in
+  let pads = (2pt, 2pt, 2pt, 2pt) in
+  let decoset = HDecoSet.rectangle-round-fill 4pt 2pt (Color.gray 0.9) in
+    script-guard Latin (inline-frame-breakable pads decoset ib)
 
 
 let-inline ctx \github it =
@@ -208,6 +217,7 @@ module Type : sig
   type t
   val to-math : t -> math
   val (-->) : t -> t -> t
+  val base-type : inline-text -> t
   val unit : t
   val bool : t
   val int : t
@@ -313,7 +323,50 @@ let-inline ctx \meta it =
     read-inline ctx it
 
 
+let-inline ctx \metasub msub it =
+  read-inline ctx {${\text!{\meta{#it;}}_{#msub}}}
+
+
 let-inline ctx \inline-frame inner =
   let pads = (2pt, 2pt, 2pt, 2pt) in
   let decoset = HDecoSet.simple-frame-stroke 0.5pt Color.black in
     inline-frame-breakable pads decoset (read-inline ctx inner)
+
+
+let-math \tuple mlst =
+  let m = Math.join ${,} mlst in
+    ${\paren{#m}}
+
+
+let-block ctx +frame content =
+  let pads = (10pt, 10pt, 5pt, 5pt) in
+  let decoset = VDecoSet.paper in
+    block-frame-breakable ctx pads decoset (fun ctx -> read-block ctx content)
+
+
+let-inline ctx \fbox it =
+  let pads = (2pt, 2pt, 2pt, 2pt) in
+  let t = 0.5pt in
+  let deco (x, y) w h d =
+    [ stroke t Color.black (Gr.rectangle (x, y -' d) (x +' w, y +' h)) ]
+  in
+    inline-frame-inner pads deco (read-inline ctx it)
+
+
+type position-spec =
+  | Top
+  | Bottom
+
+
+let-inline ctx \parbox ?:specopt wid ib =
+  let blockf =
+    match specopt with
+    | None         -> embed-block-top ctx wid
+    | Some(Top)    -> embed-block-top ctx wid
+    | Some(Bottom) -> embed-block-bottom ctx wid
+  in
+    blockf (fun ctx -> read-block ctx ib)
+
+
+let-inline ctx \as-latin-word it =
+  script-guard Latin (read-inline ctx it)
