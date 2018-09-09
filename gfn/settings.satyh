@@ -3,6 +3,7 @@
 @require: code
 @require: color
 @require: itemize
+@require: hdecoset
 @import: book-class
 
 
@@ -310,3 +311,9 @@ let-inline ctx \meta it =
     ctx |> Book.set-latin-font Book.font-latin-italic
   in
     read-inline ctx it
+
+
+let-inline ctx \inline-frame inner =
+  let pads = (2pt, 2pt, 2pt, 2pt) in
+  let decoset = HDecoSet.simple-frame-stroke 0.5pt Color.black in
+    inline-frame-breakable pads decoset (read-inline ctx inner)
