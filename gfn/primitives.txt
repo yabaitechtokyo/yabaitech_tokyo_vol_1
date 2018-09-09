@@ -1,145 +1,184 @@
-[ ] ^
-[ ] set-math-variant-char
-[ ] convert-string-for-math
-[ ] set-math-command
-[ ] math-variant-char
-[ ] get-left-math-class
-[ ] get-right-math-class
-[ ] space-between-maths
-[ ] math-concat
-[ ] math-group
-[ ] math-sup
-[ ] math-sub
-[ ] math-frac
-[ ] math-radical
-[ ] math-paren
-[ ] math-paren-with-middle
-[ ] math-upper
-[ ] math-lower
-[ ] math-pull-in-scripts
-[ ] math-char
-[ ] math-big-char
-[ ] math-char-with-kern
-[ ] math-big-char-with-kern
-[ ] text-in-math
-[ ] math-color
-[ ] math-char-class
-[ ] embed-math
-[ ] tabular
-[ ] load-pdf-image
-[ ] load-image
-[ ] use-image-by-width
-[ ] hook-page-break
-[ ] unite-path
-[ ] shift-path
-[ ] get-path-bbox
-[ ] start-path
-[ ] line-to
-[ ] bezier-to
-[ ] terminate-path
-[ ] close-with-line
-[ ] close-with-bezier
-[ ] ++
-[ ] +++
-[ ] read-inline
-[ ] read-block
-[ ] embed-block-breakable
-[ ] line-break
-[ ] page-break
-[ ] block-frame-breakable
-[ ] add-footnote
-[ ] embed-block-top
-[ ] block-skip
-[ ] embed-block-bottom
-[ ] line-stack-top
-[ ] line-stack-bottom
-[ ] get-initial-context
-[ ] set-hyphen-min
-[ ] set-min-gap-of-lines
-[ ] set-space-ratio
-[ ] set-paragraph-margin
-[ ] set-min-paragraph-ascender-and-descender
-[ ] set-font-size
-[ ] get-font-size
-[ ] set-font
-[ ] get-font
-[ ] set-math-font
-[ ] set-dominant-wide-script
-[ ] get-dominant-wide-script
-[ ] set-dominant-narrow-script
-[ ] get-dominant-narrow-script
-[ ] set-language
-[ ] get-language
-[ ] set-text-color
-[ ] get-text-color
-[ ] set-leading
-[ ] get-text-width
-[ ] set-manual-rising
-[ ] raise-inline
-[ ] set-hyphen-penalty
-[ ] embed-string
-[ ] get-axis-height
-[ ] inline-skip
-[ ] inline-glue
-[ ] inline-frame-outer
-[ ] inline-frame-inner
-[ ] inline-frame-fixed
-[ ] inline-frame-breakable
-[ ] inline-graphics
-[ ] inline-graphics-outer
-[ ] script-guard
-[ ] discretionary
-[ ] register-cross-reference
-[ ] get-cross-reference
-[ ] get-natural-metrics
-[ ] get-natural-length
-[ ] display-message
-[ ] string-same
-[ ] string-sub
-[ ] string-sub-bytes
-[ ] string-length
-[ ] string-byte-length
-[ ] string-unexplode
-[ ] regexp-of-string
-[ ] string-match
-[ ] split-into-lines
-[ ] split-on-regexp
-[ ] arabic
-[ ] float
-[ ] round
-[ ] draw-text
-[ ] stroke
-[ ] fill
-[ ] dashed-stroke
-[ ] shift-graphics
-[ ] get-graphics-bbox
-[ ] *
-[ ] /
-[ ] mod
-[ ] +
-[ ] -
-[ ] ==
-[ ] >
-[ ] <
-[ ] &&
-[ ] ||
-[ ] not
-[ ] +.
-[ ] -.
-[ ] *.
-[ ] /.
-[ ] sin
-[ ] asin
-[ ] cos
-[ ] acos
-[ ] tan
-[ ] atan
-[ ] atan2
-[ ] +'
-[ ] -'
-[ ] *'
-[ ] /'
-[ ] <'
-[ ] >'
-[ ] set-every-word-break
-[ ] probe-cross-reference
+-*- coding: utf-8 -*-
+
+ [ ] embed-block-breakable
+ [ ] block-frame-breakable
+ [ ] embed-block-top
+ [ ] embed-block-bottom
+ [ ] line-stack-top
+ [ ] line-stack-bottom
+ [ ] get-natural-length
+ [ ] block-skip
+
+ [ ] get-text-width
+
+ [ ] set-manual-rising
+ [ ] raise-inline
+ [ ] embed-string
+ [ ] get-axis-height
+
+== コマンド定義：発展編 ==
+D[o] set-font-size
+D[o] get-font-size
+D[ ] set-font
+D[ ] get-font
+D[ ] set-text-color
+D[ ] get-text-color
+D[ ] ++
+D[ ] +++
+D[ ] get-natural-metrics
+D[o] read-inline
+D[ ] read-block
+D[o] line-break
+
+== 行分割 ==
+L[ ] discretionary
+L[ ] inline-skip
+L[ ] inline-glue
+L[ ] set-leading
+L[ ] set-every-word-break
+L[ ] set-min-gap-of-lines
+L[ ] set-paragraph-margin
+L[ ] set-min-paragraph-ascender-and-descender
+
+== 文字組版 ==
+C[ ] set-hyphen-min
+C[ ] script-guard
+C[ ] set-dominant-wide-script
+C[ ] get-dominant-wide-script
+C[ ] set-dominant-narrow-script
+C[ ] get-dominant-narrow-script
+C[ ] set-hyphen-penalty
+C[ ] set-space-ratio
+
+== グラフィックス ==
+G[ ] inline-frame-outer
+G[ ] inline-frame-inner
+G[ ] inline-frame-fixed
+G[ ] inline-frame-breakable
+G[ ] inline-graphics
+G[ ] inline-graphics-outer
+G[ ] tabular
+G[ ] load-pdf-image
+G[ ] load-image
+G[ ] use-image-by-width
+G[ ] hook-page-break
+G[ ] unite-path
+G[ ] shift-path
+G[ ] get-path-bbox
+G[ ] start-path
+G[ ] line-to
+G[ ] bezier-to
+G[ ] terminate-path
+G[ ] close-with-line
+G[ ] close-with-bezier
+G[ ] draw-text
+G[ ] stroke
+G[ ] fill
+G[ ] dashed-stroke
+G[ ] shift-graphics
+G[ ] get-graphics-bbox
+
+== 数式組版 ==
+M[ ] set-math-variant-char
+M[ ] convert-string-for-math
+M[ ] set-math-command
+M[ ] math-variant-char
+M[ ] get-left-math-class
+M[ ] get-right-math-class
+M[ ] space-between-maths
+M[ ] math-concat
+M[ ] math-group
+M[ ] math-sup
+M[ ] math-sub
+M[ ] math-frac
+M[ ] math-radical
+M[ ] math-paren
+M[ ] math-paren-with-middle
+M[ ] math-upper
+M[ ] math-lower
+M[ ] math-pull-in-scripts
+M[ ] math-char
+M[ ] math-big-char
+M[ ] math-char-with-kern
+M[ ] math-big-char-with-kern
+M[ ] text-in-math
+M[ ] math-color
+M[ ] math-char-class
+M[ ] embed-math
+M[ ] set-math-font
+
+== 相互参照 ==
+R[ ] register-cross-reference
+R[ ] get-cross-reference
+R[ ] probe-cross-reference
+
+== ページ分割 ==
+P[ ] page-break
+P[ ] add-footnote
+P[ ] get-initial-context
+
+== 基本演算 ==
+-- 整数 --
+A[ ] mod
+A[ ] +
+A[ ] -
+A[ ] *
+A[ ] /
+A[ ] ==
+A[ ] >
+A[ ] <
+A[ ] <>
+A[ ] >=
+A[ ] <=
+
+-- 真偽値 --
+A[ ] &&
+A[ ] ||
+A[ ] not
+
+-- 浮動小数点数 --
+A[ ] float
+A[ ] round
+A[ ] +.
+A[ ] -.
+A[ ] *.
+A[ ] /.
+A[ ] sin
+A[ ] asin
+A[ ] cos
+A[ ] acos
+A[ ] tan
+A[ ] atan
+A[ ] atan2
+
+-- 長さ --
+A[ ] +'
+A[ ] -'
+A[ ] *'
+A[ ] /'
+A[ ] <'
+A[ ] >'
+
+-- 文字列 --
+A[ ] ^
+A[ ] arabic
+A[ ] string-same
+A[ ] string-sub
+A[ ] string-length
+A[ ] string-unexplode
+A[ ] regexp-of-string
+A[ ] string-match
+A[ ] split-into-lines
+A[ ] split-on-regexp
+
+-- その他 --
+A[ ] !
+A[ ] ::
+A[ ] |>
+A[ ] display-message
+
+== 非収録 ==
+/[/] set-language
+/[/] get-language
+/[/] string-sub-bytes
+/[/] string-byte-length
