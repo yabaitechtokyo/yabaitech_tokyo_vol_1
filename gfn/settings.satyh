@@ -218,6 +218,7 @@ module Type : sig
   val to-math : t -> math
   val (-->) : t -> t -> t
   val base-type : inline-text -> t
+  val product : t list -> t
   val unit : t
   val bool : t
   val int : t
@@ -235,12 +236,21 @@ end = struct
   type t =
     | Ctr  of inline-text * t list
     | Func of t * t
+    | Prod of t list
 
 
   type paren-mode =
     | Normal
     | Domain
     | Single
+
+
+  let-math \arr =
+    let mbr =
+      text-in-math MathOrd (fun ctx ->
+        discretionary 100 inline-nil inline-fil inline-nil)
+    in
+      math-group MathBin MathBin (math-concat (math-char MathOrd `→`) mbr)
 
 
   let to-math =
@@ -252,7 +262,10 @@ end = struct
               ${#m\ }
             )) |> List.fold-left math-concat ${}
           in
-          let mctr = text-in-math MathOrd (fun ctx -> read-inline ctx it) in
+          let mctr =
+            text-in-math MathOrd
+              (fun ctx -> read-inline ctx {\no-break{#it;}})
+          in
           let m = ${#marg#mctr} in
           ( match (mode, tyargs) with
             | (Single, _ :: _) -> ${\paren{#m}}
@@ -262,11 +275,15 @@ end = struct
       | mode (Func(ty1, ty2)) =
           let m1 = aux Domain ty1 in
           let m2 = aux Normal ty2 in
-          let m = ${#m1 \to #m2} in
+          let m = ${#m1 \arr #m2} in
           ( match mode with
             | Normal -> m
             | _      -> ${\paren{#m}}
           )
+
+      | mode (Prod(tys)) =
+          let ms = List.map (aux Single) tys in
+            Math.join ${\mathbin{\ast}} ms
     in
     aux Normal
 
@@ -277,6 +294,10 @@ end = struct
 
   let (-->) ty1 ty2 =
     Func(ty1, ty2)
+
+
+  let product tys =
+    Prod(tys)
 
 
   let unit         = base-type {unit}
@@ -297,15 +318,21 @@ end = struct
 end
 
 
-let quote-indent = 24pt
+let quote-indent-1 = 24pt
+let quote-indent-2 = 12pt
 
 
 let-inline ctx \val it-cmd ty =
   let m = Type.to-math ty in
+  let wid = get-text-width ctx in
+  let len = quote-indent-1 +' quote-indent-2 in
   let ib =
-    inline-skip quote-indent ++
-      read-inline ctx {\codem{#it-cmd;} : ${#m}} ++
-        inline-fil
+    inline-skip len ++
+      embed-block-top ctx (wid -' len)
+        (fun ctx ->
+          line-break true true ctx
+            (inline-skip (0pt -' quote-indent-2) ++
+              read-inline ctx {\codem{#it-cmd;} : ${#m}} ++ inline-fil))
   in
     inline-fil ++
       embed-block-breakable ctx

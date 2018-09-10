@@ -249,84 +249,149 @@ document (|
       }
     >
     +section{行分割に関するプリミティヴ}<
-      +p{
-        \ref-chapter(`advanced-command-definition`);に於いて，
-        行分割処理そのものを担うプリミティヴが
+      +subsection{行分割候補箇所}<
+        +p{
+          \ref-chapter(`advanced-command-definition`);に於いて，
+          行分割処理そのものを担うプリミティヴが
 
-        \val({line-break})(Type.(bool --> (bool -->
-          (context --> (inline-boxes --> block-boxes)))));%
+          \val({line-break})(Type.(bool --> (bool -->
+            (context --> (inline-boxes --> block-boxes)))));%
 
-        であることは既に紹介したが，分割される箇所の候補がどのように決定され，
-        その処理にユーザやパッケージ開発者がどのように介入できるかについてはまだ触れていなかった．
-        これについて以下で少し解説する．
-      }
-      +p{
-        \SATySFi;では，行分割の候補となる箇所がインラインボックス列の中に含まれており，
-        そのいずれも
+          であることは既に紹介したが，分割される箇所の候補がどのように決定され，
+          その処理にユーザやパッケージ開発者がどのように介入できるかについてはまだ触れていなかった．
+          これについて以下で少し解説する．
+        }
+        +p{
+          \SATySFi;では，行分割の候補となる箇所がインラインボックス列の中に含まれており，
+          そのいずれも
 
-        \listing{
-          * そこで行分割されなかった場合の内容 ${b_0}
-          * そこで行分割された場合に直前の行末に入る内容 ${b_1}
-          * そこで行分割された場合に直後の行頭に入る内容 ${b_2}
-          * そこで行分割された場合に加算される\dfnje{ペナルティ値}{penalty} ${p}
-        }%
+          \listing{
+            * そこで行分割されなかった場合の内容 ${b_0}
+            * そこで行分割された場合に直前の行末に入る内容 ${b_1}
+            * そこで行分割された場合に直後の行頭に入る内容 ${b_2}
+            * そこで行分割された場合に加算される\dfnje{ペナルティ値}{penalty} ${p}
+          }%
 
-        からなる4つの情報 ${\tuple{|b_0|b_1|b_2|p|}} をもつ．
-        逆に，これらの情報をもたない箇所では行分割しない\footnote{
-          厳密に言うと例外がある．
-          ブロックボックス列を “段落の一部として埋め込む” 機能を担う
-          \codem{embed-block-breakable}というプリミティヴによって
-          生成されたインラインボックス列は，その直前で必ず行分割される．
-        }．
-        この4つ組を備えた箇所を以降
-        単に\dfnje{行分割候補箇所}{line break opportunity}
-        と呼ぶことにしよう．
-        行分割候補箇所は，
-        インラインテキストからインラインボックス列に変換する過程で現れる．
-        ペナルティ値 ${p} は基本的にテキスト処理文脈から決定される．
-        この際に，例えば空白文字は
-        ${b_0} が（単語間の空白として適切な程度に）多少伸縮する空白，
-        ${b_1} と ${b_2} が空っぽであるような行分割候補箇所に変換される．
-        “table” という文字列は，
-        ${b_0} が
-        \as-latin-word{\BoxGraphics.roman{|t|a|b|l|e|}}，
-        ${b_1} が
-        \as-latin-word{\BoxGraphics.roman{|t|a|-|}}，
-        ${b_2} が
-        \as-latin-word{\BoxGraphics.roman{|b|l|e|}}
-        であるような行分割候補箇所へと変換される．
-        すなわち，途中で行分割する必要がなければ単に行中で
-        \as-latin-word{\BoxGraphics.roman{|t|a|b|l|e|}}と組まれるように，
-        途中でハイフネーションを行なって分割する方が周辺の要素の並びから望ましいと判断される場合は
-        その行末が\as-latin-word{\BoxGraphics.roman{|t|a|-|}}で
-        次の行頭が\as-latin-word{\BoxGraphics.roman{|b|l|e|}}になるように，
-        それぞれ指定した行分割候補箇所になるのである\footnote{
-          実際のハイフネーション処理はもう少しだけ複雑である．
-          単語中でハイフネーションが可能な箇所は2箇所以上あったりするからだ．
-        }．
-        インラインテキストがどのようにインラインボックス列に変換され，
-        どのように行分割候補箇所が現れるかは，
-        前述のとおり基本的には
-        Unicode Line Breaking Algorithm \cite[`unicode-lb`];
-        と『日本語組版処理の要件』\cite[`jlreq`];に基づいているが，
-        多言語組版を想定して将来的には
-        ユーザやパッケージ開発者が介入して変更できるようにしたいと考えている．
-      }
-      +p{
-        行分割候補箇所はインラインテキストからインラインボックス列への変換過程で生成されるだけでなく，
-        “手動で” 挿入することもできる．これに用いるのがプリミティヴ：
+          からなる4つの情報 ${\tuple{|b_0|b_1|b_2|p|}} をもつ．
+          逆に，これらの情報をもたない箇所では行分割しない\footnote{
+            厳密に言うと例外がある．
+            ブロックボックス列を “段落の一部として埋め込む” 機能を担う
+            \codem{embed-block-breakable}というプリミティヴによって
+            生成されたインラインボックス列は，その直前で必ず行分割される．
+          }．
+          この4つ組を備えた箇所を以降
+          単に\dfnje{行分割候補箇所}{line break opportunity}
+          と呼ぶことにしよう．
+          ペナルティ値は実際の行分割箇所を決定するにあたって参考にされ，
+          この値が大きいほどその候補箇所での行分割が抑制される\footnote{
+            一応（行分割を促進する意図で）負の値を指定することもできるが，
+            現在の実装は負の値が渡されることを想定していないので，
+            行分割が実際に促進される保証はない．
+          }．これについては\ref-subsection(`penalty`);で後述する．
+        }
+        +p{
+          行分割候補箇所は，
+          インラインテキストからインラインボックス列に変換する過程で現れる．
+          この際に，例えば空白文字は
+          ${b_0} が（単語間の空白として適切な程度に）多少伸縮する空白，
+          ${b_1} と ${b_2} が空っぽであるような行分割候補箇所に変換される．
+          “table” という文字列は，
+          ${b_0} が
+          \as-latin-word{\BoxGraphics.roman{|t|a|b|l|e|}}，
+          ${b_1} が
+          \as-latin-word{\BoxGraphics.roman{|t|a|-|}}，
+          ${b_2} が
+          \as-latin-word{\BoxGraphics.roman{|b|l|e|}}
+          であるような行分割候補箇所へと変換される．
+          すなわち，途中で行分割する必要がなければ単に行中で
+          \as-latin-word{\BoxGraphics.roman{|t|a|b|l|e|}}と組まれるように，
+          途中でハイフネーションを行なって分割する方が周辺の要素の並びから望ましいと判断される場合は
+          その行末が\as-latin-word{\BoxGraphics.roman{|t|a|-|}}で
+          次の行頭が\as-latin-word{\BoxGraphics.roman{|b|l|e|}}になるように，
+          それぞれ指定した行分割候補箇所になるのである\footnote{
+            実際のハイフネーション処理はもう少しだけ複雑である．
+            単語中でハイフネーションが可能な箇所は2箇所以上あったりするからだ．
+          }．
+          インラインテキストがどのようにインラインボックス列に変換され，
+          どのように行分割候補箇所が現れるかは，
+          前述のとおり基本的には
+          Unicode Line Breaking Algorithm \cite[`unicode-lb`];
+          と『日本語組版処理の要件』\cite[`jlreq`];に基づいているが，
+          多言語組版を想定して将来的には
+          ユーザやパッケージ開発者が介入して変更できるようにしたいと考えている．
+        }
+        +p{
+          行分割候補箇所はインラインテキストからインラインボックス列への変換過程で生成されるだけでなく，
+          “手動で” 挿入することもできる．これに用いるのがプリミティヴ：
 
-        \val({discretionary})(Type.(int -->
-          (inline-boxes --> (inline-boxes --> (inline-boxes --> inline-boxes)))));%
+          \val({discretionary})(Type.(int -->
+            (inline-boxes --> (inline-boxes --> (inline-boxes --> inline-boxes)))));%
 
-        である．使い方は至極単純で，
-        \codem{discretionary \meta{p}
-          \metasub(${0}){ib} \metasub(${1}){ib} \metasub(${2}){ib}}
-        でペナルティ値 ${p} が\codem{\meta{p}}，
-        各 ${b_i} がそれぞれ\codem{\metasub(${i}){ib}}であるような
-        行分割候補箇所が生成される．
-      }
-      +p{ \dfnje{グルー}{glue}と呼ばれる．\REMAINS{inline-glue} }
+          である．使い方は至極単純で，
+          \codem{discretionary \meta{p}
+            \metasub(${0}){ib} \metasub(${1}){ib} \metasub(${2}){ib}}
+          でペナルティ値 ${p} が\codem{\meta{p}}，
+          各 ${b_i} がそれぞれ\codem{\metasub(${i}){ib}}であるような
+          行分割候補箇所が生成される．
+          なお，\codem{discretionary}の引数に渡した\codem{\metasub(${i}){ib}}の中に
+          さらに入れ子で行分割候補箇所が含まれている場合，
+          その箇所では決して行分割されない．つまり，そこでは必ず ${b_0} の内容が選ばれる．
+        }
+      >
+      +subsection?:(`penalty`){ペナルティ値}<
+        +p{
+          インラインテキストからインラインボックス列への変換の過程で
+          与えられる各行分割候補箇所のペナルティ値 ${p} は，基本的に
+          \codem{read-inline}の第1引数として渡したテキスト処理文脈に基づいて決定される．
+          単語間空白から変換される行分割候補箇所 ${\tuple{|p|b_0|b_1|b_2|}} は，
+          デフォルトでは\footnote{
+            \codem{get-initial-context}が返すテキスト処理文脈では，の意．
+          } ${p = 100} であり，${b_1} と ${b_2} は空である．
+          ${b_0} は伸縮する空白であり，\dfnje{グルー}{glue}と呼ばれる．
+          これについては\ref-subsection(`glue`);で後述する．
+          ${p} はプリミティヴ：
+
+          \val({set-word-break-penalty})(Type.(int --> (context --> context)));%
+
+          により変更することができる．すなわち，
+          テキスト処理文脈\codem{\meta{ctx}}と
+          単語間空白の行分割候補箇所に対して設定したいペナルティ値\codem{\meta{p}}に対して
+          \codem{set-word-break-penalty \meta{p} \meta{ctx}}で
+          ペナルティ値が\codem{\meta{p}}に更新されたテキスト処理文脈が返される．
+          ${b_1} と ${b_2} も変更することができ，
+
+          \val({set-every-word-break})(Type.(inline-boxes --> (inline-boxes -->
+            (context --> context))));%
+
+          によって行なう．すなわち
+          \codem{set-every-word-break \metasub(${1}){ib} \metasub(${2}){ib}}
+          で\codem{\metasub(${i}){ib}}をそれぞれ
+          単語感空白の行分割候補箇所の ${b_i} に設定する．
+          現在単語間空白の ${b_1} と ${b_2} に設定されている内容を取得するのは
+
+          \val({get-every-word-break})(Type.(context -->
+            product [inline-boxes; inline-boxes]));%
+
+          による．
+        }
+      >
+      +subsection?:(`glue`){グルー}<
+        +p{
+          行分割の際，単語間の空白や和文の文字の間などの箇所は
+          両端を揃えるために多少伸縮するのであった．
+          これは\dfnje{グルー}{glue}と呼ばれる仕組みによって実装されている．
+          グルーは
+
+          \listing{
+            * 自然な長さ ${l_0}
+            * 収縮の基準となる非負の長さ ${l_{-}}
+            * 伸長の基準となる非負の長さ ${l_{+}}
+          }%
+
+          の3つの情報 ${\tuple{|l_0|l_{-}|l_{+}|}} からなっている．
+          \REMAINS{inline-glue}
+        }
+      >
       +p{ \REMAINS{inline-fil} }
     >
   >
