@@ -1,7 +1,5 @@
 -*- coding: utf-8 -*-
 
- [ ] embed-block-breakable
- [ ] block-frame-breakable
  [ ] embed-block-top
  [ ] embed-block-bottom
  [ ] line-stack-top
@@ -14,13 +12,10 @@
  [ ] set-manual-rising
  [ ] raise-inline
  [ ] embed-string
- [ ] get-axis-height
 
 == コマンド定義：発展編 ==
 D[o] set-font-size
 D[o] get-font-size
-D[ ] set-font
-D[ ] get-font
 D[ ] set-text-color
 D[ ] get-text-color
 D[ ] ++
@@ -31,81 +26,108 @@ D[ ] read-block
 D[o] line-break
 
 == 行分割 ==
-L[ ] discretionary
-L[ ] inline-skip
-L[ ] inline-glue
+-- 行分割候補箇所とハイフネーション --
+L[o] discretionary
+L[o] set-word-break-penalty
+L[o] get-every-word-break
+L[o] set-every-word-break
+L[o] inline-skip
+L[o] inline-glue
+L[o] set-space-ratio
+L[/] set-hyphen-min
+L[o] set-hyphen-penalty
+L[ ] embed-block-breakable
+
+-- 段落方向の長さ --
 L[ ] set-leading
-L[ ] set-every-word-break
 L[ ] set-min-gap-of-lines
 L[ ] set-paragraph-margin
 L[ ] set-min-paragraph-ascender-and-descender
 
 == 文字組版 ==
-C[ ] set-hyphen-min
-C[ ] script-guard
+C[ ] set-font
+C[ ] get-font
 C[ ] set-dominant-wide-script
 C[ ] get-dominant-wide-script
 C[ ] set-dominant-narrow-script
 C[ ] get-dominant-narrow-script
-C[ ] set-hyphen-penalty
-C[ ] set-space-ratio
+C[ ] script-guard
 
 == グラフィックス ==
+-- パス生成 --
+G[o] unite-path
+G[o] shift-path
+G[o] get-path-bbox
+G[o] start-path
+G[o] line-to
+G[o] bezier-to
+G[o] terminate-path
+G[o] close-with-line
+G[o] close-with-bezier
+
+-- グラフィックス生成 --
+G[o] stroke
+G[o] fill
+G[ ] dashed-stroke
+G[o] shift-graphics
+G[o] get-graphics-bbox
+G[o] draw-text
+G[o] inline-graphics
+G[ ] inline-graphics-outer
+
+-- フレーム --
 G[ ] inline-frame-outer
 G[ ] inline-frame-inner
 G[ ] inline-frame-fixed
 G[ ] inline-frame-breakable
-G[ ] inline-graphics
-G[ ] inline-graphics-outer
-G[ ] tabular
+G[ ] block-frame-breakable
+
+-- 画像 --
 G[ ] load-pdf-image
 G[ ] load-image
 G[ ] use-image-by-width
-G[ ] hook-page-break
-G[ ] unite-path
-G[ ] shift-path
-G[ ] get-path-bbox
-G[ ] start-path
-G[ ] line-to
-G[ ] bezier-to
-G[ ] terminate-path
-G[ ] close-with-line
-G[ ] close-with-bezier
-G[ ] draw-text
-G[ ] stroke
-G[ ] fill
-G[ ] dashed-stroke
-G[ ] shift-graphics
-G[ ] get-graphics-bbox
+
+-- 表 --
+G[ ] tabular
 
 == 数式組版 ==
+-- 数式中の文字 --
+M[ ] math-char
+M[ ] math-big-char
+M[ ] math-char-with-kern
+M[ ] math-big-char-with-kern
 M[ ] set-math-variant-char
 M[ ] convert-string-for-math
-M[ ] set-math-command
 M[ ] math-variant-char
 M[ ] get-left-math-class
 M[ ] get-right-math-class
 M[ ] space-between-maths
+
+-- 数式 --
 M[ ] math-concat
 M[ ] math-group
 M[ ] math-sup
 M[ ] math-sub
 M[ ] math-frac
-M[ ] math-radical
-M[ ] math-paren
-M[ ] math-paren-with-middle
 M[ ] math-upper
 M[ ] math-lower
 M[ ] math-pull-in-scripts
-M[ ] math-char
-M[ ] math-big-char
-M[ ] math-char-with-kern
-M[ ] math-big-char-with-kern
 M[ ] text-in-math
+
+-- 括弧類 --
+M[ ] math-radical
+M[ ] math-paren
+M[ ] math-paren-with-middle
+M[ ] get-axis-height
+
+-- スタイル --
 M[ ] math-color
 M[ ] math-char-class
+
+-- 数式の使用 --
 M[ ] embed-math
 M[ ] set-math-font
+M[ ] set-math-command
 
 == 相互参照 ==
 R[ ] register-cross-reference
@@ -115,6 +137,7 @@ R[ ] probe-cross-reference
 == ページ分割 ==
 P[ ] page-break
 P[ ] add-footnote
+P[ ] hook-page-break
 P[ ] get-initial-context
 
 == 基本演算 ==

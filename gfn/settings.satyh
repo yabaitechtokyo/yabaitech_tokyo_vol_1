@@ -17,6 +17,9 @@ let-inline ctx \REMAINS msg =
       (read-inline ctx {要加筆： #msg;})
 
 
+let-math \defeq = ${\coloneq}
+
+
 let-inline ctx \quad =
   let sz = Book.get-cjk-font-size ctx in
     inline-skip sz
@@ -52,8 +55,13 @@ let strut h d =
 
 
 let-inline ctx \codem it =
+  let ib-strut = strut 8pt 3pt in
   let ib =
-    strut 8pt 3pt ++ read-inline (ctx |> set-mono-font) it
+    let ctx =
+      ctx |> set-mono-font
+          |> set-every-word-break inline-nil ib-strut
+    in
+      ib-strut ++ read-inline ctx it
   in
   let pads = (2pt, 2pt, 2pt, 2pt) in
   let decoset = HDecoSet.rectangle-round-fill 4pt 2pt (Color.gray 0.9) in
@@ -209,6 +217,46 @@ module Sample = struct
     let ctx-enlarge = set-font-size (size *' 1.5) ctx in
       read-inline ctx-enlarge it
 
+
+  let-inline ctx \q inner =
+    let ib-after = read-inline ctx {«\ } in
+    let ctxq =
+      ctx |> set-every-word-break inline-nil ib-after
+    in
+    read-inline ctxq {« #inner; »}
+
+
+  let-block ctx +p-alph it =
+    line-break true true ctx
+      (inline-skip 15mm ++ read-inline ctx it ++ inline-fil)
+
+
+  let-inline ctx \area it =
+    let ib = read-inline ctx it in
+    let (w, h, d) = get-natural-metrics ib in
+    let thickness = 0.5pt in
+    let color = Color.black in
+      inline-graphics w h d (fun (x, y) ->
+        [
+          stroke thickness color
+            (start-path (x, y -' d)
+              |> line-to (x +' w, y -' d)
+              |> line-to (x +' w, y +' h)
+              |> line-to (x, y +' h)
+              |> close-with-line);
+
+          stroke thickness color
+            (start-path (x, y -' d)
+              |> line-to (x +' w, y +' h)
+              |> terminate-path);
+
+          stroke thickness color
+            (start-path (x, y +' h)
+              |> line-to (x +' w, y -' d)
+              |> terminate-path);
+        ]
+      )
+
 end
 
 
@@ -218,6 +266,7 @@ module Type : sig
   val to-math : t -> math
   val (-->) : t -> t -> t
   val base-type : inline-text -> t
+  val product : t list -> t
   val unit : t
   val bool : t
   val int : t
@@ -228,6 +277,15 @@ module Type : sig
   val inline-boxes : t
   val block-text : t
   val block-boxes : t
+  val pre-path : t
+  val path : t
+  val point : t
+  val graphics : t
+  val color : t
+  val deco : t
+  val deco-set : t
+  val paren : t
+  val script : t
   val list : t -> t
   val option : t -> t
 end = struct
@@ -235,12 +293,21 @@ end = struct
   type t =
     | Ctr  of inline-text * t list
     | Func of t * t
+    | Prod of t list
 
 
   type paren-mode =
     | Normal
     | Domain
     | Single
+
+
+  let-math \arr =
+    let mbr =
+      text-in-math MathOrd (fun ctx ->
+        discretionary 100 inline-nil inline-fil inline-nil)
+    in
+      math-group MathBin MathBin (math-concat (math-char MathOrd `→`) mbr)
 
 
   let to-math =
@@ -252,7 +319,10 @@ end = struct
               ${#m\ }
             )) |> List.fold-left math-concat ${}
           in
-          let mctr = text-in-math MathOrd (fun ctx -> read-inline ctx it) in
+          let mctr =
+            text-in-math MathOrd
+              (fun ctx -> read-inline ctx {\no-break{#it;}})
+          in
           let m = ${#marg#mctr} in
           ( match (mode, tyargs) with
             | (Single, _ :: _) -> ${\paren{#m}}
@@ -262,11 +332,15 @@ end = struct
       | mode (Func(ty1, ty2)) =
           let m1 = aux Domain ty1 in
           let m2 = aux Normal ty2 in
-          let m = ${#m1 \to #m2} in
+          let m = ${#m1 \arr #m2} in
           ( match mode with
             | Normal -> m
             | _      -> ${\paren{#m}}
           )
+
+      | mode (Prod(tys)) =
+          let ms = List.map (aux Single) tys in
+            Math.join ${\mathbin{\ast}} ms
     in
     aux Normal
 
@@ -279,6 +353,10 @@ end = struct
     Func(ty1, ty2)
 
 
+  let product tys =
+    Prod(tys)
+
+
   let unit         = base-type {unit}
   let bool         = base-type {bool}
   let int          = base-type {int}
@@ -289,6 +367,15 @@ end = struct
   let inline-boxes = base-type {inline-boxes}
   let block-text   = base-type {block-text}
   let block-boxes  = base-type {block-boxes}
+  let pre-path     = base-type {pre-path}
+  let path         = base-type {path}
+  let point        = base-type {point}
+  let graphics     = base-type {graphics}
+  let color        = base-type {color}
+  let deco         = base-type {deco}
+  let deco-set     = base-type {deco-set}
+  let paren        = base-type {paren}
+  let script       = base-type {script}
 
 
   let list ty = Ctr({list}, [ty])
@@ -297,23 +384,65 @@ end = struct
 end
 
 
-let quote-indent = 24pt
+let quote-indent-1 = 24pt
+let quote-indent-2 = 12pt
+let val-margin = 12pt
+let val-explain-margin = 6pt
 
 
-let-inline ctx \val it-cmd ty =
+let val-scheme ctx indexopt it-cmd ty explainopt =
   let m = Type.to-math ty in
+  let it =
+    match indexopt with
+    | None    -> {\codem{#it-cmd;} : ${#m}}
+    | Some(s) -> {\index(s)?:({\code(s);}){\codem{#it-cmd;}} : ${#m}}
+  in
+  let wid = get-text-width ctx in
+  let len = quote-indent-1 +' quote-indent-2 in
   let ib =
-    inline-skip quote-indent ++
-      read-inline ctx {\codem{#it-cmd;} : ${#m}} ++
-        inline-fil
+    inline-skip len ++
+      embed-block-top ctx (wid -' len)
+        (fun ctx ->
+          line-break true true ctx
+            (inline-skip (0pt -' quote-indent-2) ++
+              read-inline ctx it ++ inline-fil))
+  in
+  let bb-head =
+    let ctx =
+      match explainopt with
+      | None    -> ctx
+      | Some(_) -> ctx |> set-paragraph-margin val-margin val-explain-margin
+    in
+      line-break true true ctx ib
+  in
+  let bb-explain =
+    match explainopt with
+    | None ->
+        block-nil
+
+    | Some(it-explain) ->
+        let pads = (quote-indent-1 +' quote-indent-2, 0pt, 0pt, 0pt) in
+        let decoset = VDecoSet.empty in
+        let ctx = ctx |> set-paragraph-margin val-explain-margin val-margin in
+          block-frame-breakable ctx pads decoset (fun ctx ->
+            line-break false true ctx
+              (read-inline ctx it-explain ++ inline-fil))
   in
     inline-fil ++
       embed-block-breakable ctx
-        (line-break true true ctx ib)
+        (bb-head +++ bb-explain)
+
+
+let-inline ctx \val ?:indexopt it-cmd ty =
+  val-scheme ctx indexopt it-cmd ty None
+
+
+let-inline ctx \val-explain ?:indexopt it-cmd ty it =
+  val-scheme ctx indexopt it-cmd ty (Some(it))
 
 
 let-inline ctx \type ty =
-  embed-math ctx (Type.to-math ty)
+  script-guard Latin (embed-math ctx (Type.to-math ty))
 
 
 let-inline ctx \meta it =
