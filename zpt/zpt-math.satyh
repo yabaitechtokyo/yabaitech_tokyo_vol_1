@@ -1,10 +1,13 @@
 @require: math
+@require: proof
 
 module ZptMath : sig
   direct \cdot : [] math-cmd
+  direct \ldots : [] math-cmd
   direct \imp : [] math-cmd
   direct \imp2 : [] math-cmd
   direct \semicolon : [] math-cmd
+  direct \ipc : [math; math] math-cmd
   direct \adj1 : [math; math; math] math-cmd
   direct \adj2 : [math; math] math-cmd
   direct \adj-up : [math] math-cmd
@@ -14,15 +17,22 @@ module ZptMath : sig
   direct \repeat : [int; inline-text] inline-cmd
   direct \fmodal : [math] math-cmd
   direct \dmodal : [math] math-cmd
+  direct \todo : [inline-text] inline-cmd
+  direct \derive : [inline-text?; math list; math] math-cmd
 
 end = struct
   let bin = math-char MathBin
 
   let-math \cdot = bin `⋅`
+  let-math \ldots = bin `…`
 
   let-math \imp = ${\rightarrow}
   let-math \imp2 = ${\Rightarrow}
   let-math \semicolon = math-char MathBin `;`
+
+  let-math \ipc ant succ = ${
+    #ant \vdash #succ
+  }
 
   let-math \adj1 ant1 ant2 succ = ${
     #ant1 \semicolon #ant2 \vdash_1 #succ
@@ -58,5 +68,17 @@ end = struct
 
   let-math \fmodal p = let box = bin `□` in ${#box #p}
   let-math \dmodal p = let box = bin `■` in ${#box #p}
+
+  let-inline ctx \todo text =
+    let ctx-red = ctx |> set-text-color Color.red in
+      read-inline ctx-red {TODO: #text;}
+
+  let myderive nameopt mlst m=
+    match nameopt with
+    | None -> ${\derive !(mlst) !(m)}
+    | Some(name) -> ${\derive ?:{\text!{\ (#name;)}} !(mlst) !(m)}
+
+  let-math \derive ?:nameopt mlst m =
+    myderive nameopt mlst m
   
 end
