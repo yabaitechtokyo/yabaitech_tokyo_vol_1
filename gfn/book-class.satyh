@@ -79,6 +79,7 @@ module Book : sig
   direct \ref-page : [string] inline-cmd
   direct \ref-chapter : [string] inline-cmd
   direct \ref-section : [string] inline-cmd
+  direct \ref-subsection : [string] inline-cmd
   direct \ref-definition : [string] inline-cmd
   direct \ref-theorem : [string] inline-cmd
   direct \ref-lemma : [string] inline-cmd
@@ -140,6 +141,12 @@ end = struct
 
   let-inline ctx \ref-section key =
     let opt = get-cross-reference (`section:` ^ key ^ `:num`) in
+    let it = embed-string (Option.from `?` opt) in
+      read-inline ctx {#it;節}
+
+
+  let-inline ctx \ref-subsection key =
+    let opt = get-cross-reference (`subsection:` ^ key ^ `:num`) in
     let it = embed-string (Option.from `?` opt) in
       read-inline ctx {#it;節}
 

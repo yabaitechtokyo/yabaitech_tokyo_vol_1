@@ -37,4 +37,31 @@ let bibliography = [
     url = `https://github.com/konn/satysfi-steamer`;
     year = 2018;
   |));
+  (`liang-knuth`, Book(|
+    author = {| Franklin M. Liang |};
+    title = {Word Hy-phen-a-tion by Com-put-er};
+    publisher = {Ph. D. Thesis};
+    year = 1983;
+  |));
+  (`knuth-plass`, Article(|
+    author = {| Donald E. Knuth | Michael F. Plass |};
+    year = 1981;
+    title = {Breaking paragraphs into lines};
+    journal = {Software–Practice and Experience};
+    volume = Some(11);
+    number = None;
+    pages = (1119, 1184);
+  |));
+ (`unicode-lb`, WebSite(|
+   author = {| Unicode Consortium |};
+   title ={Unicode Standard Annex \#14: Unicode Line Breaking Algorithm (Unicode 10.0.0)};
+   url = `http://unicode.org/reports/tr14/`;
+   year = 2017;
+  |));
+  (`jlreq`, Book(|
+    author = {| W3C日本語組版タスクフォース |};
+    year = 2012;
+    title = {W3C技術ノート 日本語組版処理の要件};
+    publisher = {\REMAINS{出版社}};
+  |));
 ]
