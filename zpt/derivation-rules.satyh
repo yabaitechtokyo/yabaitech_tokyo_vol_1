@@ -142,6 +142,71 @@ let adj-structure = '<
   %   |});
 >
 
+let adj-rules-imp = '<
+  +math-list (
+  ${
+  | \derive?:!{${\imp}I}
+           {| \adj1{\Theta}{\Gamma, A}{B} |}
+           { \adj1{\Theta}{\Gamma}{A \imp B} }
+  | \derive?:!{${\imp}E}
+           {| \adj1{\Theta}{\Gamma}{A \imp B}
+            | \adj1{\Theta}{\Gamma}{A}
+            |}
+           { \adj1{\Theta}{\Gamma}{B} }
+  |});
+
+  +math-list (
+  ${
+  | \derive?:!{${\imp2}I}
+           {| \adj2{\Theta, \alpha}{\beta} |}
+           { \adj2{\Theta}{\alpha \imp2 \beta} }
+  | \derive?:!{${\imp2}E}
+           {| \adj2{\Theta}{\alpha \imp2 \beta}
+            | \adj2{\Theta}{\alpha}
+            |}
+           { \adj2{\Theta}{\beta} }
+  |});
+>
+
+let adj-rules-up = '<
+  +math-list (
+    ${
+    | \derive?:!{${\adj-up{}}I}
+             {| \adj1{\Theta}{\cdot}{A} |}
+             { \adj2{\Theta}{\adj-up{A}} }
+    | \derive?:!{${\adj-up{}}E}
+             {| \adj2{\Theta}{\adj-up{A}}
+              |}
+             { \adj1{\Theta}{\Gamma}{A} }
+    |}
+  );
+>
+
+let adj-rules-lr = '<
+  +math-list (${
+    | \derive?:!{${\adj-up{}}E}
+             {| \derive?:!{${\adj-up{}}I}
+                       {| \adj1{\Theta}{\cdot}{A} |}
+                       { \adj2{\Theta}{\adj-up{A}} }
+              |}
+             { \adj1{\Theta}{\Gamma}{A} }
+    | \Rightarrow_R
+    | \adj1{\Theta}{\Gamma}{A} 
+    |});
+>
+
+let adj-rules-le = '<
+  +math-list (${
+    | \adj2{\Theta}{\adj-up{A}}
+    | \Rightarrow_E
+    | \derive?:!{${\adj-up{}}E}
+             {| \derive?:!{${\adj-up{}}I}
+                       {| \adj2{\Theta}{\adj-up{A}} |}
+                       { \adj1{\Theta}{\cdot}{A} } |}
+             { \adj2{\Theta}{\adj-up{A}} }
+    |});
+>
+
 
 let adj-rules =
     {
