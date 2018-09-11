@@ -28,12 +28,14 @@ D[o] line-break
 == 行分割 ==
 -- 行分割候補箇所とハイフネーション --
 L[o] discretionary
-L[ ] inline-skip
-L[ ] inline-glue
-L[ ] set-space-ratio
-L[ ] set-hyphen-min
-L[ ] set-hyphen-penalty
-L[ ] set-every-word-break
+L[o] set-word-break-penalty
+L[o] get-every-word-break
+L[o] set-every-word-break
+L[o] inline-skip
+L[o] inline-glue
+L[o] set-space-ratio
+L[/] set-hyphen-min
+L[o] set-hyphen-penalty
 L[ ] embed-block-breakable
 
 -- 段落方向の長さ --
@@ -53,24 +55,24 @@ C[ ] script-guard
 
 == グラフィックス ==
 -- パス生成 --
-G[ ] unite-path
-G[ ] shift-path
-G[ ] get-path-bbox
-G[ ] start-path
-G[ ] line-to
-G[ ] bezier-to
-G[ ] terminate-path
-G[ ] close-with-line
-G[ ] close-with-bezier
+G[o] unite-path
+G[o] shift-path
+G[o] get-path-bbox
+G[o] start-path
+G[o] line-to
+G[o] bezier-to
+G[o] terminate-path
+G[o] close-with-line
+G[o] close-with-bezier
 
 -- グラフィックス生成 --
-G[ ] stroke
-G[ ] fill
+G[o] stroke
+G[o] fill
 G[ ] dashed-stroke
-G[ ] shift-graphics
-G[ ] get-graphics-bbox
-G[ ] draw-text
-G[ ] inline-graphics
+G[o] shift-graphics
+G[o] get-graphics-bbox
+G[o] draw-text
+G[o] inline-graphics
 G[ ] inline-graphics-outer
 
 -- フレーム --

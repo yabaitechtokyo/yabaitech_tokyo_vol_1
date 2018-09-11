@@ -87,6 +87,7 @@ module Book : sig
   direct \ref-example : [string] inline-cmd
   direct \ref-figure : [string] inline-cmd
   direct \ref-table : [string] inline-cmd
+  direct \index : [string; inline-text?; inline-text] inline-cmd
   direct \cite : [string list] inline-cmd
   direct \figure : [string?; inline-text; block-text] inline-cmd
   direct \table : [string?; inline-text; block-text] inline-cmd
@@ -161,6 +162,21 @@ end = struct
     let opt = get-cross-reference (`table:` ^ key ^ `:num`) in
     let it = embed-string (Option.from `?` opt) in
       read-inline ctx {表#it;}
+
+
+  let-mutable index-list <- []
+
+
+  let-inline ctx \index s ?:itopt it =
+    let it-index =
+      match itopt with
+      | None           -> it
+      | Some(it-index) -> it-index
+    in
+      hook-page-break (fun pginfo _ -> (
+        let pageno = pginfo#page-number in
+        index-list <- (s, it-index, pageno) :: !index-list
+      )) ++ read-inline ctx it
 
 
   let font-size-normal  = 12pt
@@ -774,7 +790,11 @@ end = struct
     let () = register-cross-reference (label ^ `:num`) s-num in
     let it-num = embed-string s-num in
     let ib-dfn =
-      read-inline (ctx |> set-latin-font font-latin-bold) {#category; #it-num;}
+      let ctx =
+        ctx |> set-latin-font font-latin-sans
+            |> set-cjk-font font-cjk-gothic
+      in
+        read-inline ctx {#category; #it-num;}
     in
     let ib-word =
       match wordopt with
@@ -794,27 +814,27 @@ end = struct
 
   let-block ctx +definition ?:wordopt ?:labelopt inner =
     let label = make-label `definition:` labelopt in
-      theorem-scheme ctx (fun x -> x) {Definition} wordopt label inner
+      theorem-scheme ctx (fun x -> x) {定義} wordopt label inner
 
 
   let-block ctx +theorem ?:wordopt ?:labelopt inner =
     let label = make-label `theorem:` labelopt in
-      theorem-scheme ctx (set-latin-font font-latin-italic) {Theorem} wordopt label inner
+      theorem-scheme ctx (set-latin-font font-latin-italic) {定理} wordopt label inner
 
 
   let-block ctx +lemma ?:wordopt ?:labelopt inner =
     let label = make-label `lemma:` labelopt in
-      theorem-scheme ctx (set-latin-font font-latin-italic) {Lemma} wordopt label inner
+      theorem-scheme ctx (set-latin-font font-latin-italic) {補題} wordopt label inner
 
 
   let-block ctx +corollary ?:wordopt ?:labelopt inner =
     let label = make-label `corollary:` labelopt in
-      theorem-scheme ctx (set-latin-font font-latin-italic) {Corollary} wordopt label inner
+      theorem-scheme ctx (set-latin-font font-latin-italic) {系} wordopt label inner
 
 
   let-block ctx +example ?:wordopt ?:labelopt inner =
     let label = make-label `example:` labelopt in
-      theorem-scheme ctx (fun x -> x) {Example} wordopt label inner
+      theorem-scheme ctx (fun x -> x) {例} wordopt label inner
 
 
   let-block ctx +proof ?:wordopt inner =
