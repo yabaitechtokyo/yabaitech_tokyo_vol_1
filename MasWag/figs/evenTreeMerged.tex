@@ -3,7 +3,7 @@
 \usepackage{tikz}
 \usetikzlibrary{automata,positioning}
 \begin{document}
-\begin{tikzpicture}[shorten >=1pt,node distance=2cm,on grid,auto] 
+\begin{tikzpicture}[shorten >=1pt,node distance=0.7cm,on grid,auto] 
  \node[state,initial above,accepting] (s_0) {$\varepsilon$};
  \node[state] (s_a) at (-1.5,-1.5) {a};
  \node[state] (s_b) at (1.5,-1.5) {b};
@@ -19,6 +19,14 @@
  \node[state] (s_bab) at (1.5,-4.5) {bab};
  \node[state] (s_bba) at (2.5,-4.5) {bba};
  \node[state] (s_bbb) at (3.5,-4.5) {bbb};
+ \node (s_aaad)[below=of s_aaa] {$\vdots$};
+ \node (s_aabd)[below=of s_aab] {$\vdots$};
+% \node (s_abad)[below=of s_aba] {$\vdots$};
+ \node (s_abbd)[below=of s_abb] {$\vdots$};
+ \node (s_baad)[below=of s_baa] {$\vdots$};
+ \node (s_babd)[below=of s_bab] {$\vdots$};
+ \node (s_bbad)[below=of s_bba] {$\vdots$};
+ \node (s_bbbd)[below=of s_bbb] {$\vdots$};
 
  \path[->] 
  (s_0) edge [left] node {a} (s_a)
