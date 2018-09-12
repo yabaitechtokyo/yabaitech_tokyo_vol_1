@@ -636,6 +636,9 @@ end = struct
     inline-skip 32pt
 
 
+  let quad-indent ctx =
+    inline-skip (get-font-size ctx)
+
   let-block ctx +p inner =
     let needs-indentation =
       if !needs-indentation-ref then true else
@@ -645,7 +648,7 @@ end = struct
     let ib-inner = read-inline ctx inner in
     let ib-parag =
       if needs-indentation then
-        paragraph-indent ++ ib-inner ++ inline-fil
+        (quad-indent ctx) ++ ib-inner ++ inline-fil
       else
         ib-inner ++ inline-fil
     in

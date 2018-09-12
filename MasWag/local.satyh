@@ -1,12 +1,12 @@
 @import: cs-thesis
+@import: maswag-math
 
 let-inline ctx \sample-command it =
   read-inline (ctx |> set-text-color Color.red) it
 
 let-math \alphabet = ${\mathrm{\Sigma}}
-let-math \cdot = ${\bullet}
+%let-math \cdot = ${\bullet}
 let-math \colon = ${:}
-let-math \triangle = ${\text!{△}}
 let-math \iff = ${\Leftrightarrow}
 
 let-block ctx +frame content =

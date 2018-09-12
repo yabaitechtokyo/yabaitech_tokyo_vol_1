@@ -1,7 +1,8 @@
 @import: ../main/cs-thesis
+@import: derivation-rules
 
 let zpt-article = '<
-  +chapter ?:(`zpt-article`) {型付き${\lambda}計算をつくろう} {zeptometer} <
+  +chapter ?:(`zpt-article`) {自然な様相論理をつくる} {zeptometer} <
     +section {はじめに} <
     +p{(間違ってる部分があるかもしれんからあったら指摘しくれなみたいなexcuseを入れる)}
     +p{(適当な挨拶が入る)}
@@ -12,15 +13,57 @@ let zpt-article = '<
     より根本的な理解による最大の恩恵は、それが新しい論理/型つき${\lambda}計算をつくる時の指針となることです。実際にこの記事では単純型付き${\lambda}計算を起点として様相論理に対応する計算体系をいくつか紹介します。
     }
     >
-    +section {直観主義論理と単純型付き${\lambda}計算} <
+    +section {直観主義論理} <
+      +p {#tonk-deriv;}
+      +p {#ipc-symbols;}
+      +p {#ipc-hyp;}
+      +p {#ipc-structure;}
+      +p {#ipc-deriv;}
     >
     +section {ハーモニーと簡約} <
     >
     +section {二つの階層の論理} <
+      +p {さて、先程のIPCを土台として新しい論理を作ってみましょう。これから作るものは歴史的にBentonの随伴論理とよばれるもの亜種ですが、ここでは2IPCと呼ぶことにしましょう。まずは記号の定義から。}
+
+      #adj-symbols;
+      +p {定義から明らかなように、2IPCでは二つの階層が存在し別々に記号が定義されています。レベル2がメタ、レベル1がオブジェクトの階層に対応しています。命題としては ${\adj-up{A}} と ${\adj-down{\alpha}} によって相互のレベルを行き来できるようになっています。二つの階層に応じて2IPCでは二つの判断が存在します。}
+
+      #adj-judgments;
+
+      +p {階層の構造は非対称である点に注意してください。レベル1の判断ではレベル1と2の文脈がそれぞれあるのに対し、レベル2の判断ではレベル2の文脈しかありません。\todo{気持ちの説明を入れる。}仮定の使用に関しては以下の二つのルールが定義されます。}
+
+      #adj-hyp;
+
+      +p {現在注目しているレベルの仮定を使用できます。それぞれのレベルの文脈はIPCの文脈と同じようにふるまうと考えると、以下の構造規則が成り立つことが期待されます。(弱化、縮約、交換の規則がそれぞれのレベルの文脈について成り立ちますが省略します。)}
+
+      #adj-structure;
+
+      +p {このように構造が定まったので論理結合子を定めていきましょう。まず${\imp}と${\imp2}はそれぞれのレベルにおいてIPCの${\imp}と同じように定義されます。これらのlocal reduction, local expansionもIPCの${\imp}とほぼ同じなので省略します。}
+
+      #adj-rules-imp;
+
+      +p {${\imp}と${\imp2}が特定のレベルにおける論理結合子であったのに対して${\adj-up{}}と${\adj-down{}}はレベルをまたいでおり、IPC2に特有の論理結合子となっています。まずは${\adj-up{}}の定義から見ていきましょう。}
+
+      #adj-rules-up;
+
+      +p {${\adj-up{}}の導入規則ではレベル2における${\adj-up{A}}の意味を「レベル1でAが仮定無しで成り立つこと」と定義しています。その帰結として除去規則ではレベル2で${\adj-up{A}}で成り立つ時にレベル1でAを導きます。(なお、ここでレベル1の文脈に任意の${\Gamma}を許容するのはレベル1における弱化を成立させるためです。)実際にこれらの規則がlocal reductionとlocal expansionをつくることを以下のように確認できます。}
+
+      #adj-rules-lr;
+      #adj-rules-le;
     >
     +section {行って戻るとS4様相} <
     >
     +section {階層の対称性と二つのK様相} <
+      +p {
+      \repeat(500){this\ }
+      #modalm-symbols;}
+      +p {#modalm-structure;}
+      +p {#modalm-rules;}
+      +p {
+      \repeat(500){this\ }
+      #modald-symbols;}
+      +p {#modald-structure;}
+      +p {#modald-rules;}
     >
     +section {おわりに} <
     >

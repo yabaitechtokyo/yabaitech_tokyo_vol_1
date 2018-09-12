@@ -84,7 +84,7 @@ module CSThesis : sig
   direct \table : [string?; inline-text; block-text] inline-cmd
   direct +p : [inline-text] block-cmd
   direct +pn : [inline-text] block-cmd
-  direct +p-ja : [inline-text] block-cmd
+  direct +p-en : [inline-text] block-cmd
   direct +chapter : [string?; inline-text; inline-text; block-text] block-cmd
   direct +section : [string?; inline-text; block-text] block-cmd
   direct +subsection : [string?; inline-text; block-text] block-cmd
@@ -608,6 +608,18 @@ end = struct
 
 
   let-block ctx +p inner =
+    let len = get-font-size ctx *' font-ratio-cjk in
+    let ib-inner = inline-skip len ++ read-inline ctx inner ++ inline-fil in
+      form-paragraph ctx ib-inner
+
+
+  let-block ctx +pn inner =
+    let () = needs-indentation-ref <- true in
+    let ib-inner = read-inline ctx inner in
+      form-paragraph ctx (ib-inner ++ inline-fil)
+
+
+  let-block ctx +p-en inner =
     let needs-indentation =
       if !needs-indentation-ref then true else
         let () = needs-indentation-ref <- true in
@@ -621,18 +633,6 @@ end = struct
         ib-inner ++ inline-fil
     in
       form-paragraph ctx ib-parag
-
-
-  let-block ctx +pn inner =
-    let () = needs-indentation-ref <- true in
-    let ib-inner = read-inline ctx inner in
-      form-paragraph ctx (ib-inner ++ inline-fil)
-
-
-  let-block ctx +p-ja inner =
-    let len = get-font-size ctx *' font-ratio-cjk in
-    let ib-inner = inline-skip len ++ read-inline ctx inner ++ inline-fil in
-      form-paragraph ctx ib-inner
 
 
   let-mutable num-figure <- 0
