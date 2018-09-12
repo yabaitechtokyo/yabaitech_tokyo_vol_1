@@ -785,7 +785,7 @@ end = struct
   let theorem-scheme ctx ctxf category wordopt label inner =
     let () = increment num-theorems in
     let s-num =
-      (arabic (!num-chapter)) ^ `.` ^ (arabic (!num-section)) ^ `.` ^ (arabic (!num-theorems))
+      (arabic (!num-chapter)) ^ `.` ^ (arabic (!num-theorems))
     in
     let () = register-cross-reference (label ^ `:num`) s-num in
     let it-num = embed-string s-num in

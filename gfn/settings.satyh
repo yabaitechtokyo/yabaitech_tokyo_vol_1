@@ -272,6 +272,7 @@ module Type : sig
   val int : t
   val float : t
   val length : t
+  val string : t
   val context : t
   val inline-text : t
   val inline-boxes : t
@@ -362,6 +363,7 @@ end = struct
   let int          = base-type {int}
   let float        = base-type {float}
   let length       = base-type {length}
+  let string       = base-type {string}
   let context      = base-type {context}
   let inline-text  = base-type {inline-text}
   let inline-boxes = base-type {inline-boxes}

@@ -68,7 +68,7 @@ G[o] close-with-bezier
 -- グラフィックス生成 --
 G[o] stroke
 G[o] fill
-G[ ] dashed-stroke
+G[/] dashed-stroke
 G[o] shift-graphics
 G[o] get-graphics-bbox
 G[o] draw-text
