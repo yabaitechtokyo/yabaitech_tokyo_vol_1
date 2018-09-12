@@ -5,6 +5,7 @@
 @import: getting-started
 @import: alias-command-definition
 @import: overall
+@import: cross-reference
 @import: bib
 
 document (|
@@ -44,7 +45,7 @@ document (|
         既に述べたように，\SATySFi;はいわゆる函数型らしい特徴を兼ね備えた
         組版処理向けのマークアップ言語である．
         むしろ，より正確を期して言い表すならば
-        函数型言語の上に組版処理用の種々の言語機能が分厚く搭載された
+        値呼びの函数型言語の上に組版処理用の種々の言語機能が分厚く搭載された
         DSL（domain-specific language, 領域特化言語）だ．
         プログラミング言語としての\SATySFi;の基礎的部分には
         OCamlに大変よく似た体系が採用されており，
@@ -56,9 +57,111 @@ document (|
         また，OCamlと\SATySFi;との間には目的意識や美意識の違いに起因した多少の差異があるので，
         これについて（既にOCamlで流暢にプログラミングできる読者に対しても）簡単に補足する．
       }
-      +p{
-        \REMAINS{プログラミングの解説}
-      }
+      +subsection{式と値}<
+        +p{
+          \SATySFi;には対話環境が特に整備されていないので，
+          プログラムの計算結果をPDFに出力して確かめることにしよう．
+          ひとまず以下のようなコードを見てほしい：
+
+          \d-code(```
+            @require: stdjareport
+
+            let-inline \show-int n =
+              embed-string (arabic n)
+            in
+
+            document (|
+              title = {Programming in \SATySFi;};
+              author = {計 算太郎};
+            |) '<
+              +p{ Answer: \show-int(40 + 2); }
+            >
+          ```);%
+
+          \codem{let-inline}から始まる，
+          未知でありながら前節で見たインラインコマンドを定義する方法によく似た構文があるが，
+          実際これは\codem{\\show-int}というインラインコマンドの定義である．
+          この定義をどう読むのかは後々わかることになるので，
+          今の段階では
+          「与えられた整数を版面に文字として10進法で出力するコマンド\codem{\\show-int}」
+          を定義するオマジナイだと思っていただきたい．
+          注目されたいのは\codem{\\show-int}を使う部分，すなわち
+
+          \d-code(```
+            ​  +p{ Answer: \show-int(40 + 2); }
+          ```);%
+
+          である．丸括弧に囲まれた\codem{40 + 2}という怪しげな記述がある．
+          とりあえず，この文書を\SATySFi;処理系にかけてみると，
+          この段落に相当する部分は
+
+          \d-block(open Sample in '<
+            +p{ Answer: \show-int(40 + 2); }
+          >);%
+
+          と出力される．そう，${40} と ${2} の和が計算されているのである．
+          平たく言えば，こういった “計算をする処理” がプログラムの仕事の根幹であり，
+          “計算をする処理” をプログラムとして記述することをプログラミングと呼ぶ．
+          \codem{40 + 2}のような記述は
+          \dfnje{\index(`シキ`){式}}{expression}
+          またはしばしば
+          \dfnje{\index(`コウ`){項}}{term}と呼ばれ，
+          式を適切な構文にしたがって組み立てることでプログラムが構築される\footnote{
+            C言語やPythonなどの
+            “手続き的な” 観点に強く基づいている計算機言語に馴染みのある読者は
+            「式から文をつくり，文からプログラムを構築するのではないか？」
+            と思われるかもしれないが，
+            \SATySFi;に文の概念はない．
+            というか，式の特殊な場合が “手続き的な” 言語に備わっている文に相当するのである．
+            これはOCamlをはじめとする多くのいわゆる函数型言語に共通する性質である．
+          }．
+        }
+        +p{
+          \codem{40 + 2}の “計算が進んで” \codem{42}になったように，
+          式は一般に “それ以上計算しない式” へと “うつりかわっていく”．
+          この “うつりかわり” の過程を
+          \dfnje{\index(`ヒョウカ`){評価}}{evaluation}
+          またはしばしば
+          \dfnje{\index(`カンヤク`){簡約}}{reduction}
+          と呼び， “それ以上計算しない式” を
+          \dfnje{\index(`コウブンテキアタイ`){構文的値}}{syntactic value}
+          或いは単に
+          \dfnje{\index(`アタイ`){値}}{value}
+          と呼ぶ．
+          プログラムの動作とは，式を評価して値を求めることなのである．
+        }
+        +p{
+          \REMAINS{2項演算子の結合優先度}
+        }
+      >
+      +section{変数とその束縛}<
+        +p{
+          \REMAINS{変数の概念とlet式}
+        }
+        +p{
+          \REMAINS{変数名}
+        }
+      >
+      +section{基本的なデータと型}<
+        +p{
+          \REMAINS{整数，文字列，浮動小数点数，長さ，真偽値}
+        }
+      >
+      +section{函数と条件分岐}<
+        +p{
+          \REMAINS{函数定義と条件分岐}
+        }
+      >
+      +section{代数的データ型}<
+        +p{
+          \REMAINS{代数的データ型}
+        }
+      >
+      +section{再帰函数}<
+        +p{
+          \REMAINS{再帰函数}
+        }
+      >
     >
   >
   +chapter?:(`overall-structure`){文書が処理される仕組み}< #overall; >
@@ -789,110 +892,7 @@ document (|
     }
     +p{ \REMAINS{} }
   >
-  +chapter?:(`cross-reference`){相互参照}<
-    +p{
-      \dfnje{相互参照}{cross reference}とは，
-      章節や図表の番号といった
-      “内容そのものに関係なく割り当てられ，かつ文書中の他の場所から指し示すときに使われる”
-      情報を自動的に取り扱う機能である．
-      \ref-chapter(`introduction`);でも述べたように，
-      相互参照はマークアップ方式の組版処理システムが（WYSIWYG方式のそれに比べて）
-      簡潔に実現することを得意としやすい機能だ．
-    }
-    +p{
-      \SATySFi;での相互参照の実現方法は\LaTeX;でのそれと基本的に同様であり，
-      “1回目の処理で相互参照用のIDとその内容を紐づけて外部ファイルに記録しておき，
-      2回目の処理で補完する” 方式をとっている．
-      ここで相互参照のIDとそれに紐づけられた（番号などの）内容を記録しておく外部ファイルが
-      \ref-chapter(`getting-started`);で登場し即座に無視されていた
-      \path{\meta{foo}.satysfi-aux}，すなわち
-      \dfnje{補助ファイル}{auxiliary file}なのである．
-      なお，上で述べた “1回目で記録して2回目で補完する” をより正確に言えば
-      “毎回組版処理が始まるときに（既に存在すれば）補助ファイルを読み込み，
-      相互参照のIDと内容の紐づけが不動点に達するまで組版処理を繰り返す” である\footnote{
-        相互参照の紐づけがいつまでも不動点に到達しないような意地悪な記述をすることも（残念ながら）できる．
-        この意地悪な挙動を型システムなどの言語機能によって排除することは原理的に難しい．
-        \SATySFi;は，相互参照の紐づけが不動点に達していなくても，あらかじめ定められた打ち切り回数に到達したら
-
-        \console(`could not reach to fixpoint when resolving cross references.`);%
-
-        とログを表示して終了する．
-        打ち切り回数は ${8} 回である（今のところこれを変更する方法は提供していない）．
-      }．
-      \SATySFi;を使用している際に，
-      型検査を通った文書の処理でしばしば
-
-      \console(```
-        needs another trial for solving cross references...
-        evaluating texts (2nd trial) ...
-      ```);%
-
-      などとログを出して最初からもう一度組版処理を始め，やがて
-
-      \console(```
-        all cross references were solved.
-      ```);%
-
-      などと報告して（正常にPDFを出力して）終了するのに気づいた方も多いだろうが，
-      これは相互参照の紐づけが不動点に達するまで組版処理を繰り返しているのである．
-    }
-    +p{
-      実現方法からもわかるように，相互参照はかなり原始的な定式化によって成り立っている．
-      これはひとえに相互参照を必ず “1回の処理” で整合させるのは本質的に困難であることに起因する．
-      “1回の処理” で整合させる本質的な困難さを感じ取れる大雑把な例を以下に挙げてみよう：\quad;
-      相互参照で或る章節のページ番号を挿入したいとする．
-      そのページ番号がいくつなのかはページ分割をするまでわからないから，
-      ページ番号としてどのような内容を本文中に挿入したらよいのか事前には決められない．
-      \codem{inline-graphics}と同様の要領で内容をあらかじめ未定にしておいて
-      ページ分割後に内容を決定してはどうかと考えるかもしれないが，
-      ページ番号の内容がグリフ列として版面上どれだけの幅を占めるかさえ事前にはわからない．
-      このように，内容がページ分割結果に依存する処理は（どこでページ分割するかも当然ながら内容に依存しているので）
-      “1回の処理” で整合させることが一般にきわめて困難なのである．
-    }
-    +p{
-      仕組みが原始的なだけあって，相互参照機能を実現しているプリミティヴは非常に単純だ．
-      以下の2種類のみである：
-
-      \val-explain?:(`register-cross-reference`)({register-cross-reference})%
-        (Type.(string --> (string --> unit))) {
-          \codem{register-cross-reference \meta{key} \meta{value}}で
-          相互参照のID\codem{\meta{key}}から内容\codem{\meta{value}}への紐づけを登録する．
-          既に\codem{\meta{key}}から何らかの内容への紐づけが登録されていた場合は
-          上書きされ，また古い内容と新しい内容が文字列として異なっていた場合は
-          相互参照が不動点に達していないという理由で\SATySFi;処理系に再処理を促す．
-          \codem{\meta{key}}からの紐づけが元々登録されていなかった場合も
-          同様に再処理を促す．
-        }%
-
-      \val-explain?:(`get-cross-reference`)({get-cross-reference})%
-        (Type.(string --> (option string))) {
-          \codem{get-cross-reference \meta{key}}という形で使い，
-          既に\codem{\meta{key}}に紐づけられた
-          何らかの内容\codem{\meta{value}}が登録されている場合は
-          \codem{Some(\meta{value})}が返される．
-          \codem{\meta{key}}に紐づけられた内容が登録されていない場合は
-          \codem{None}を返す．
-        }%
-
-      なお，登録されていない相互参照ID\codem{\meta{key}}が\codem{get-cross-reference}によって取得を試みられ，
-      そのまま相互参照が不動点に達して終了した場合，\SATySFi;は
-
-      \console(```
-        some cross references were not solved:
-      ```);
-
-      という文言とともにそのような\codem{\meta{key}}を列挙して報告する．
-    }
-    +example{
-      \codem{register-cross-reference}と\codem{get-cross-reference}を用いた
-      相互参照コマンドの実装例は，
-      \SATySFi;のリポジトリの\path{lib-satysfi/dist/packages}
-      にある\pkg{stdjabook}などを参考にすると良いだろう．
-    }
-    +p{
-      \REMAINS{余力があれば小さい例をつくる}
-    }
-  >
+  +chapter?:(`cross-reference`){相互参照}< #cross-reference; >
   +chapter?:(`page-breaking`){ページ分割処理}<
     +p{ \REMAINS{} }
   >

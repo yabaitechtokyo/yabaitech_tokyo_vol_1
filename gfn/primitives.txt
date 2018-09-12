@@ -130,9 +130,9 @@ M[ ] set-math-font
 M[ ] set-math-command
 
 == 相互参照 ==
-R[ ] register-cross-reference
-R[ ] get-cross-reference
-R[ ] probe-cross-reference
+R[o] register-cross-reference
+R[o] get-cross-reference
+R[/] probe-cross-reference
 
 == ページ分割 ==
 P[ ] page-break

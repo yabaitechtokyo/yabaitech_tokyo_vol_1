@@ -229,7 +229,7 @@ let introduction = '<
         ユーザが以下のような出力をしようとしてわずかに間違った記述を入力に含めてしまった場合を考え，
         \LaTeX;と\SATySFi;でどのようにエラー報告が異なるかを見てみる．
       }
-      +frame<
+      +d-block<
         +p {
           いろは歌：
           \fbox{\parbox ?:(Top) (5cm) <

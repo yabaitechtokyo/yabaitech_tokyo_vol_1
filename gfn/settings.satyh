@@ -257,6 +257,11 @@ module Sample = struct
         ]
       )
 
+
+  let-inline \show-int n =
+    embed-string (arabic n)
+
+
 end
 
 
@@ -469,10 +474,15 @@ let-math \tuple mlst =
     ${\paren{#m}}
 
 
-let-block ctx +frame content =
+let-block ctx +d-block content =
   let pads = (10pt, 10pt, 5pt, 5pt) in
   let decoset = VDecoSet.paper in
     block-frame-breakable ctx pads decoset (fun ctx -> read-block ctx content)
+
+
+let-inline ctx \d-block content =
+  inline-fil ++
+    embed-block-breakable ctx (read-block ctx '<+d-block(content);>)
 
 
 let-inline ctx \fbox it =
