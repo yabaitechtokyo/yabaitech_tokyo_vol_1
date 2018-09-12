@@ -13,7 +13,7 @@ document (|
   preface = preface;
   bibliography = bibliography;
 |) '<
-  +chapter?:(`introduction`){ゲームを始める前に}< #introduction; >
+  +chapter?:(`introduction`){\SATySFi;の開発動機}< #introduction; >
   +chapter?:(`getting-started`){\SATySFi;簡易入門}< #getting-started; >
   +chapter?:(`basic-command-definition`){コマンド定義：基礎編}<
     +p{

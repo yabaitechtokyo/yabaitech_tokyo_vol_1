@@ -182,8 +182,9 @@ end
 let make-graphics ctx grf =
   grf (|
     text-centering = (fun pt it ->
-      Gr.text-centering pt (read-inline ctx it)
-    );
+      Gr.text-centering pt (read-inline ctx it));
+    text-rightward = (fun pt it ->
+      Gr.text-rightward pt (read-inline ctx it));
   |)
 
 
@@ -501,3 +502,14 @@ let-inline ctx \parbox ?:specopt wid ib =
 
 let-inline ctx \as-latin-word it =
   script-guard Latin (read-inline ctx it)
+
+
+let-inline ctx \stack len its =
+  let bbf ctx =
+    its
+      |> List.map (fun it ->
+        line-break true true (ctx |> set-paragraph-margin 4pt 4pt)
+          (read-inline ctx it ++ inline-fil))
+      |> List.fold-left (+++) block-nil
+  in
+  embed-block-top ctx len bbf

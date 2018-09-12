@@ -353,7 +353,7 @@ let getting-started = '<
   >
   +section{定理環境}<
     +p{
-      \code(`cs-thesis`);には定義・補題・定理・系・例のための環境一式が備わっており，
+      \pkg{stdjareport}には定義・補題・定理・系・例のための環境一式が備わっており，
       コマンドはそれぞれ
       \code(`+definition`);，\code(`+lemma`);，\code(`+theorem`);，\code(`+corollary`);，\code(`+example`);
       である．いずれも用法は同様で，最も簡素な使い方としてはブロックテキスト中で

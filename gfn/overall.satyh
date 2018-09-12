@@ -136,7 +136,8 @@ let overall = '<
         \ref-figure(`conversion-to-inline-boxes`);のように表すことができる．
         「ボックス列」という命名は，この図のような直観から来ている．
         \figure?:(`conversion-to-inline-boxes`){インラインボックス列への変換}<
-          +centered-graphics(15cm)(6.5cm)(fun r ->
+          +centered-graphics(15cm)(6.5cm)(fun r -> (
+            let arrowf = Gr.arrow 2pt Color.black 12pt 10pt 3pt in
             List.concat [
               [
                 stroke 0.5pt Color.black (Gr.rectangle (0cm, 0cm) (15cm, 6.5cm));
@@ -145,8 +146,15 @@ let overall = '<
                   \size(20pt){\codem{\{The quick brown fox jumps ${\cdots}\}}}
                 };
               ];
-              Gr.arrow 2pt Color.black 12pt 10pt 3pt (7.5cm, 4cm) (7.5cm, 2.5cm);
+              arrowf (7.5cm, 4cm) (7.5cm, 2.5cm);
+              arrowf (9cm, 3.5cm) (7.5cm, 3.25cm);
               [
+                r#text-rightward (9.25cm, 3.5cm) {
+                  \stack(4cm){
+                    | フォント，文字サイズ，
+                    | 文字色，${\ldots}
+                    |}
+                };
                 r#text-centering (7.5cm, 1.75cm) {
                   \BoxGraphics.roman{|T|h|e|}%
                   \BoxGraphics.space;%
@@ -162,7 +170,7 @@ let overall = '<
                 r#text-centering (7.5cm, 1cm) {インラインボックス列};
               ];
             ]
-          );
+          ));
         >
       }
     >
@@ -188,7 +196,8 @@ let overall = '<
         それが段落の進む方向に積み重なっているので行分割された後の内容は
         ブロックボックス列なのである．
         \figure?:(`line-breaking`){行分割処理の直観}<
-          +centered-graphics(15cm)(8cm)(fun r ->
+          +centered-graphics(15cm)(8cm)(fun r -> (
+            let arrowf = Gr.arrow 2pt Color.black 12pt 10pt 3pt in
             List.concat [
               [
                 stroke 0.5pt Color.black (Gr.rectangle (0cm, 0cm) (15cm, 8cm));
@@ -205,8 +214,15 @@ let overall = '<
                   \ \size(20pt){${\cdots}}
                 };
               ];
-              Gr.arrow 2pt Color.black 12pt 10pt 3pt (7.5cm, 6cm) (7.5cm, 4cm);
+              arrowf (7.5cm, 6cm) (7.5cm, 4cm);
+              arrowf (9cm, 5.25cm) (7.5cm, 5cm);
               [
+                r#text-rightward (9.25cm, 5.25cm) {
+                  \stack(4cm){
+                    | 段落の幅，
+                    | 行送り，${\ldots}
+                    |}
+                };
                 r#text-centering (7.5cm, 3cm) {
                   \BoxGraphics.justify(8cm){|
                     \BoxGraphics.line{
@@ -232,7 +248,7 @@ let overall = '<
                 }
               ];
             ]
-          );
+          ));
         >
       }
       +p{
