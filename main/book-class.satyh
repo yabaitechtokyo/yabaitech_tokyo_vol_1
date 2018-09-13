@@ -57,13 +57,7 @@ type bib-item =
 
 module Book : sig
 
-  val document : 'a -> block-text -> document
-    constraint 'a :: (|
-      title : inline-text;
-      author : inline-text;
-      preface : block-text;
-      bibliography : (string * bib-item) list;
-    |)
+  val document : block-text -> document
 
   val font-latin-roman  : string * float * float
   val font-latin-italic : string * float * float
@@ -92,7 +86,8 @@ module Book : sig
   direct \figure : [string?; inline-text; block-text] inline-cmd
   direct \table : [string?; inline-text; block-text] inline-cmd
   direct +p : [inline-text] block-cmd
-  direct +chapter : [string?; inline-text; block-text] block-cmd
+  direct +chapter : [string?; inline-text; inline-text; (string * bib-item) list; block-text] block-cmd
+
   direct +section : [string?; inline-text; block-text] block-cmd
   direct +subsection : [string?; inline-text; block-text] block-cmd
   direct +definition : [inline-text?; string?; inline-text] block-cmd
@@ -183,6 +178,7 @@ end = struct
   let font-size-title   = 32pt
   let font-size-author  = 16pt
   let font-size-chapter = 24pt
+  let font-size-chapter-author = 18pt
   let font-size-section = 18pt
   let font-size-subsection = 16pt
 
@@ -267,6 +263,10 @@ end = struct
         |> set-font Latin font-latin-bold
         |> set-cjk-font font-cjk-gothic
 
+  let make-chapter-author ctx =
+    ctx |> set-font-size font-size-chapter-author
+        |> set-font Latin font-latin-bold
+        |> set-cjk-font font-cjk-gothic
 
   let make-section-title ctx =
     ctx |> set-font-size font-size-section
@@ -303,6 +303,15 @@ end = struct
     in
       bb +++ line-break false false ctx (ib-title ++ inline-fil) +++ block-skip 36pt
 
+  let chapter-heading-with-author ctx ib-num-opt ib-title ib-author =
+    let bb-num-opt =
+      match ib-num-opt with
+      | None         -> block-nil
+      | Some(ib-num) -> line-break false false ctx (ib-num ++ inline-fil)
+    in
+    let bb-title = line-break false false ctx (ib-title ++ inline-fil) in
+    let bb-author = line-break false false ctx (inline-fil ++ ib-author) in
+      bb-num-opt +++ bb-title +++ bb-author +++ block-skip 18pt
 
   let section-heading ctx ib-heading =
     line-break true false (ctx |> set-paragraph-margin section-top-margin section-bottom-margin) ib-heading
@@ -400,8 +409,18 @@ end = struct
   let-mutable num-subsection <- 0
   let-mutable num-theorems <- 0
 
+  let paper-size = UserDefinedPaper(182mm, 257mm)
+  let text-origin = (16mm, 30mm)
+  let text-width = 150mm
+  let text-height = 200mm
+  let header-origin = (16mm, 15mm)
+  let header-width = text-width
+  let footer-origin = (16mm, 240mm)
+  let footer-width = text-width
+  let footnote-indent = 6mm
 
-  let chapter-scheme ctx label title inner =
+  let chapter-scheme ctx label title author bibliography inner =
+    let txtwid = text-width in
     let () = increment num-chapter in
     let () = num-section <- 0 in
     let () = num-subsection <- 0 in
@@ -410,15 +429,80 @@ end = struct
     let () = register-cross-reference (`chapter:` ^ label ^ `:num`) s-num in
     let () = toc-acc-ref <- (TOCElementChapter(label, title)) :: !toc-acc-ref in
     let ctx-title = make-chapter-title ctx in
+    let ctx-author = make-chapter-author ctx in
+    let ctx-doc =
+      get-standard-context txtwid
+        |> set-font-size 12pt
+        |> set-leading 18pt
+        |> set-hyphen-penalty 1000
+    in
     let ib-num =
       read-inline ctx-title (embed-string (`Chapter `# ^ s-num))
         ++ hook-page-break (fun pbinfo _ ->
              register-cross-reference (`chapter:` ^ label ^ `:page`) (arabic pbinfo#page-number))
     in
     let ib-title = read-inline ctx-title title in
-    let bb-title = chapter-heading ctx (Some(ib-num)) ib-title in
+    let ib-author = read-inline ctx-author author in
+    let bb-title = chapter-heading-with-author ctx (Some(ib-num)) ib-title ib-author in
     let bb-inner = read-block ctx inner in
-      bb-title +++ bb-inner +++ clear-page
+
+    % -- bibliography --
+    let bb-bib =
+      let ib-bib-title =
+        read-inline (make-chapter-title ctx-doc) {参考文献} ++ inline-fil
+      in
+      let bibs = bibliography in
+      let () =
+        bibs |> List.iteri (fun i (label, _) -> (
+          register-cross-reference (`bib:` ^ label) (arabic (i + 1))
+        ))
+      in
+      let bb-bib-main =
+        bibs |> List.fold-lefti (fun i bbacc (_, bibitem) -> (
+          let it =
+            match bibitem with
+            | InProceedings(r) ->
+                let it-authors = join-authors r#author in
+                let it-title = r#title in
+                let it-book-title = r#booktitle in
+                let it-volnum = make-volume-and-number r#volume r#number r#series in
+                let it-pages = make-pages r#pages in
+                let it-year = embed-string (arabic r#year) in
+                  {#it-authors;. #it-title;.
+                    In \book-title{#it-book-title;}, #it-volnum;pages #it-pages;, #it-year;.}
+
+            | Article(r) ->
+                let it-authors = join-authors r#author in
+                let it-title = r#title in
+                let it-journal = r#journal in
+                let it-volnum = make-volume-and-number r#volume r#number None in
+                let it-pages = make-pages r#pages in
+                let it-year = embed-string (arabic r#year) in
+                  {#it-authors;. #it-title;.
+                    \book-title{#it-journal;}, #it-volnum;pages #it-pages;, #it-year;.}
+
+            | Book(r) ->
+                let it-authors = join-authors r#author in
+                let it-title = r#title in
+                let it-publisher = r#publisher in
+                let it-year = embed-string (arabic r#year) in
+                  {#it-authors;. \book-title{#it-title;}. #it-publisher;, #it-year;.}
+
+            | WebSite(r) ->
+                let it-authors = join-authors r#author in
+                let it-title = r#title in
+                let it-url = embed-string r#url in
+                let it-year = embed-string (arabic r#year) in
+                  {#it-authors;. \book-title{#it-title;}. \url{#it-url;}, #it-year;.}
+
+          in
+            bbacc +++ bib-entry ctx-doc (i + 1) (read-inline ctx-doc it)
+
+        )) block-nil
+      in
+        (section-heading ctx-doc ib-bib-title) +++ bb-bib-main
+    in
+      bb-title +++ bb-inner +++ bb-bib +++ clear-page
 
 
   let section-scheme ctx label title inner =
@@ -460,21 +544,7 @@ end = struct
       bb-title +++ bb-inner
 
 
-  let paper-size = UserDefinedPaper(182mm, 257mm)
-  let text-origin = (16mm, 30mm)
-  let text-width = 150mm
-  let text-height = 200mm
-  let header-origin = (16mm, 15mm)
-  let header-width = text-width
-  let footer-origin = (16mm, 240mm)
-  let footer-width = text-width
-  let footnote-indent = 6mm
-
-
-  let document record inner =
-    % -- constants --
-    let title = record#title in
-    let author = record#author in
+  let document inner =
     let page = paper-size in
     let txtorg = text-origin in
     let txtwid = text-width in
@@ -490,39 +560,6 @@ end = struct
         |> set-font-size 12pt
         |> set-leading 18pt
         |> set-hyphen-penalty 1000
-    in
-
-    % -- title --
-    let bb-title =
-      let ctx-title =
-        ctx-doc
-          |> set-font-size 16pt
-          |> set-paragraph-margin 8pt 8pt
-          |> set-every-word-break inline-fil inline-fil
-      in
-      let centerf it =
-        line-break false false ctx-title
-          (inline-fil ++ read-inline ctx-title it ++ inline-fil)
-      in
-      [
-        block-skip 54pt;
-        centerf record#title;
-        block-skip 18pt;
-        centerf {by};
-        block-skip 12pt;
-        centerf record#author;
-        block-skip 108pt;
-        clear-page;
-      ] |> List.fold-left (+++) block-nil
-    in
-
-    let bb-preface =
-      let ib-preface-title =
-        read-inline (make-chapter-title ctx-doc) {序文} ++ inline-fil
-      in
-      let bb-preface-title = (chapter-heading ctx-doc None ib-preface-title) in
-      let bb-preface-main = read-block ctx-doc record#preface in
-        bb-preface-title +++ bb-preface-main +++ clear-page
     in
 
     % -- main --
@@ -596,63 +633,6 @@ end = struct
               (hook-page-break (fun pbinfo _ -> (show-page-number-ref <- Some(pbinfo#page-number))) ++ inline-fil)
     in
 
-    % -- bibliography --
-    let bb-bib =
-      let ib-bib-title =
-        read-inline (make-chapter-title ctx-doc) {参考文献} ++ inline-fil
-      in
-      let bibs = record#bibliography in
-      let () =
-        bibs |> List.iteri (fun i (label, _) -> (
-          register-cross-reference (`bib:` ^ label) (arabic (i + 1))
-        ))
-      in
-      let bb-bib-main =
-        bibs |> List.fold-lefti (fun i bbacc (_, bibitem) -> (
-          let it =
-            match bibitem with
-            | InProceedings(r) ->
-                let it-authors = join-authors r#author in
-                let it-title = r#title in
-                let it-book-title = r#booktitle in
-                let it-volnum = make-volume-and-number r#volume r#number r#series in
-                let it-pages = make-pages r#pages in
-                let it-year = embed-string (arabic r#year) in
-                  {#it-authors;. #it-title;.
-                    In \book-title{#it-book-title;}, #it-volnum;pages #it-pages;, #it-year;.}
-
-            | Article(r) ->
-                let it-authors = join-authors r#author in
-                let it-title = r#title in
-                let it-journal = r#journal in
-                let it-volnum = make-volume-and-number r#volume r#number None in
-                let it-pages = make-pages r#pages in
-                let it-year = embed-string (arabic r#year) in
-                  {#it-authors;. #it-title;.
-                    \book-title{#it-journal;}, #it-volnum;pages #it-pages;, #it-year;.}
-
-            | Book(r) ->
-                let it-authors = join-authors r#author in
-                let it-title = r#title in
-                let it-publisher = r#publisher in
-                let it-year = embed-string (arabic r#year) in
-                  {#it-authors;. \book-title{#it-title;}. #it-publisher;, #it-year;.}
-
-            | WebSite(r) ->
-                let it-authors = join-authors r#author in
-                let it-title = r#title in
-                let it-url = embed-string r#url in
-                let it-year = embed-string (arabic r#year) in
-                  {#it-authors;. \book-title{#it-title;}. \url{#it-url;}, #it-year;.}
-
-          in
-            bbacc +++ bib-entry ctx-doc (i + 1) (read-inline ctx-doc it)
-
-        )) block-nil
-      in
-        (chapter-heading ctx-doc None ib-bib-title) +++ bb-bib-main
-    in
-
     % -- page settings --
     let pagecontf pbinfo =
       let () = FootnoteScheme.start-page () in
@@ -705,7 +685,7 @@ end = struct
           footer-content = footer;
         |)
     in
-      page-break page pagecontf pagepartsf (bb-title +++ bb-preface +++ bb-toc +++ bb-main +++ bb-bib)
+      page-break page pagecontf pagepartsf (bb-toc +++ bb-main)
 
 
   let-block ctx +p inner =
@@ -744,13 +724,13 @@ end = struct
     figure-scheme ctx labelopt `table:` {Table} caption inner
 
 
-  let-block ctx +chapter ?:labelopt title inner =
+  let-block ctx +chapter ?:labelopt title author bibliography inner =
     let label =
       match labelopt with
       | None        -> generate-fresh-label ()
       | Some(label) -> label
     in
-      chapter-scheme ctx label title inner
+      chapter-scheme ctx label title author bibliography inner
 
 
   let-block ctx +section ?:labelopt title inner =

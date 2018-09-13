@@ -1,0 +1,9 @@
+% -*- coding: utf-8 -*-
+@import: book-class
+@import: bib
+
+document() '<
+  +chapter {MasWag} {titleでよ} <
+    +p {Hello}
+  >
+>
