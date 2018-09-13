@@ -1,6 +1,6 @@
 @import: local
 
-let bibliography = [
+let maswag-bibliography = [
   
 
   (`journals/iandc/Angluin87`, Article(|
