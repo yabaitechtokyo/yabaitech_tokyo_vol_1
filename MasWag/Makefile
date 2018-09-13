@@ -1,4 +1,4 @@
-main.pdf: main.saty bib.satyh local.satyh introduction.satyh automata.satyh lstar.satyh rnnlstar.satyh conclusion.satyh figs/mustHaveAA.pdf figs/evenDFA.pdf figs/evenDFAStep1.pdf figs/evenDFAStep2.pdf figs/evenTree.pdf figs/evenTreeMerged.pdf
+standalone.pdf: standalone.saty bib.satyh local.satyh introduction.satyh automata.satyh lstar.satyh rnnlstar.satyh conclusion.satyh figs/mustHaveAA.pdf figs/evenDFA.pdf figs/evenDFAStep1.pdf figs/evenDFAStep2.pdf figs/evenTree.pdf figs/evenTreeMerged.pdf
 	satysfi $<
 
 bib.satyh: bib.xml
@@ -11,7 +11,7 @@ bib.satyh: bib.xml
 	m4 -DVARNAME=$(basename $(notdir $@)) $< > $@
 
 clean:
-	$(RM) main.pdf introduction.satyh automata.satyh lstar.satyh ./pandoc/introduction.template ./pandoc/automata.template ./pandoc/lstar.template
+	$(RM) standalone.pdf introduction.satyh automata.satyh lstar.satyh ./pandoc/introduction.template ./pandoc/automata.template ./pandoc/lstar.template
 
 .PHONY: clean
 

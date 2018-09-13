@@ -1,0 +1,31 @@
+% -*- coding: utf-8 -*-
+@require: stdja
+@require: proof
+@import: bib
+@import: local
+@require: tabular
+@import: local-standalone
+
+@import: introduction
+@import: automata
+@import: lstar
+@import: rnnlstar
+@import: conclusion
+
+document '<
+  +chapter(|
+  title = {RNNからのオートマトン学習};
+  author = {MasWag};
+  bibliography = maswag-bibliography;
+  |) <
+   #introduction;
+
+   #automata;
+
+   #lstar;
+
+   #rnnlstar;
+
+   #conclusion;
+>
+>
