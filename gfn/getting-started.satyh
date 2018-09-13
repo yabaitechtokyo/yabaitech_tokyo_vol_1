@@ -90,7 +90,7 @@ let getting-started = '<
         \codem{\@require}と\codem{\@import}で拡張子を省略する仕組みは
         単に手間を省くためにあるわけではない．
         補われる拡張子は\path{.satyh}とは限らないのである．
-        これについては\ref-chapter(`text-mode`);でのテキストモードについての説明で後述する．
+        これについては\ref-chapter(`future-work`);でのテキストモードについての説明で後述する．
       }．
 %        より精確には，\code(`<path/to>`);として（UNIX系OSでは）
 %        \code(`~/.satysfi`);，\code(`/usr/local/share/satysfi`);，\code(`/usr/share/satysfi`);

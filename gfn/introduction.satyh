@@ -191,7 +191,7 @@ let introduction = '<
   >
   +section{\SATySFi;が選んだ解決策}<
     +p{
-      \ref-subsection(`problem`);で述べた問題点を解消するため，
+      \ref-section(`problem`);で述べた問題点を解消するため，
 
       \listing{
         * コマンド定義を記述したコードの可読性が高くカスタマイズしやすい

@@ -315,6 +315,7 @@ module Type : sig
   val deco-set : t
   val paren : t
   val script : t
+  val image : t
   val list : t -> t
   val option : t -> t
 end = struct
@@ -406,6 +407,7 @@ end = struct
   let deco-set     = base-type {deco-set}
   let paren        = base-type {paren}
   let script       = base-type {script}
+  let image        = base-type {image}
 
 
   let list ty = Ctr({list}, [ty])

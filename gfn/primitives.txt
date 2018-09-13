@@ -83,9 +83,9 @@ G[ ] inline-frame-breakable
 G[ ] block-frame-breakable
 
 -- 画像 --
-G[ ] load-pdf-image
-G[ ] load-image
-G[ ] use-image-by-width
+G[o] load-pdf-image
+G[o] load-image
+G[o] use-image-by-width
 
 -- 表 --
 G[ ] tabular
