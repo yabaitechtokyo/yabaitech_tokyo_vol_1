@@ -15,7 +15,7 @@ let lstar = '<+section{L\*アルゴリズム} <
 +p {
 
   \figure ?:(`fig:evenDFA`){a, bの個数が共に偶数の文字列の言語を認識するDFAの例。}<
-     +image-frame{\insert-pdf-image(7cm)(`figs/evenDFA.pdf`)(1);}
+     +image-frame{\insert-pdf-image(7cm)(path-to-root ^ `figs/evenDFA.pdf`)(1);}
   >
   本節では例として ${L = \{ a \in \{\text!{a,b}\} \mid \text!{a, bの個数が共に偶数}\}} を用います。例えば\ref-figure(`fig:evenDFA`);のDFAがこの言語を認識します。
 }
@@ -244,7 +244,7 @@ cellf {F};
 +p {
 
   \figure ?:(`fig:evenDFAStep1`){\ref-figure(`fig:observationTable2`);の観察表に対応するDFA${\mathcal{A}_1}}<
-     +image-frame{\insert-pdf-image(7cm)(`figs/evenDFAStep1.pdf`)(1);}
+     +image-frame{\insert-pdf-image(7cm)(path-to-root ^ `figs/evenDFAStep1.pdf`)(1);}
   >
   例えば\ref-figure(`fig:observationTable2`);の観察表からは\ref-figure(`fig:evenDFAStep1`);のDFA、${\mathcal{A}_1}が生成されます。
 }
@@ -411,8 +411,8 @@ cellf {F};
 }
 +p {
   \figure ?:(`fig:evenDFAStep2`){\ref-figure(`fig:observationTable3`);の観察表に対応するDFA${\mathcal{A}_2}}<
-     +image-frame{\insert-pdf-image(7cm)(`figs/evenDFAStep2.pdf`)(1);}
-     +image-frame{\insert-pdf-image(7cm)(`figs/evenDFA.pdf`)(1);}
+     +image-frame{\insert-pdf-image(7cm)(path-to-root ^ `figs/evenDFAStep2.pdf`)(1);}
+     +image-frame{\insert-pdf-image(7cm)(path-to-root ^ `figs/evenDFA.pdf`)(1);}
   >
   
   \ref-figure(`fig:observationTable3`);の下側の観察表から生成されるDFAについて等価性質問を問い合わせると学習したい言語と一致するので、今回の学習はここで終了となります。
@@ -437,8 +437,8 @@ cellf {F};
 }
 +p {
   \figure ?:(`fig:evenTree`){a, bの個数が共に偶数の文字列の言語を認識する無限状態のオートマトンの例 (上)と、 その状態aとabaを纏めたオートマトン (下)}<
-     +image-frame{\insert-pdf-image(7cm)(`figs/evenTree.pdf`)(1);}
-     +image-frame{\insert-pdf-image(7cm)(`figs/evenTreeMerged.pdf`)(1);}
+     +image-frame{\insert-pdf-image(7cm)(path-to-root ^ `figs/evenTree.pdf`)(1);}
+     +image-frame{\insert-pdf-image(7cm)(path-to-root ^ `figs/evenTreeMerged.pdf`)(1);}
   >
 
   文字列${w,w'}とMyhill-Nerode同値関係${R_L}について、${w R_L w'}が成り立つということの直観は、「これから与えられる未知の文字列${w''\in\alphabet^\ast}について${w\cdot w''\in L}が成り立つかどうかを調べたいときに、今まで読んだ文字が${w}であるか${w'}であるかは気にしなくて良い」ということになります。

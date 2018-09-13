@@ -1,12 +1,27 @@
 @import: ../main/book-class
 @import: bib
+@import: local
+@require: tabular
+@import: introduction
+@import: automata
+@import: lstar
+@import: rnnlstar
+@import: conclusion
 
 let maswag-article = '<
   +chapter ?:(`maswag-article`) (|
   bibliography = bibliography;
-  title = {Title};
+  title = {RNNからのオートマトン学習};
   author = {MasWag};
   |) <
-    +p {Hello}
+   #introduction;
+
+   #automata;
+
+   #lstar;
+
+   #rnnlstar;
+
+   #conclusion;
   >
 >

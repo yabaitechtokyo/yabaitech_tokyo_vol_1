@@ -15,10 +15,10 @@ let rnnlstar = '<+section{RNNによる等価性質問} <
 +subsection{RNNによる等価性質問の概要} <
 +p {
   \figure ?:(`fig:RNNasAutom1`){RNNを無限状態のオートマトンとして見た例}<
-     +image-frame{\insert-pdf-image(7cm)(`figs/RNNasAutom.pdf`)(1);}
+     +image-frame{\insert-pdf-image(7cm)(path-to-root ^ `figs/RNNasAutom.pdf`)(1);}
   >
   \figure ?:(`fig:RNNasAutom2`){\ref-figure(`fig:RNNasAutom1`);のRNNからクラスタリングによってDFAを構築した例}<
-     +image-frame{\insert-pdf-image(7cm)(`figs/RNNasAutom.pdf`)(2);}
+     +image-frame{\insert-pdf-image(7cm)(path-to-root ^ `figs/RNNasAutom.pdf`)(2);}
   >
 
   等価性質問について、\cite([`conf/icml/WeissGY18`]);ではRNNからある種のオートマトンを構成しながら答えていきます。まず、状態数が無限状態で構わなければ、状態空間を${\mathbb{R}^N}、初期状態を${h_0}、受理状態を${f^{-1}\(\mathrm{T}\)}、遷移関数を${\mathrm{\Delta}\(h,a\)=g\(h,a\)}とすることで、RNNを無限状態のオートマトンと見ることができます(\ref-figure(`fig:RNNasAutom1`);)。しかし、等価性質問に答えるためには状態数が有限である必要があります。そこで、Myhill-Nerode同値関係のように、同じ状態と見なしても構わない状態を一つのクラスタとして纏める (クラスタリング) ことでDFAを構築します (\ref-figure(`fig:RNNasAutom2`);)。つまりクラスタリングの関数${p:\mathbb{R}^N\to\mathbb{N}}で、以下の性質が成り立つものを求めることができれば、${p}の像を状態空間とするDFAを構築することができます。

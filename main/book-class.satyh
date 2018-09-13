@@ -722,11 +722,11 @@ end = struct
 
 
   let-inline ctx \figure ?:labelopt caption inner =
-    figure-scheme ctx labelopt `figure:` {Figure} caption inner
+    figure-scheme ctx labelopt `figure:` {図} caption inner
 
 
   let-inline ctx \table ?:labelopt caption inner =
-    figure-scheme ctx labelopt `table:` {Table} caption inner
+    figure-scheme ctx labelopt `table:` {表} caption inner
 
 
   let-block ctx +chapter ?:labelopt record inner =

@@ -1,11 +1,12 @@
-@import: cs-thesis
+@import: ../main/book-class
 @import: maswag-math
+
+let path-to-root = `../MasWag/`
 
 let-inline ctx \sample-command it =
   read-inline (ctx |> set-text-color Color.red) it
 
 let-math \alphabet = ${\mathrm{\Sigma}}
-%let-math \cdot = ${\bullet}
 let-math \colon = ${:}
 let-math \iff = ${\Leftrightarrow}
 
