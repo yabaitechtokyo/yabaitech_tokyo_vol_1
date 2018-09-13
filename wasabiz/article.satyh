@@ -1,7 +1,13 @@
-@import: ../main/cs-thesis
+@import: ../main/book-class
+@import: ../main/bib
+% replace this to your bibliography!!
 
 let wasabiz-article = '<
-  +chapter ?:(`wasabiz-article`) {Title} {wasabiz} <
+  +chapter ?:(`wasabiz-article`) (|
+  bibliography = bibliography;
+  title = {Title};
+  author = {wasabiz};
+  |) <
     +p {Hello}
   >
 >

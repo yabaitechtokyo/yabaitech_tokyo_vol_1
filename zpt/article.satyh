@@ -1,8 +1,14 @@
-@import: ../main/cs-thesis
+@import: ../main/book-class
+@import: ../main/bib
+% replace this to your bibliography!!
 @import: derivation-rules
 
 let zpt-article = '<
-  +chapter ?:(`zpt-article`) {自然な様相論理をつくる} {zeptometer} <
+  +chapter ?:(`zpt-article`) (|
+  bibliography = bibliography;
+  title = {自然な様相論理をつくる};
+  author = {zeptometer};
+  |) <
     +section {はじめに} <
     +p{(間違ってる部分があるかもしれんからあったら指摘しくれなみたいなexcuseを入れる)}
     +p{(適当な挨拶が入る)}

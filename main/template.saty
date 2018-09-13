@@ -2,34 +2,11 @@
 @import: local
 @import: bib
 @import: ../MasWag/article
-@import: ../pohe/article
 @import: ../wasabiz/article
 @import: ../zpt/article
 
-document (|
-  title-en = {Title in English};
-  title-ja = {邦文標題};
-  author-en = {Jiro Todai};
-  author-ja = {東大 次郎};
-  supervisor-en = {Kyoin Shido};
-  supervisor-ja = {紫藤 匡胤};
-  supervisor-title = {Professor};
-  date = {February XXth, 20YY};
-  bibliography = bibliography;
-  acknowledgements = '<
-    +p{
-      Acknowledgement acknowledgement acknowledgement acknowledgement acknowledgement
-      acknowledgement acknowledgement acknowledgement, acknowledgement acknowledgement acknowledgement.
-      \sample-command{
-        Acknowledgement acknowledgement acknowledgement acknowledgement
-        acknowledgement acknowledgement acknowledgement
-        acknowledgement acknowledgement acknowledgement acknowledgement acknowledgement acknowledgement.
-      }
-    }
-  >;
-|) '<
+document '<
   #maswag-article;
-  #pohe-article;
   #wasabiz-article;
   #zpt-article;
 >

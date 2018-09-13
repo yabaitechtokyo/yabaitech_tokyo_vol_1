@@ -1,7 +1,12 @@
-@import: ../main/cs-thesis
+@import: ../main/book-class
+@import: bib
 
 let maswag-article = '<
-  +chapter ?:(`maswag-article`) {Title} {MasWag} <
+  +chapter ?:(`maswag-article`) (|
+  bibliography = bibliography;
+  title = {Title};
+  author = {MasWag};
+  |) <
     +p {Hello}
   >
 >
