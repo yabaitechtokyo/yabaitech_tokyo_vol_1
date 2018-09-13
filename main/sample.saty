@@ -2,8 +2,32 @@
 @import: book-class
 @import: bib
 
-document() '<
-  +chapter {MasWag} {titleでよ} <
+document '<
+  +chapter(|
+  bibliography = bibliography;
+  title = {titleでよ};
+  author = {MasWag};
+  |) <
+    +p {Hello}
+  >
+  +chapter(|
+  bibliography = bibliography;
+  title = {titleだった};
+  author = {zptmtr};
+  |) <
+    +p {Hello}
+    +section{sectionを書いてみた} <
+        +p {Hello Workman}
+        +subsection{subsectionも書いてみた} <
+        +p {Hello World}
+    >
+    >
+  >
+  +chapter(|
+  bibliography = bibliography;
+  title = {びず};
+  author = {わさ};
+  |) <
     +p {Hello}
   >
 >
