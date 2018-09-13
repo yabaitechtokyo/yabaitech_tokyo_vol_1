@@ -1,4 +1,4 @@
-@import: local
+@import: book-class
 
 let bibliography = [
   (`Hindley69`, Article(|

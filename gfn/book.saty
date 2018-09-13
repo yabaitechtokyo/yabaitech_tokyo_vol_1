@@ -5,6 +5,7 @@
 @import: getting-started
 @import: alias-command-definition
 @import: overall
+@import: cross-reference
 @import: bib
 
 document (|
@@ -44,7 +45,7 @@ document (|
         既に述べたように，\SATySFi;はいわゆる函数型らしい特徴を兼ね備えた
         組版処理向けのマークアップ言語である．
         むしろ，より正確を期して言い表すならば
-        函数型言語の上に組版処理用の種々の言語機能が分厚く搭載された
+        値呼びの函数型言語の上に組版処理用の種々の言語機能が分厚く搭載された
         DSL（domain-specific language, 領域特化言語）だ．
         プログラミング言語としての\SATySFi;の基礎的部分には
         OCamlに大変よく似た体系が採用されており，
@@ -56,9 +57,111 @@ document (|
         また，OCamlと\SATySFi;との間には目的意識や美意識の違いに起因した多少の差異があるので，
         これについて（既にOCamlで流暢にプログラミングできる読者に対しても）簡単に補足する．
       }
-      +p{
-        \REMAINS{プログラミングの解説}
-      }
+      +subsection{式と値}<
+        +p{
+          \SATySFi;には対話環境が特に整備されていないので，
+          プログラムの計算結果をPDFに出力して確かめることにしよう．
+          ひとまず以下のようなコードを見てほしい：
+
+          \d-code(```
+            @require: stdjareport
+
+            let-inline \show-int n =
+              embed-string (arabic n)
+            in
+
+            document (|
+              title = {Programming in \SATySFi;};
+              author = {計 算太郎};
+            |) '<
+              +p{ Answer: \show-int(40 + 2); }
+            >
+          ```);%
+
+          \codem{let-inline}から始まる，
+          未知でありながら前節で見たインラインコマンドを定義する方法によく似た構文があるが，
+          実際これは\codem{\\show-int}というインラインコマンドの定義である．
+          この定義をどう読むのかは後々わかることになるので，
+          今の段階では
+          「与えられた整数を版面に文字として10進法で出力するコマンド\codem{\\show-int}」
+          を定義するオマジナイだと思っていただきたい．
+          注目されたいのは\codem{\\show-int}を使う部分，すなわち
+
+          \d-code(```
+            ​  +p{ Answer: \show-int(40 + 2); }
+          ```);%
+
+          である．丸括弧に囲まれた\codem{40 + 2}という怪しげな記述がある．
+          とりあえず，この文書を\SATySFi;処理系にかけてみると，
+          この段落に相当する部分は
+
+          \d-block(open Sample in '<
+            +p{ Answer: \show-int(40 + 2); }
+          >);%
+
+          と出力される．そう，${40} と ${2} の和が計算されているのである．
+          平たく言えば，こういった “計算をする処理” がプログラムの仕事の根幹であり，
+          “計算をする処理” をプログラムとして記述することをプログラミングと呼ぶ．
+          \codem{40 + 2}のような記述は
+          \dfnje{\index(`シキ`){式}}{expression}
+          またはしばしば
+          \dfnje{\index(`コウ`){項}}{term}と呼ばれ，
+          式を適切な構文にしたがって組み立てることでプログラムが構築される\footnote{
+            C言語やPythonなどの
+            “手続き的な” 観点に強く基づいている計算機言語に馴染みのある読者は
+            「式から文をつくり，文からプログラムを構築するのではないか？」
+            と思われるかもしれないが，
+            \SATySFi;に文の概念はない．
+            というか，式の特殊な場合が “手続き的な” 言語に備わっている文に相当するのである．
+            これはOCamlをはじめとする多くのいわゆる函数型言語に共通する性質である．
+          }．
+        }
+        +p{
+          \codem{40 + 2}の “計算が進んで” \codem{42}になったように，
+          式は一般に “それ以上計算しない式” へと “うつりかわっていく”．
+          この “うつりかわり” の過程を
+          \dfnje{\index(`ヒョウカ`){評価}}{evaluation}
+          またはしばしば
+          \dfnje{\index(`カンヤク`){簡約}}{reduction}
+          と呼び， “それ以上計算しない式” を
+          \dfnje{\index(`コウブンテキアタイ`){構文的値}}{syntactic value}
+          或いは単に
+          \dfnje{\index(`アタイ`){値}}{value}
+          と呼ぶ．
+          プログラムの動作とは，式を評価して値を求めることなのである．
+        }
+        +p{
+          \REMAINS{2項演算子の結合優先度}
+        }
+      >
+      +section{変数とその束縛}<
+        +p{
+          \REMAINS{変数の概念とlet式}
+        }
+        +p{
+          \REMAINS{変数名}
+        }
+      >
+      +section{基本的なデータと型}<
+        +p{
+          \REMAINS{整数，文字列，浮動小数点数，長さ，真偽値}
+        }
+      >
+      +section{函数と条件分岐}<
+        +p{
+          \REMAINS{函数定義と条件分岐}
+        }
+      >
+      +section{代数的データ型}<
+        +p{
+          \REMAINS{代数的データ型}
+        }
+      >
+      +section{再帰函数}<
+        +p{
+          \REMAINS{再帰函数}
+        }
+      >
     >
   >
   +chapter?:(`overall-structure`){文書が処理される仕組み}< #overall; >
@@ -97,7 +200,8 @@ document (|
         といった情報が “テキストの情報” に加えて必要である．
         これらの
         “テキストには表れていないが組版処理上必要な情報”
-        を，\SATySFi;は\dfnje{テキスト処理文脈}{text-processing context}
+        を，\SATySFi;は
+        \dfnje{\index(`テキスト処理文脈`){テキスト処理文脈}}{text-processing context}
         という機構に保持させて扱う．
         抽象的な説明を続けてもおそらく要領を得ないであろうから，
         具体例を用いて説明しよう．
@@ -148,16 +252,18 @@ document (|
         外から渡されてきたテキスト処理文脈\codem{ctx}が保持している
         フォントサイズを取り出して束縛する．これはプリミティヴ：
 
-        \val({get-font-size})(Type.(context --> length));%
+        \val?:(`get-font-size`)({get-font-size})%
+          (Type.(context --> length));%
 
         を用いて行なう．取得したフォントサイズ\codem{size}は\type(Type.(length));型であり，
 
-        \val({(\*')})(Type.(length --> (float --> length)));%
+        \val?:(`*'`)({(\*')})(Type.(length --> (float --> length)));%
 
         を用いて\codem{size \*' 1.5}で${1.5}倍の長さを得る．
         フォントサイズの設定は
 
-        \val({set-font-size})(Type.(length --> (context --> context)));%
+        \val?:(`set-font-size`)({set-font-size})%
+          (Type.(length --> (context --> context)));%
 
         を用いて行なう．
         すなわち，古いテキスト処理文脈\codem{ctx}と設定するフォントサイズ\codem{size}に対して
@@ -177,7 +283,8 @@ document (|
       +p{
         最も重要なのは最終行だ．ここで使われているプリミティヴ
 
-        \val({read-inline})(Type.(context --> (inline-text --> inline-boxes)));%
+        \val?:(`read-inline`)({read-inline})%
+          (Type.(context --> (inline-text --> inline-boxes)));%
 
         は\ref-chapter(`overall-structure`);で説明した
         インライン変換器に相当し，\ref-figure(`conversion-to-inline-boxes`);
@@ -196,7 +303,13 @@ document (|
       }
     >
     +p{
-      \REMAINS{発展的なコマンド定義}
+      \REMAINS{コマンドが処理されるアニメーション}
+    }
+    +p{
+      \REMAINS{let-inlineによるエイリアス定義は糖衣構文}
+    }
+    +p{
+      \REMAINS{発展的なコマンド定義：line-break}
     }
   >
   +chapter?:(`line-breaking`){行分割処理}<
@@ -249,84 +362,268 @@ document (|
       }
     >
     +section{行分割に関するプリミティヴ}<
-      +p{
-        \ref-chapter(`advanced-command-definition`);に於いて，
-        行分割処理そのものを担うプリミティヴが
+      +subsection{行分割候補箇所}<
+        +p{
+          \ref-chapter(`advanced-command-definition`);に於いて，
+          行分割処理そのものを担うプリミティヴが
 
-        \val({line-break})(Type.(bool --> (bool -->
-          (context --> (inline-boxes --> block-boxes)))));%
+          \val?:(`line-break`)({line-break})(Type.(bool --> (bool -->
+            (context --> (inline-boxes --> block-boxes)))));%
 
-        であることは既に紹介したが，分割される箇所の候補がどのように決定され，
-        その処理にユーザやパッケージ開発者がどのように介入できるかについてはまだ触れていなかった．
-        これについて以下で少し解説する．
-      }
-      +p{
-        \SATySFi;では，行分割の候補となる箇所がインラインボックス列の中に含まれており，
-        そのいずれも
+          であることは既に紹介したが，分割される箇所の候補がどのように決定され，
+          その処理にユーザやパッケージ開発者がどのように介入できるかについてはまだ触れていなかった．
+          これについて以下で少し解説する．
+        }
+        +p{
+          \SATySFi;では，行分割の候補となる箇所がインラインボックス列の中に含まれており，
+          そのいずれも
 
-        \listing{
-          * そこで行分割されなかった場合の内容 ${b_0}
-          * そこで行分割された場合に直前の行末に入る内容 ${b_1}
-          * そこで行分割された場合に直後の行頭に入る内容 ${b_2}
-          * そこで行分割された場合に加算される\dfnje{ペナルティ値}{penalty} ${p}
-        }%
+          \listing{
+            * そこで行分割されなかった場合の内容 ${b_0}
+            * そこで行分割された場合に直前の行末に入る内容 ${b_1}
+            * そこで行分割された場合に直後の行頭に入る内容 ${b_2}
+            * そこで行分割された場合に加算される
+              \dfnje{\index(`ペナルティチ`){ペナルティ値}}{penalty} ${p}
+          }%
 
-        からなる4つの情報 ${\tuple{|b_0|b_1|b_2|p|}} をもつ．
-        逆に，これらの情報をもたない箇所では行分割しない\footnote{
-          厳密に言うと例外がある．
-          ブロックボックス列を “段落の一部として埋め込む” 機能を担う
-          \codem{embed-block-breakable}というプリミティヴによって
-          生成されたインラインボックス列は，その直前で必ず行分割される．
-        }．
-        この4つ組を備えた箇所を以降
-        単に\dfnje{行分割候補箇所}{line break opportunity}
-        と呼ぶことにしよう．
-        行分割候補箇所は，
-        インラインテキストからインラインボックス列に変換する過程で現れる．
-        ペナルティ値 ${p} は基本的にテキスト処理文脈から決定される．
-        この際に，例えば空白文字は
-        ${b_0} が（単語間の空白として適切な程度に）多少伸縮する空白，
-        ${b_1} と ${b_2} が空っぽであるような行分割候補箇所に変換される．
-        “table” という文字列は，
-        ${b_0} が
-        \as-latin-word{\BoxGraphics.roman{|t|a|b|l|e|}}，
-        ${b_1} が
-        \as-latin-word{\BoxGraphics.roman{|t|a|-|}}，
-        ${b_2} が
-        \as-latin-word{\BoxGraphics.roman{|b|l|e|}}
-        であるような行分割候補箇所へと変換される．
-        すなわち，途中で行分割する必要がなければ単に行中で
-        \as-latin-word{\BoxGraphics.roman{|t|a|b|l|e|}}と組まれるように，
-        途中でハイフネーションを行なって分割する方が周辺の要素の並びから望ましいと判断される場合は
-        その行末が\as-latin-word{\BoxGraphics.roman{|t|a|-|}}で
-        次の行頭が\as-latin-word{\BoxGraphics.roman{|b|l|e|}}になるように，
-        それぞれ指定した行分割候補箇所になるのである\footnote{
-          実際のハイフネーション処理はもう少しだけ複雑である．
-          単語中でハイフネーションが可能な箇所は2箇所以上あったりするからだ．
-        }．
-        インラインテキストがどのようにインラインボックス列に変換され，
-        どのように行分割候補箇所が現れるかは，
-        前述のとおり基本的には
-        Unicode Line Breaking Algorithm \cite[`unicode-lb`];
-        と『日本語組版処理の要件』\cite[`jlreq`];に基づいているが，
-        多言語組版を想定して将来的には
-        ユーザやパッケージ開発者が介入して変更できるようにしたいと考えている．
-      }
-      +p{
-        行分割候補箇所はインラインテキストからインラインボックス列への変換過程で生成されるだけでなく，
-        “手動で” 挿入することもできる．これに用いるのがプリミティヴ：
+          からなる4つの情報 ${\tuple{|b_0|b_1|b_2|p|}} をもつ．
+          逆に，これらの情報をもたない箇所では行分割しない\footnote{
+            厳密に言うと例外がある．
+            ブロックボックス列を “段落の一部として埋め込む” 機能を担う
+            \codem{embed-block-breakable}というプリミティヴによって
+            生成されたインラインボックス列は，その直前で必ず行分割される．
+          }．
+          この4つ組を備えた箇所を以降
+          単に\dfnje{
+            \index(`ギョウブンカツコウホカショ`){行分割候補箇所}
+          }{line break opportunity}
+          と呼ぶことにしよう．
+          ペナルティ値は実際の行分割箇所を決定するにあたって参考にされ，
+          この値が大きいほどその候補箇所での行分割が抑制される\footnote{
+            一応（行分割を促進する意図で）負の値を指定することもできるが，
+            現在の実装は負の値が渡されることを想定していないので，
+            行分割が実際に促進される保証はない．
+          }．これについては\ref-subsection(`penalty`);で後述する．
+        }
+        +p{
+          行分割候補箇所は，
+          インラインテキストからインラインボックス列に変換する過程で現れる．
+          この際に，例えば空白文字は
+          ${b_0} が（単語間の空白として適切な程度に）多少伸縮する空白，
+          ${b_1} と ${b_2} が空っぽであるような行分割候補箇所に変換される．
+          “table” という文字列は，
+          ${b_0} が
+          \as-latin-word{\BoxGraphics.roman{|t|a|b|l|e|}}，
+          ${b_1} が
+          \as-latin-word{\BoxGraphics.roman{|t|a|-|}}，
+          ${b_2} が
+          \as-latin-word{\BoxGraphics.roman{|b|l|e|}}
+          であるような行分割候補箇所へと変換される．
+          すなわち，途中で行分割する必要がなければ単に行中で
+          \as-latin-word{\BoxGraphics.roman{|t|a|b|l|e|}}と組まれるように，
+          途中でハイフネーションを行なって分割する方が周辺の要素の並びから望ましいと判断される場合は
+          その行末が\as-latin-word{\BoxGraphics.roman{|t|a|-|}}で
+          次の行頭が\as-latin-word{\BoxGraphics.roman{|b|l|e|}}になるように，
+          それぞれ指定した行分割候補箇所になるのである\footnote{
+            実際のハイフネーション処理はもう少しだけ複雑である．
+            単語中でハイフネーションが可能な箇所は2箇所以上あったりするからだ．
+          }．
+          インラインテキストがどのようにインラインボックス列に変換され，
+          どのように行分割候補箇所が現れるかは，
+          前述のとおり基本的には
+          Unicode Line Breaking Algorithm \cite[`unicode-lb`];
+          と『日本語組版処理の要件』\cite[`jlreq`];に基づいているが，
+          多言語組版を想定して将来的には
+          ユーザやパッケージ開発者が介入して変更できるようにしたいと考えている．
+        }
+        +p{
+          行分割候補箇所はインラインテキストからインラインボックス列への変換過程で生成されるだけでなく，
+          “手動で” 挿入することもできる．これに用いるのがプリミティヴ：
 
-        \val({discretionary})(Type.(int -->
-          (inline-boxes --> (inline-boxes --> (inline-boxes --> inline-boxes)))));%
+          \val?:(`discretionary`)({discretionary})(Type.(int -->
+            (inline-boxes --> (inline-boxes --> (inline-boxes --> inline-boxes)))));%
 
-        である．使い方は至極単純で，
-        \codem{discretionary \meta{p}
-          \metasub(${0}){ib} \metasub(${1}){ib} \metasub(${2}){ib}}
-        でペナルティ値 ${p} が\codem{\meta{p}}，
-        各 ${b_i} がそれぞれ\codem{\metasub(${i}){ib}}であるような
-        行分割候補箇所が生成される．
-      }
-      +p{ \dfnje{グルー}{glue}と呼ばれる．\REMAINS{inline-glue} }
+          である．使い方は至極単純で，
+          \codem{discretionary \meta{p}
+            \metasub(${0}){ib} \metasub(${1}){ib} \metasub(${2}){ib}}
+          でペナルティ値 ${p} が\codem{\meta{p}}，
+          各 ${b_i} がそれぞれ\codem{\metasub(${i}){ib}}であるような
+          行分割候補箇所が生成される．
+          なお，\codem{discretionary}の引数に渡した\codem{\metasub(${i}){ib}}の中に
+          さらに入れ子で行分割候補箇所が含まれている場合，
+          その箇所では決して行分割されない．つまり，そこでは必ず ${b_0} の内容が選ばれる．
+        }
+      >
+      +subsection?:(`penalty`){ペナルティ値}<
+        +p{
+          インラインテキストからインラインボックス列への変換の過程で
+          与えられる各行分割候補箇所のペナルティ値 ${p} は，基本的に
+          \codem{read-inline}の第1引数として渡したテキスト処理文脈に基づいて決定される．
+          単語間空白から変換される行分割候補箇所 ${\tuple{|p|b_0|b_1|b_2|}} は，
+          デフォルトでは\footnote{
+            プリミティヴ
+            \index(`get-initial-context`)?:({\code(`get-intial-context`);}){
+              \codem{get-initial-context}
+            }が返すテキスト処理文脈では，の意．
+          } ${p = 100} であり，${b_1} と ${b_2} は空である．
+          ${b_0} は伸縮する空白であり，\dfnje{\index(`グルー`){グルー}}{glue}と呼ばれる．
+          これについては\ref-subsection(`glue`);で後述する．
+          ${p} はプリミティヴ：
+
+          \val?:(`set-word-break-penalty`)({set-word-break-penalty})%
+            (Type.(int --> (context --> context)));%
+
+          により変更することができる．すなわち，
+          テキスト処理文脈\codem{\meta{ctx}}と
+          単語間空白の行分割候補箇所に対して設定したいペナルティ値\codem{\meta{p}}に対して
+          \codem{set-word-break-penalty \meta{p} \meta{ctx}}で
+          ペナルティ値が\codem{\meta{p}}に更新されたテキスト処理文脈が返される．
+          ${b_1} と ${b_2} も変更することができ，
+
+          \val?:(`set-every-word-break`)({set-every-word-break})%
+            (Type.(inline-boxes --> (inline-boxes --> (context --> context))));%
+
+          によって行なう．すなわち
+          \codem{set-every-word-break \metasub(${1}){ib} \metasub(${2}){ib}}
+          で\codem{\metasub(${i}){ib}}をそれぞれ
+          単語間空白の行分割候補箇所の ${b_i} に設定する．
+          現在単語間空白の ${b_1} と ${b_2} に設定されている内容を取得するのは
+
+          \val?:(`get-every-word-break`)({get-every-word-break})%
+            (Type.(context --> product [inline-boxes; inline-boxes]));%
+
+          による．
+          \REMAINS{行分割に於けるペナルティ}
+        }
+        +example{
+          フランス語の表記の或る流儀では，
+          引用符であるギュメに囲まれた部分が複数行に亘って続く場合，
+          2行目以降の先頭にも開く側の引用符を置く．
+          このような処理を自動でやってくれる引用符のコマンド，
+          すなわち以下のような記述と組版結果を実現するような
+          コマンド\codem{\\q}を定義したい：
+
+          \d-code-and-block(```
+            +p{
+              \q{
+                The original problem to be solved was
+                for fine French typesetting,
+                in which guillemets are placed
+                running down the left side of a paragraph,
+                as in this paragraph,
+                so long as material is being quoted.
+              }
+              Since \TeX; breaks paragraphs in arbitrary places,
+              it was impossible to develop a robust macro package
+              that could, in a single pass, place the guillemets
+              in the right positions.
+            }
+          ```)(open Sample in '<
+            +p-alph{
+              \q{
+                The original problem to be solved was
+                for fine French typesetting,
+                in which guillemets are placed
+                running down the left side of a paragraph,
+                as in this paragraph,
+                so long as material is being quoted.
+              }
+              Since \TeX; breaks paragraphs in arbitrary places,
+              it was impossible to develop a robust macro package
+              that could, in a single pass, place the guillemets
+              in the right positions.
+            }
+          >);%
+
+          これは\codem{set-every-word-break}を使えばおおよそ実現できる：
+
+          \d-code(```
+            let-inline ctx \q inner =
+              let ib-after = read-inline ctx {«\ } in
+              let ctxq =
+                ctx |> set-every-word-break inline-nil ib-after
+              in
+                read-inline ctxq {« #inner; »}
+          ```);%
+
+          要するに「単語間空白で行分割された場合は次の行頭にギュメの開く側をつける」という指示を
+          ギュメの内側のインラインテキストを変換するときに使うテキスト処理文脈に与えることで
+          所望の処理を実現している．
+          \REMAINS{ハイフネーションの場合}
+        }
+        +p{
+          ハイフネーションによるペナルティもテキスト処理文脈が保持しており，単語間空白と同様に
+
+          \val?:(`set-hyphen-penalty`)({set-hyphen-penalty})%
+            (Type.(int --> (context --> context)));%
+
+          によって変更することができる．
+          デフォルトでは ${100} に設定されている．
+        }
+      >
+      +subsection?:(`glue`){グルー}<
+        +p{
+          行分割の際，単語間の空白や和文の文字の間などの箇所は
+          両端を揃えるために多少伸縮するのであった．
+          これは\dfnje{\index(`グルー`){グルー}}{glue}と呼ばれる仕組みによって実装されている．
+          グルーは
+
+          \listing{
+            * 自然な長さ ${l_0}
+            * 収縮の基準となる非負の長さ ${l_1}
+            * 伸長の基準となる非負の長さ ${l_2}
+          }%
+
+          の3つの情報 ${\tuple{|l_0|l_1|l_2|}} からなっている．
+          インラインテキストからインラインボックス列へ変換される過程で
+          単語間空白などから生じるが，
+          プリミティヴ：
+
+          \val?:(`inline-glue`)({inline-glue})%
+            (Type.(length --> (length --> (length --> inline-boxes))));%
+
+          を用いて “手づくりする” こともできる．すなわち
+          \codem{inline-glue
+            \metasub(${0}){l} \metasub(${1}){l} \metasub(${2}){l}}
+          で各 ${l_i} が\codem{\metasub(${i}){l}}のグルーが返される．
+          なお，段落先頭の字下げなど伸縮せず一定の長さのものは
+          \dfnje{スキップ}{skip}と呼ばれ\footnote{
+            \dfnje{カーン}{kern}と呼ばれることの方が一般的かもしれないが，
+            現在の\SATySFi;では慣習的にスキップと呼んでいる．
+          }，プリミティヴ：
+
+          \val?:(`inline-skip`)({inline-skip})%
+            (Type.(length --> inline-boxes));%
+
+          でつくることができる\footnote{
+            生成されるインラインボックス列の内部表現が異なるものの，
+            振舞いの上では\codem{inline-skip \meta{l}}は
+            \codem{inline-glue \meta{l} 0pt 0pt}と等価である．
+            このため，\codem{inline-skip}は
+            将来的にプリミティヴからパッケージで定義される函数へと “降格” するかもしれない．
+          }．
+          \REMAINS{グルーからのバッドネスの算出}
+        }
+        +p{
+          インラインテキストがインラインボックス列に変換される過程で
+          単語間空白がどのようなグルーに変換されるかは，
+          \codem{read-inline}に第1引数として渡されたテキスト処理文脈が保持している
+          フォントサイズ ${s} および
+          浮動小数点数のパラメータ ${r_0}，${r_1}，${r_2} によって決まり，
+          それぞれ ${l_i \defeq r_i s} で定められる．
+          デフォルトでは ${r_0 = 0.33}，${r_1 = 0.08}，${r_2 = 0.16}
+          になっているが，プリミティヴ：
+
+          \val?:(`set-space-ratio`)({set-space-ratio})%
+            (Type.(float --> (float --> (float --> (context --> context)))));%
+
+          によって変更できる．すなわち
+          \codem{set-space-ratio
+            \metasub(${0}){r} \metasub(${1}){r} \metasub(${2}){r} \meta{ctx}}
+          でテキスト処理文脈\codem{\meta{ctx}}を
+          各 ${r_i} が\codem{\metasub(${i}){r}}になるように更新したものを返す．
+        }
+      >
       +p{ \REMAINS{inline-fil} }
     >
   >
@@ -337,7 +634,238 @@ document (|
     +p{ \REMAINS{} }
   >
   +chapter?:(`graphics`){グラフィックス}<
-    +p{ \REMAINS{} }
+    +p{
+      版面を構成する文字以外の要素で重要なのがグラフィックスである．
+      本章では，本文の囲み枠，表の罫線，幾何図形，直交座標系のグラフ，グラフ理論のグラフ，可換図式，
+      さらには数式中の “連続的に伸縮する” 括弧といった多様な対象を描画する用途で活用できる
+      \SATySFi;のグラフィックスの機能について紹介する．
+      一読すればわかるようにグラフィックス用のプリミティヴは非常にプリミティヴなのだが，
+      そのプリミティヴさゆえに，思い立てばユーザの手によって非常に柔軟な描画が指定できる．
+      また，頻出する図形や囲み枠の指定については
+      \pkg{gr}，\pkg{deco}，\pkg{hdecoset}，\pkg{vdecoset}
+      などのライブラリで提供されており，図形定義に活用できる．
+    }
+    +section{パス}<
+      +p{
+        \dfnje{\index(`パス`){パス}}{path}は
+        曲線や閉曲線およびそれが占める領域を定めた情報であり，
+        グラフィックスを構成する最も基本的な単位だ．
+        パスの構築は
+
+        \listing{
+          * \index(`point`){\type(Type.(point));型}：
+              \type(Type.(product [length; length]));と同義，
+              “${2} 次元座標” や “${2} 次元ベクトル” の型として使う
+        }
+
+        という型シノニムと
+
+        \listing{
+          * \index(`pre-path`){\type(Type.(pre-path));型}：
+              \dfnje{\index(`ミカンパス`){未完パス}}{pre-path}，
+              すなわちまだ閉じたり終了したりしていない伸ばす途中のパスの型
+          * \index(`path`){\type(Type.(path));}型：
+              完成したパスの型
+        }%
+
+        という2つの基本型を用いて，以下に挙げるようなプリミティヴで行なう．
+        座標はページの左下を ${\tuple{|0|0|}} とする絶対座標で，
+        版面上の右向きが ${+x}方向，上向きが ${+y} 方向である\footnote{
+          ${y} 座標が上向きに伸びるのは違和感があるかもしれないが，
+          これはPDFの仕様の “最も基本的な座標系” にそのまま従ったものだ．
+        }．
+        これだけ聞くと絶対座標でパスの各点を指定することについては
+        あまりにもプリミティヴすぎるのではないかと違和感を覚えるかもしれないが，
+        以下で紹介するプリミティヴ\codem{shift-path}を用いて相対座標を扱うことができるので，
+        ひとまず心配しないでいただきたい．
+
+        \val-explain?:(`start-path`)({start-path})%
+          (Type.(point --> pre-path)) {
+            第1引数に指定した点から未完パスを開始する．
+          }
+        \val-explain?:(`line-to`)({line-to})%
+          (Type.(point --> (pre-path --> pre-path))) {
+            \codem{\meta{prepath} \|\> line-to \meta{v}}で
+            未完パス\codem{\meta{prepath}}を終点から
+            点\codem{\meta{v}}へと線分で延長したものを返す．
+          }
+        \val-explain?:(`bezier-to`)({bezier-to})%
+          (Type.(point --> (point --> (point --> (pre-path --> pre-path))))) {
+            \codem{\meta{prepath} \|\>
+              bezier-to \metasub(${1}){u} \metasub(${2}){u} \meta{v}}
+            で未完パス\codem{\meta{prepath}}を
+            終点から点\codem{\meta{v}}へとBézier曲線で延長したものを返す．
+            \codem{\metasub(${1}){u}}と\codem{\metasub(${2}){u}}は制御点である．
+          }
+        \val-explain?:(`close-with-line`)({close-with-line})%
+          (Type.(pre-path --> path)) {
+            未完パスを受け取り，起点と終点を線分で結んで閉じてできるパスを返す．
+          }
+        \val-explain?:(`close-with-bezier`)({close-with-bezier})%
+          (Type.(point --> (point --> (pre-path --> path)))) {
+            \codem{\meta{prepath} \|\>
+              close-with-bezier \metasub(${1}){u} \metasub(${2}){u}}で
+            未完パス\codem{\meta{prepath}}の起点と終点を
+            制御点\codem{\metasub(${1}){u}}，\codem{\metasub(${2}){u}}の
+            Bézier曲線で結んで閉じてできるパスを返す．
+          }
+        \val-explain?:(`terminate-path`)({terminate-path})%
+          (Type.(pre-path --> path)) {
+            未完パスを受け取り，開いたままのパスとして返す．
+          }
+        \val-explain?:(`unite-path`)({unite-path})%
+          (Type.(path --> (path --> path))) {
+            2つのパスを統合して1つにする．
+            これはドーナツ形など中空のパスをつくるのに必須である\footnote{
+              点がパスの “内側” であるか否かは，
+              その点を囲んでいるパスの回転数の総和の偶奇によって決まっている．
+            }．
+          }
+        \val-explain?:(`shift-path`)({shift-path})%
+          (Type.(point --> (path --> path))) {
+            \codem{\meta{path} \|\> shift-path \meta{v}}で
+            パス\codem{\meta{path}}の位置を\codem{\meta{v}}だけずらす．
+          }
+        \val-explain?:(`get-path-bbox`)({get-path-bbox})%
+          (Type.(path --> product [point; point])) {
+            パスを受け取り，そのパスのバウンディングボックスの左下と右上の座標の組を返す．
+            すなわち，与えられたパスが占める領域のうち
+            ${x} 座標がとる最小値と ${y} 座標がとる最小値の組
+            ${\tuple{|x_{\mathrm{min}}|y_{\mathrm{min}}|}}と，
+            ${x} 座標がとる最大値と ${y} 座標がとる最大値の組
+            ${\tuple{|x_{\mathrm{max}}|y_{\mathrm{max}}|}}との組を返す．
+          }
+      }
+    >
+    +section{グラフィックス指定}<
+      +p{
+        パス，つまり\type(Type.(path));型の値は，単に曲線や閉曲線のデータ，
+        さらにいえばどんな領域を占めているかの情報であり，それ自体が描けるものではない．
+        実際にそのパスに基づいて文書中に図形を挿入するには，
+        それがどんな色で塗られるかとか，あるいはどんな枠線で描かれるかといった情報を与える必要がある．
+        パスに加えてそれらの情報を持っているのが\type(Type.(graphics));型の値である．
+        これは以下のプリミティヴを用いてつくる．
+
+        \val-explain?:(`fill`)({fill})%
+          (Type.(color --> (path --> graphics))) {
+            \codem{fill \meta{color} \meta{path}}で
+            パス\codem{\meta{path}}の内側を色\codem{\meta{color}}で塗った
+            グラフィックスを返す．
+          }
+        \val-explain?:(`stroke`)({stroke})%
+          (Type.(length --> (color --> (path --> graphics)))) {
+            \codem{stroke \meta{t} \meta{color} \meta{path}}で
+            パス\codem{\meta{path}}を幅\codem{\meta{t}}，
+            色\codem{\meta{color}}の線として描いたグラフィックスを返す．
+          }
+        \val-explain?:(`draw-text`)({draw-text})%
+          (Type.(point --> (inline-boxes --> graphics))) {
+            \codem{draw-text \meta{v} \meta{ib}}で
+            位置\codem{\meta{v}}を参照点として
+            インラインボックス列\codem{\meta{ib}}を置いたグラフィックスを返す．
+          }
+        \val-explain?:(`shift-graphics`)({shift-graphics})%
+          (Type.(point --> (graphics --> graphics))) {
+            第1引数の分だけ第2引数のグラフィックスの座標をずらす．
+          }
+        \val-explain?:(`get-graphics-bbox`)({get-graphics-bbox})%
+          (Type.(graphics --> product [point; point])) {
+            \codem{get-path-bbox}と同じ要領で
+            与えられたグラフィックスのバウンディングボックスを返す．
+            ストロークの太さは考慮されないことに注意．
+          }
+      }
+      +p{
+        さて，グラフィックスの構成は上に掲げたプリミティヴを用いればよいが，
+        実際に本文中にグラフィックスを挿入するにはどうすればいいのだろうか．
+        このために用意されているのがプリミティヴ：
+
+        \val?:(`inline-graphics`)({inline-graphics})%
+          (Type.(length --> (length --> (length -->
+            ((point --> list graphics) --> inline-boxes)))));%
+
+        である．これは
+        \codem{inline-graphics \meta{w} \meta{h} \meta{d} \meta{grf}}
+        という形で使うことでインラインボックス列を得る．
+        最初の3つの引数は寸法の指定で，
+        \codem{\meta{w}}が横幅，
+        \codem{\meta{h}}が高さ，
+        \codem{\meta{d}}が深さである．
+        要するにグラフィックスは大きい1文字のようなものとして扱うのだが，
+        どのような寸法の文字として扱って欲しいかを指定しているのである．
+        そして重要なのは第4引数\codem{\meta{grf}}で，
+        これは座標を受け取ってグラフィックスのリストを返す函数である．
+        \SATySFi;はまずグラフィックスの内容が確定していない段階で
+        寸法だけを用いて（行分割処理やページ分割処理を経て）
+        実際に版面のどの位置に配置されるかを決定し，
+        位置が確定してからその参照点${\tuple{|x|y|}}を
+        指定されていた函数\codem{\meta{grf}}に引数として渡す．
+        そしてその返り値としてできたグラフィックスのリストをそこに描き込む，
+        という仕組みになっている．
+      }
+      +example{
+        指定されたテキストが現在のフォントで占める領域と同じ範囲をバツ印つきの長方形の枠にして
+        出力するコマンド，すなわち以下のような記述と組版結果を実現するコマンド
+        \codem{\\area}を考える：
+
+        \d-code-and-block(```
+          +p{ The quick brown fox jumps over the lazy dog. }
+          +p{ The quick \area{brown} fox jumps over the \area{lazy} dog. }
+        ```)(open Sample in '<
+          +p-alph{ The quick brown fox jumps over the lazy dog. }
+          +p-alph{ The quick \area{brown} fox jumps over the \area{lazy} dog. }
+        >);%
+
+        このような\codem{\\area}は次のように
+        \codem{inline-graphics}および
+        \index(`get-natural-metrics`)?:({\code(`get-natural-metrics`);})%
+          {\codem{get-natural-metrics}}
+        を用いて定義することができる：
+
+        \d-code(```
+          let-inline ctx \area it =
+            let ib = read-inline ctx it in
+            let (w, h, d) = get-natural-metrics ib in
+            let thickness = 0.5pt in
+            let color = Color.black in
+              inline-graphics w h d (fun (x, y) ->
+                [
+                  stroke thickness color
+                    (start-path (x, y -' d)
+                      |> line-to (x +' w, y -' d)
+                      |> line-to (x +' w, y +' h)
+                      |> line-to (x, y +' h)
+                      |> close-with-line);
+
+                  stroke thickness color
+                    (start-path (x, y -' d)
+                      |> line-to (x +' w, y +' h)
+                      |> terminate-path);
+
+                  stroke thickness color
+                    (start-path (x, y +' h)
+                      |> line-to (x +' w, y -' d)
+                      |> terminate-path);
+                ]
+              )
+        ```);
+      }
+      +p{
+        なお，上での説明からもわかるとおり，
+        第4引数\codem{\meta{grf}}の “中身” が評価されるタイミングは
+        注意が必要である．\REMAINS{続き}
+
+      }
+    >
+    +section{囲み枠}<
+      +p{ \REMAINS{囲み枠} }
+    >
+    +section{表組版}<
+      +p{ \REMAINS{表組版} }
+    >
+    +section{画像}<
+      +p{ \REMAINS{画像挿入} }
+    >
   >
   +chapter?:(`math`){数式組版}<
     +p{
@@ -364,9 +892,7 @@ document (|
     }
     +p{ \REMAINS{} }
   >
-  +chapter?:(`cross-reference`){相互参照}<
-    +p{ \REMAINS{} }
-  >
+  +chapter?:(`cross-reference`){相互参照}< #cross-reference; >
   +chapter?:(`page-breaking`){ページ分割処理}<
     +p{ \REMAINS{} }
   >

@@ -1,4 +1,4 @@
-@import: cs-thesis
+@import: book-class
 
 let-inline ctx \sample-command it =
   read-inline (ctx |> set-text-color Color.red) it

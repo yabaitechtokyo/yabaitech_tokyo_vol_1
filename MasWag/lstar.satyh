@@ -4,7 +4,7 @@
 
 let lstar = '<+section{L\*アルゴリズム} <
 +p {
-  前節で定義した正規言語をDFAの形式で人間が書くことも当然できますが、これ以降本章では未知の正規言語を学習するという問題を主に考えます。機械学習の教師付き二値分類問題では「正例と負例からなる訓練用データを与えて、訓練用以外のデータについても高い確率で正しく分類する」という問題設定が良く用いられますが、ここでは\emph{exact learning}と呼ばれる学習を考えます。Exact learningでは、未知の正規言語を近似する正規言語を学習するのではなく、未知の正規言語と完全に等しい正規言語を表現するDFAを学習します。ここで、任意の文字列の有限集合は正規言語であるので、有限個の訓練用データを与えても本当に学習したい正規言語に辿り着くのは難しそうです。本節では (というよりexact learningの文脈ではしばしば) 、訓練用データの代わりに次の二つの質問を神託に聞くことを通して学習を行なう、という設定を考えます。現実的にこんなことがわかる神託をどうやって作るのか、という問題はここでは考えません。
+  前節で定義した正規言語をDFAの形式で人間が書くことも当然できますが、これ以降本章では未知の正規言語を学習するという問題を主に考えます。機械学習の教師付き二値分類問題では「正例と負例からなる訓練用データを与えて、訓練用以外のデータについても高い確率で正しく分類する」という問題設定が良く用いられますが、ここでは\emph{exact learning}と呼ばれる学習を考えます。Exact learningでは、未知の正規言語を近似する正規言語を学習するのではなく、未知の正規言語と完全に等しい正規言語を表現するDFAを学習します。ここで、任意の文字列の有限集合は正規言語であるので、有限個の訓練用データを与えても本当に学習したい正規言語に辿り着くのは難しそうです。本節では (というよりexact learningの文脈ではしばしば) 、訓練用データの代わりに次の二つの質問を神託に聞くことを通して学習を行なう、という設定を考えます。現実的にこんなことがわかる神託をどうやって用意するのか、という問題はここでは考えません。
 }
 +p{
 \listing{
@@ -13,16 +13,23 @@ let lstar = '<+section{L\*アルゴリズム} <
 }
 }
 +p {
-  本節では例として ${L = \{ a \in \{\text!{a,b}\} \mid \text!{a, bの個数が共に偶数}\}} を用います。例えば図\ref-figure(`fig:evenDFA`);のDFAがこの言語を認識します。
 
   \figure ?:(`fig:evenDFA`){a, bの個数が共に偶数の文字列の言語を認識するDFAの例。}<
-     +image-frame{\insert-pdf-image(7cm)(`figs/evenDFA.pdf`)(1);}
+     +image-frame{\insert-pdf-image(7cm)(path-to-root ^ `figs/evenDFA.pdf`)(1);}
   >
+  本節では例として ${L = \{ a \in \{\text!{a,b}\} \mid \text!{a, bの個数が共に偶数}\}} を用います。例えば\ref-figure(`fig:evenDFA`);のDFAがこの言語を認識します。
 }
 +subsection{観察表} <
 +p {
-  L\* アルゴリズムでは \emph{観察表} (observation table) と呼ばれる表${T}に、各質問の結果を随時記入していくことで学習を進めていきます。観察表は図\ref-figure(`fig:observationTable`);にある様に行、列が共に${\alphabet}上の文字列で添字付けされている表です。観察表の各セルには所属性質問の結果が記入されます。例えばセル${T\[w,w'\]}には文字列${w\cdot w'}の所属性質問の結果が記入されます。また、観察表には水平線より上側と下側の区別があります。水平線より上側の行の添字集合を${P\subseteq \alphabet^\ast},下側の添字集合を${P'\subseteq\alphabet^\ast},また、列の添字集合を${S\subseteq\alphabet^\ast}と呼びます。水平線より下側の各行ベクトルが水平線より上側に表われているとき、つまり各${w'\in P'}について${T\[w,\text!{-}\]=T\[w',\text!{-}\]}を充たす${w\in P}が存在するとき、その観察表を\emph{閉じている}と言います。
-
+  L\* アルゴリズムでは \emph{観察表} (observation table) と呼ばれる表${T}に、各質問の結果を随時記入していくことで学習を進めていきます。観察表は\ref-figure(`fig:observationTable`);にある様に行、列が共に${\alphabet}上の文字列で添字付けされている表です。観察表の各セルには所属性質問の結果が記入されます。各セル${T\[w,w'\]}には文字列${w\cdot w'}の所属性質問の結果が記入されます。また、観察表には水平線より上側と下側の区別があります。
+水平線より上側の行の添字集合を${P\subseteq \alphabet^\ast},下側の添字集合を${P'\subseteq\alphabet^\ast},また、列の添字集合を${S\subseteq\alphabet^\ast}と呼びます。
+また、観察表が以下の条件を充たすとき、その観察表を\emph{閉じている}と言います。
+}
++p{
+\listing{
+* 各${w'\in P'}について、${T\[w,\text!{-}\]=T\[w',\text!{-}\]}を充たす${w\in P}が存在する
+* 各${w'\in P}、${a\in\alphabet}について、${w\cdot a\in P\cup P'}が成り立つ
+}
   \figure ?:(`fig:observationTable`){観察表の例。${P=\{\epsilon,\text!{a,b}\},P'=\{\text!{aa,ab,ba,bb}\},S=\{\epsilon,\text!{a}\}}}<
 +centering{
 \tabular(fun cellf multif empty -> [
@@ -125,7 +132,7 @@ cellf {};
 }
 >
 
-  L\*アルゴリズムではまず始めに図\ref-figure(`fig:initObservationTable`);の観察表から始めます。最初に空欄になっているセル${T\[\epsilon, \epsilon\]}を所属性質問を用いて埋め、同時に${P'}にa,bを追加し、同様に埋めます (図\ref-figure(`ref:observationTable1`); 。
+  L\*アルゴリズムではまず始めに\ref-figure(`fig:initObservationTable`);の観察表から始めます。最初に空欄になっているセル${T\[\epsilon, \epsilon\]}を所属性質問を用いて埋め、同時に${P'}にa,bを追加し、同様に埋めます (\ref-figure(`fig:observationTable1`);) 。
 
   \figure ?:(`fig:observationTable1`){${\epsilon}、a、bについて埋めた観察表}<
 +centering{
@@ -171,8 +178,6 @@ cellf {F};
 >
 }
 +p {
-  ここで図\ref-figure(`ref:observationTable1`);の観察表が閉じているかを判定します。今回は行aの行ベクトルが水平線の上側の何れの行ベクトルとも一致しないので閉じていません。そこで閉じていない原因の行aを水平線の上側に移動します。このとき各${\{\text!{a} \cdot a \mid a \in \alphabet\}}を添字とする列が${P}と${P'}のどちらにもに存在しない場合、その存在しない添字を${P'}に追加します (図\ref-figure(`fig:observationTable2`);) 。
-
 \figure ?:(`fig:observationTable2`){${\epsilon}、a、bについて埋めた後、閉じるまで操作を続けた観察表}<
 +centering{
 \tabular(fun cellf multif empty -> [
@@ -223,6 +228,7 @@ cellf {F};
   
 }
 >
+  ここで\ref-figure(`fig:observationTable1`);の観察表が閉じているかを判定します。今回は行aの行ベクトル${T\[\text!{a,-}\]}が水平線の上側の何れの行ベクトルとも一致しないので閉じていません。そこで閉じていない原因の行aを水平線の上側に移動します。このとき各${\{\text!{a} \cdot a \mid a \in \alphabet\}}を添字とする列が${P}と${P'}のどちらにもに存在しない場合、その存在しない添字を${P'}に追加します (\ref-figure(`fig:observationTable2`);) 。
 }
 +p {
   今回は観察表が閉じました。観察表が閉じている場合、次のルールに従って観察表からDFAを生成することができます。
@@ -231,20 +237,18 @@ cellf {F};
 \listing{
 * 各${w\in P}に対して、DFAの状態${q_w}を生成する
 * DFAの初期状態は${q_{\epsilon}}とする
-* DFAの受理状態は${T\[w,\epsilon\] = \top}となる状態${q_w}とする
-* DFAの遷移関数${\mathrm{\Delta}\(q_w,a\)}は、${w\cdot a}が水平線の上側に存在する場合${\mathrm{\Delta}\(q_w,a\)=q_{w\cdot a}}とし、そうでない場合${T\[w\cdot a,\text!{-}\] = T\[w',\text!{-}\]}を充たす水平線の上側の列${T\[w',\text!{-}\]}について、${\mathrm{\Delta}\(q_w,a\)=q_{w'}}とする。
+* DFAの受理状態は${T\[w,\epsilon\] = \mathrm{T}}となる状態${q_w}とする
+* DFAの遷移関数${\mathrm{\Delta}\(q_w,a\)}は、${w\cdot a\in P}の場合${\mathrm{\Delta}\(q_w,a\)=q_{w\cdot a}}とし、そうでない場合${T\[w\cdot a,\text!{-}\] = T\[w',\text!{-}\]}を充たす${w'\in P}について、${\mathrm{\Delta}\(q_w,a\)=q_{w'}}とする。
 }
 }
 +p {
-  例えば図\ref-figure(`fig:observationTable2`);の観察表からは図\ref-figure(`fig:evenDFAStep1`);のDFA${\mathcal{A}_1}が生成されます。
 
-  \figure ?:(`fig:evenDFAStep1`){図\ref-figure(`fig:observationTable2`);の観察表に対応するDFA${\mathcal{A}_1}}<
-     +image-frame{\insert-pdf-image(7cm)(`figs/evenDFAStep1.pdf`)(1);}
+  \figure ?:(`fig:evenDFAStep1`){\ref-figure(`fig:observationTable2`);の観察表に対応するDFA${\mathcal{A}_1}}<
+     +image-frame{\insert-pdf-image(7cm)(path-to-root ^ `figs/evenDFAStep1.pdf`)(1);}
   >
+  例えば\ref-figure(`fig:observationTable2`);の観察表からは\ref-figure(`fig:evenDFAStep1`);のDFA、${\mathcal{A}_1}が生成されます。
 }
 +p {
-  DFAを一つ生成することができたので等価性質問によってこのDFAが正解の正規言語を認識するかどうかを調べてみます。今回、DFA${\mathcal{A}_1}は言語${L}を認識しないので、最短の反例 ba が返ります。次に反例 baがどの位置から表の水平線より上側と食い違ったかを見てみます。今回は${T\[\text!{b,-}\]= T\[\text!{a,-}\]}で、実際${b\nin L}と${a\nin L}が成り立ちますが、${ba\nin L}、${aa \in L}となるので末尾のaでと表食い違いました。これはつまり現在の状態の受理・非受理のみではなく、現在の状態からaを読んだときの受理・非受理も考慮する必要があるということになります。これを表わすために${S}にaを加え、先と同様に観察表が閉じるまで所属性質問を繰り返します (図\ref-figure(`fig:observationTable3`);) 。
-
   \figure ?:(`fig:observationTable3`){操作を更に続けた観察表}<
 +centering{
 \tabular(fun cellf multif empty -> [
@@ -398,45 +402,70 @@ cellf {F};
   
 }
 >
+  DFAを一つ生成することができたので等価性質問によってこのDFA学習したい正規言語を認識するかどうかを調べてみます。
+今回、DFA${\mathcal{A}_1}は言語${L}を認識しないので、最短の反例 ba が返ります。
+次に反例 baがどの位置から\ref-figure(`fig:observationTable2`);の観察表と食い違ったかを見てみます。
+今回は${T\[\text!{b,-}\]= T\[\text!{a,-}\]}で、実際${b\nin L}と${a\nin L}が成り立ちますが、${ba\nin L}、${aa \in L}となるので末尾のaで観察表と食い違いました。
+これはつまり現在の状態の受理・非受理のみではなく、現在の状態からaを読んだときの受理・非受理も考慮する必要があるということになります。
+これを表わすために${S}の列にaを加え、先と同様に観察表が閉じるまで所属性質問を繰り返します (\ref-figure(`fig:observationTable3`);) 。
 }
 +p {
-  \figure ?:(`fig:evenDFAStep2`){図\ref-figure(`fig:observationTable3`);の観察表に対応するDFA${\mathcal{A}_2}}<
-     +image-frame{\insert-pdf-image(7cm)(`figs/evenDFAStep2.pdf`)(1);}
-     +image-frame{\insert-pdf-image(7cm)(`figs/evenDFA.pdf`)(1);}
+  \figure ?:(`fig:evenDFAStep2`){\ref-figure(`fig:observationTable3`);の観察表に対応するDFA${\mathcal{A}_2}}<
+     +image-frame{\insert-pdf-image(7cm)(path-to-root ^ `figs/evenDFAStep2.pdf`)(1);}
+     +image-frame{\insert-pdf-image(7cm)(path-to-root ^ `figs/evenDFA.pdf`)(1);}
   >
   
-  \ref-figure(`fig:observationTable3`);の下側の観察表から生成されるDFAについて等価性質問を問い合わせると学習したい言語と一致するので、今回の学習はここで終了となります。ここまでの流れだけを見ると今回たまたま上手く行っただけで、この学習が有限回で停止しない場合もあるのではないかと疑問に思うと思われますが、実は常に有限回 (より正確には多項式回)で停止しますし、更にはこの方法で生成されるDFAは与えられた言語を認識するDFAのなかで状態数が最小となることもわかります。これらの点について次に説明していきます。
+  \ref-figure(`fig:observationTable3`);の下側の観察表から生成されるDFAについて等価性質問を問い合わせると学習したい言語と一致するので、今回の学習はここで終了となります。
+ここまでの流れだけを見ると今回たまたま上手く行っただけで、この学習が有限回で停止しない場合もあるのではないかと疑問に思うと思われますが、実は常に有限回 (より正確には多項式回)で停止しますし、更にはこの方法で生成されるDFAは与えられた言語を認識するDFAのなかで状態数が最小となることもわかります。
+これらの点について次に説明していきます。
 }
 >
 +subsection{Myhill-Nerodeの定理とDFAの最小性} <
 +p {
-  さて、L\*アルゴリズムの停止性を見るために、まずは正規言語の"有限らしさ"の特徴付けであるMyhill-Nerodeの定理を見ていきます。
+  さて、L\*アルゴリズムの停止性を見るために、まずは正規言語の「有限らしさ」の特徴付けであるMyhill-Nerodeの定理を見ていきます。
 }
 +definition ?:({Myhill-Nerode同値関係}) ?:(`myhill-nerode同値関係`)
 {
   有限文字集合${\alphabet}上の言語${L}について、\emph{Myhill-Nerode同値関係}${R_L\subseteq\alphabet^\ast\times\alphabet^\ast}を、次のように定義する。文字列${w,w'\in\alphabet^\ast}について${w R_L w'}が成り立つのは以下のときである。
 }
 +math(${
-\forall w'' \in \alphabet^\ast.\, w \cdot w'' \in L \Leftrightarrow w'\cdot w'' \in L 
+\forall w'' \in \alphabet^\ast. w \cdot w'' \in L \Leftrightarrow w'\cdot w'' \in L 
 });
 +theorem ?:({Myhill-Nerodeの定理}) ?:(`myhill-nerodeの定理`)
 {
   有限文字集合${\alphabet}上の言語${L}について、${L}が正規言語であることの必要十分条件は、商集合${L/R_L}が有限集合となることである。
 }
 +p {
-  \figure ?:(`fig:evenTree`){a, bの個数が共に偶数の文字列の言語を認識する無限状態のオートマトンの例 (上)とその状態aとabaを纏めたオートマトン (下)}<
-     +image-frame{\insert-pdf-image(7cm)(`figs/evenTree.pdf`)(1);}
-     +image-frame{\insert-pdf-image(7cm)(`figs/evenTreeMerged.pdf`)(1);}
+  \figure ?:(`fig:evenTree`){a, bの個数が共に偶数の文字列の言語を認識する無限状態のオートマトンの例 (上)と、 その状態aとabaを纏めたオートマトン (下)}<
+     +image-frame{\insert-pdf-image(7cm)(path-to-root ^ `figs/evenTree.pdf`)(1);}
+     +image-frame{\insert-pdf-image(7cm)(path-to-root ^ `figs/evenTreeMerged.pdf`)(1);}
   >
 
-  文字列${w,w'}とMyhill-Nerode同値関係${R_L}について、${w R_L w'}が成り立つということの直観は、「これから与えられる未知の文字列${w''\in\alphabet^\ast}について${w\cdot w''\in L}が成り立つかどうかを調べたいときに、今まで読んだ文字が${w}であるか${w'}であるかは気にしなくて良い」ということになります。このことについて木を使ってより詳しく見ていきます。文字集合${\alphabet=\{\text!{a,b}\}}上の言語${L}として、「aとbの出現回数が共に偶数回」というものを考えます。この言語を受理する(無限状態数の)オートマトンとして図の上側の木を考えます。この木では各文字列${w\in\alphabet^\ast}について一つの状態が割り当てられ、${L}に含まれる文字列と対応する状態が受理状態となります。ここで今回、例えば${\text!{b} R_L \text!{aba}}が成り立ちますが、これは木の上の性質としてみると、bを根としたときの部分木と、abaを根としたときの部分木が等しいということになります。従って下側の(無限状態の)オートマトンのように、状態bと状態abaを一つにまとめても、受理言語は変わらないと言えます。商集合${L/R_L}が有限集合、つまり右側のオートマトンのように状態を纏める操作を行うと最終的に有限状態のオートマトンになるとき、確かに${L\(\mathcal{A}\)=L}が成り立つようなDFA${\mathcal{A}}を構成できるので${L}は正規言語になります。また、${L}が正規言語である、つまり${L\(\mathcal{A}\)=L}が成り立つようなDFA${\mathcal{A}}が存在するとき、文字列${w,w'}について${\delta\(q_0,w\)=\delta\(q_0,w'\)}が成り立つならば${w R_L w'}も成り立つので${L/R_L}は有限集合となります。以上がMyhill-Nerodeの定理が成り立つ簡単な理由です。さらに、正規言語${L}とDFA${\mathcal{A}}について、状態数が${\|L/R_L\|}より少ない場合${\delta\(q_0,w\)=\delta\(q_0,w'\)}であって${w R_L w'}が成り立たないような文字列${w,w'\in\alphabet^\ast}が存在するので、次の系が成り立ちます。
+  文字列${w,w'}とMyhill-Nerode同値関係${R_L}について、${w R_L w'}が成り立つということの直観は、「これから与えられる未知の文字列${w''\in\alphabet^\ast}について${w\cdot w''\in L}が成り立つかどうかを調べたいときに、今まで読んだ文字が${w}であるか${w'}であるかは気にしなくて良い」ということになります。
+このことについて木を使ってより詳しく見ていきます。
+文字集合${\alphabet=\{\text!{a,b}\}}上の言語${L}として、「aとbの出現回数が共に偶数回」というものを考えます。
+この言語を受理する(無限状態数の)オートマトンとして\ref-figure(`fig:evenTree`);の上側の木を考えます。
+この木では各文字列${w\in\alphabet^\ast}について一つの状態が割り当てられ、${L}に含まれる文字列と対応する状態が受理状態となります。
+ここで今回、例えば${\text!{b} R_L \text!{aba}}が成り立ちますが、これは木の上の性質としてみると、bを根としたときの部分木と、abaを根としたときの部分木が等しいということになります。
+従って\ref-figure(`fig:evenTree`);の下側の(無限状態の)オートマトンのように、状態bと状態abaを一つにまとめても、受理言語は変わらないと言えます。
+商集合${L/R_L}が有限集合、つまり右側のオートマトンのように状態を纏める操作を行うと最終的に有限状態のオートマトンになるとき、確かに${L\(\mathcal{A}\)=L}が成り立つような、状態数${\|L/R_L\|}のDFA${\mathcal{A}}を構成できるので${L}は正規言語になります。
+また、${L}が正規言語である、つまり${L\(\mathcal{A}\)=L}が成り立つようなDFA${\mathcal{A}}が存在するとき、文字列${w,w'}について${\delta\(q_0,w\)=\delta\(q_0,w'\)}が成り立つならば${w R_L w'}も成り立つので${L/R_L}は有限集合となります。
+以上がMyhill-Nerodeの定理が成り立つ簡単な理由です。
+さらに、正規言語${L}とDFA${\mathcal{A}}について、状態数が${\|L/R_L\|}より少ない場合${\delta\(q_0,w\)=\delta\(q_0,w'\)}であって${w R_L w'}が成り立たないような文字列${w,w'\in\alphabet^\ast}が存在するので、次の系が成り立ちます。
 }
 +corollary ?:({状態数最小のDFA}) ?:(`状態数最小のdfa`)
 {
   正規言語${L}について、状態数${\|L/R_L\|}で${L}を認識するDFAが存在し、また、状態数${L/R_L}未満の任意のDFAは${L}を認識しない。
 }
 +p {
-  さて、Myhill-Nerodeの定理の立場からL\*アルゴリズムの観察表を見ていきます。まず、各${w\in P}について行ベクトル${T\[w,\text!{-}\]}は互いに異なる、つまり適宜末尾に文字列を加えたときの受理/非受理の関係が異なるので、${P}の要素数は${L/R_L}の要素数以下になり、${L}が正規言語であるとならば上限が存在します。各${P'}の要素は${P}の要素に一文字付け加えたものであるので、${\|P'\|\leq\|P\|\times\|\alphabet\|}となります。また、${S}に添字${w'}を追加する際は${w'}を追加することで新たに食い違うような${w'}のみを追加する、つまり各${w\in S}について${T\[u,w\]=T\[u',w\]}であるが${T\[u,w'\]\neq T\[u',w'\]}である様な${u,u' \in P}が存在するときのみ${w'}を${S}に追加します。従って、${\|S\|\leq \|L/R_L\|}も成立します。更に観察表を閉じる際及び等価性質問の結果反例が返って来た際には${P}と${S}の大きさが1以上増えます。以上よりL\*アルゴリズムは${L}が正規言語であれば常に停止し、${L\(\mathcal{A}\)=L}を充たすDFA${\mathcal{A}}を返することがわかります。また、L\*アルゴリズムが生成するDFAの状態数は${\|P\|}ですが、${L\(\mathcal{A}\)=L}を充たす任意のDFAの状態数は${L/R_L}以下であることから、${\mathcal{A}}は${L\(\mathcal{A}\)=L}を充たす状態数が最小のDFAであることもわかります。
+  さて、Myhill-Nerodeの定理の立場からL\*アルゴリズムの観察表を見ていきます。
+まず、各${w\in P}について行ベクトル${T\[w,\text!{-}\]}は互いに異なる、つまり適宜末尾に文字列を加えたときの受理/非受理の関係が異なるので、${P}の要素数は${L/R_L}の要素数以下になり、${L}が正規言語であるとならば上限が存在します。
+各${P'}の要素は${P}の要素に一文字付け加えたものであるので、${\|P'\|\leq\|P\|\times\|\alphabet\|}となります。
+また、${S}に添字${w'}を追加する際は${w'}を追加することで新たに食い違うような${w'}のみを追加する、つまり各${w\in S}について${T\[u,w\]=T\[u',w\]}であるが${T\[u,w'\]\neq T\[u',w'\]}である様な${u,u' \in P\cup P'}が存在するときのみ${w'}を${S}に追加します。
+従って、${\|S\|\leq \|L/R_L\|\times \(1+\|\alphabet\|\)}も成立します。
+更に観察表を閉じる際及び等価性質問の結果反例が返って来た際には${P}と${S}の大きさが1以上増えます。
+以上よりL\*アルゴリズムは${L}が正規言語であれば常に停止し、${L\(\mathcal{A}\)=L}を充たすDFA${\mathcal{A}}を返することがわかります。
+また、L\*アルゴリズムが生成するDFAの状態数は${\|P\|}ですが、${L\(\mathcal{A}\)=L}を充たす任意のDFAの状態数は${L/R_L}以下であることから、${\mathcal{A}}は${L\(\mathcal{A}\)=L}を充たす状態数が最小のDFAであることもわかります。
 }
 >
 >>
