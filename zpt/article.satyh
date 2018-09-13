@@ -1,3 +1,4 @@
+@require: itemize
 @import: ../main/cs-thesis
 @import: derivation-rules
 
@@ -53,15 +54,43 @@ let zpt-article = '<
     >
     +section {行って戻るとS4様相} <
     >
+    +section {階層を対称にする} <
+      
+    >
+    +section {階層を対称にする その2} <
+      +p {先ほどは2レベルの階層を対称にすることで${\adj-down{}}がKの様相になることを確認しました。実は別の方法で階層の対称性を導入することで${\adj-up{}}もKの様相になります。ここで導入する体系をIPCkMと呼ぶことにします。IPCkMの構造に関する基本的なアイデアは以下の通りです。
+        \listing {
+        * 階層の数を任意自然数個に拡張する
+        * 階層の対称性を以下の二つで表現する
+        ** それぞれの階層で同じ論理が動く
+        ** ある階層で成り立つ命題は他の階層でも成り立つ
+        }
+        まずは記号の定義から見ていきましょう。
+      }
+      
+      #ipckm-symbols;
+
+      +p {\todo{任意自然数個の階層の話に書き変える} IPCkMに特徴的なのが最後の文脈スタックです。IPC2Mでは階層が高々二つだったのに対して、IPCkMでは任意自然数個の階層を認めるためこのような定義をしています。このような定義の下でIPCkMの判断は以下のような形になります。}
+
+      #ipckm-judgments;
+
+      +p {IPC2では二つの階層に応じて二つの判断がありましたが、IPCkMではどの階層でも同じ命題を扱うため判断を一つにまとめることができます。階層の数が増えても期待される構造はIPC2と基本的に同じで、仮定のルールは以下のように表現されます。}
+
+      #ipckm-hyp;
+
+      +p {また、一部の構造規則はIPC2のそれを素直に拡張したものとなっています。}
+
+      #ipckm-structure1;
+
+      +p {さて、IPCkMの基本的なアイデアとして「ある階層で成り立つ命題は他の階層でも成り立つ」に言及しました。これは以下のような構造規則として表現できます。}
+
+      #ipckm-structure2;
+
+      +p {}
+    >
     +section {階層の対称性と二つのK様相} <
-      +p {
-      \repeat(500){this\ }
-      #modalm-symbols;}
-      +p {#modalm-structure;}
-      +p {#modalm-rules;}
-      +p {
-      \repeat(500){this\ }
-      #modald-symbols;}
+      +p {前の章までではIPC2}
+      +p {#modald-symbols;}
       +p {#modald-structure;}
       +p {#modald-rules;}
     >

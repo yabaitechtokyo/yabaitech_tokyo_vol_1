@@ -12,7 +12,7 @@ module ZptMath : sig
   direct \adj2 : [math; math] math-cmd
   direct \adj-up : [math] math-cmd
   direct \adj-down : [math] math-cmd
-  direct \modalm : [math list; math] math-cmd
+  direct \ipckm : [math list; math] math-cmd
   direct \modald : [math; math; math] math-cmd
   direct \repeat : [int; inline-text] inline-cmd
   direct \fmodal : [math] math-cmd
@@ -48,7 +48,7 @@ end = struct
     | (x :: xs) succ = let rest = make-modal-judgment xs succ in
                            ${#x \semicolon #rest}
 
-  let-math \modalm andl succ = make-modal-judgment andl succ
+  let-math \ipckm andl succ = make-modal-judgment andl succ
 
   let-math \modald ant1 ant2 succ = ${
     #ant1 \semicolon #ant2 \vdash #succ
