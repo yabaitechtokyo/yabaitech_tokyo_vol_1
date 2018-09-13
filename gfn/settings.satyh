@@ -7,6 +7,17 @@
 @import: book-class
 
 
+% ---- constants ----
+
+let code-background = Gray(0.875)
+let quote-indent-1 = 24pt
+let quote-indent-2 = 12pt
+let val-margin = 12pt
+let val-explain-margin = 6pt
+
+% ---- ----
+
+
 let-inline ctx \REMAINS msg =
   let pads = (2pt, 2pt, 2pt, 2pt) in
   let ctx =
@@ -64,7 +75,7 @@ let-inline ctx \codem it =
       ib-strut ++ read-inline ctx it
   in
   let pads = (2pt, 2pt, 2pt, 2pt) in
-  let decoset = HDecoSet.rectangle-round-fill 4pt 2pt (Color.gray 0.9) in
+  let decoset = HDecoSet.rectangle-round-fill 4pt 2pt code-background in
     script-guard Latin (inline-frame-breakable pads decoset ib)
 
 
@@ -80,22 +91,46 @@ let-inline \person-github itn itg =
   {#itn; (\github{#itg;})}
 
 
+let display-code-decoset =
+  let deco (x, y) w h d =
+    [
+      fill code-background (Gr.rectangle (x, y -' d) (x +' w, y +' h));
+    ]
+  in
+    (deco, deco, deco, deco)
+
+
 let display-code-scheme ctx s =
-    let decoset =
-      let back-color = Gray(0.875) in
-      let deco (x, y) w h d =
-        [
-          fill back-color (Gr.rectangle (x, y -' d) (x +' w, y +' h));
-        ]
-      in
-      (deco, deco, deco, deco)
-    in
-      Code.scheme decoset Color.black ctx s
+  Code.scheme display-code-decoset Color.black ctx s
 
 
 let-inline ctx \d-code s =
   let bb = display-code-scheme ctx s in
     inline-fil ++ embed-block-breakable ctx bb
+
+
+let-inline ctx \d-code-and-block s bt =
+  let pads = (5pt, 5pt, 5pt, 5pt) in
+  let wid = get-text-width ctx in
+  let bb =
+    display-code-scheme ctx s +++
+      block-frame-breakable ctx pads VDecoSet.paper (fun ctx ->
+        read-block ctx bt
+      )
+  in
+    inline-fil ++ embed-block-breakable ctx bb
+
+
+let-inline ctx \d-codem it =
+  let pads = (5pt, 5pt, 5pt, 5pt) in
+  let bb =
+    block-frame-breakable ctx pads display-code-decoset (fun ctx ->
+      line-break true true ctx
+        (read-inline (ctx |> set-mono-font) it ++ inline-fil)
+    )
+  in
+    inline-fil ++
+      embed-block-breakable ctx bb
 
 
 module BoxGraphics = struct
@@ -196,19 +231,6 @@ let-block ctx +centered-graphics w h grf =
   in
   line-break true true (ctx |> set-paragraph-margin 0pt 0pt)
     (inline-fil ++ ib-gr ++ inline-fil)
-
-
-let-inline ctx \d-code-and-block s bt =
-  let pads = (5pt, 5pt, 5pt, 5pt) in
-  let wid = get-text-width ctx in
-  let bb =
-    display-code-scheme ctx s +++
-      block-frame-breakable ctx pads VDecoSet.paper (fun ctx ->
-        read-block ctx bt
-      )
-  in
-    inline-fil ++ embed-block-breakable ctx bb
-
 
 
 module Sample = struct
@@ -392,12 +414,6 @@ end = struct
 end
 
 
-let quote-indent-1 = 24pt
-let quote-indent-2 = 12pt
-let val-margin = 12pt
-let val-explain-margin = 6pt
-
-
 let val-scheme ctx indexopt it-cmd ty explainopt =
   let m = Type.to-math ty in
   let it =
@@ -462,6 +478,18 @@ let-inline ctx \meta it =
 
 let-inline ctx \metasub msub it =
   read-inline ctx {${\text!{\meta{#it;}}_{#msub}}}
+
+
+let-inline ctx \meta-star it =
+  embed-math ctx ${\sqbracket{\text!{#it;}}^{\ast}}
+
+
+let-inline ctx \meta-or its =
+  let m =
+    math-paren-with-middle Math.paren-left Math.paren-right Math.bar-middle
+      (its |> List.map (fun it -> ${\text!{#it;}}))
+  in
+    embed-math ctx m
 
 
 let-inline ctx \inline-frame inner =
