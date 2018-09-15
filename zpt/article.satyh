@@ -49,14 +49,23 @@ let zpt-article = '<
 
       #adj-rules-imp;
 
-      +p {${\imp}と${\imp2}が特定のレベルにおける論理結合子であったのに対して${\adj-up{}}と${\adj-down{}}はレベルをまたいでおり、IPC2に特有の論理結合子となっています。まずは${\adj-up{}}の定義から見ていきましょう。}
+      +p {${\imp}と${\imp2}が特定のレベルにおける論理結合子であったのに対して${\adj-up{}}と${\adj-down{}}はレベルをまたぐIPC2に特有の論理結合子となっています。まずは${\adj-up{}}の定義から見ていきましょう。}
 
       #adj-rules-up;
 
       +p {${\adj-up{}}の導入規則ではレベル2における${\adj-up{A}}の意味を「レベル1でAが仮定無しで成り立つこと」と定義しています。その帰結として除去規則ではレベル2で${\adj-up{A}}で成り立つ時にレベル1でAを導きます。(なお、ここでレベル1の文脈に任意の${\Gamma}を許容するのはレベル1における弱化を成立させるためです。)実際にこれらの規則がlocal reductionとlocal expansionをつくることを以下のように確認できます。}
 
-      #adj-rules-lr;
-      #adj-rules-le;
+      #adj-rules-up-lr;
+      #adj-rules-up-le;
+
+      +p {${\adj-up{}}がレベル2からレベル1の命題を扱う論理結合子であったのに対し、${\adj-down{}}はレベル1からレベル2の命題を扱う論理結合です。}
+
+      #adj-rules-down;
+
+      +p {${\adj-down{}}の導入規則で表されているように、${\adj-down{\alpha}}は「レベル2において${\alpha}が成り立っている」というレベル1の命題になっています。対応する除去則では${\adj-down{\alpha}}が成り立っている時にレベル2の仮定に${\alpha}が入っていることにして推論してもよいということを表しています。これらの規則もlocal reductionとlocal expansionを満たしていることがわかります。}
+
+      #adj-rules-down-lr;
+      #adj-rules-down-le;
     >
     +section {行って戻るとS4様相} <
     >

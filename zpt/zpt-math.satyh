@@ -18,7 +18,7 @@ module ZptMath : sig
   direct \fmodal : [math] math-cmd
   direct \dmodal : [math] math-cmd
   direct \todo : [inline-text] inline-cmd
-  direct \derive : [inline-text?; math list; math] math-cmd
+  direct \derive : [inline-text?; bool?; math list; math] math-cmd
 
 end = struct
   let bin = math-char MathBin
@@ -73,12 +73,16 @@ end = struct
     let ctx-red = ctx |> set-text-color Color.red in
       read-inline ctx-red {TODO: #text;}
 
-  let myderive nameopt mlst m=
+  let myderive nameopt bopt mlst m=
     match nameopt with
-    | None -> ${\derive !(mlst) !(m)}
-    | Some(name) -> ${\derive ?:{\text!{\ (#name;)}} !(mlst) !(m)}
+    | None -> (match bopt with
+               | None -> ${\derive !(mlst) !(m)}
+               | Some(b) -> ${\derive ?:{} ?:!(b) !(mlst) !(m)})
+    | Some(name) -> (match bopt with
+                     | None -> ${\derive ?:{\text!{\ (#name;)}} !(mlst) !(m)}
+                     | Some(b) -> ${\derive ?:{\text!{\ (#name;)}} ?:!(b) !(mlst) !(m)})
 
-  let-math \derive ?:nameopt mlst m =
-    myderive nameopt mlst m
+  let-math \derive ?:nameopt ?:bopt mlst m =
+    myderive nameopt bopt mlst m
   
 end

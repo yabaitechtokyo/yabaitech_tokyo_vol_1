@@ -182,7 +182,7 @@ let adj-rules-up = '<
   );
 >
 
-let adj-rules-lr = '<
+let adj-rules-up-lr = '<
   +math-list (${
     | \derive?:!{${\adj-up{}}E}
              {| \derive?:!{${\adj-up{}}I}
@@ -195,7 +195,7 @@ let adj-rules-lr = '<
     |});
 >
 
-let adj-rules-le = '<
+let adj-rules-up-le = '<
   +math-list (${
     | \adj2{\Theta}{\adj-up{A}}
     | \Rightarrow_E
@@ -207,52 +207,52 @@ let adj-rules-le = '<
     |});
 >
 
+let adj-rules-down = '<
+  +math-list (
+    ${
+    | \derive?:!{${\adj-down{}}I}
+             {| \adj2{\Theta}{\alpha} |}
+             { \adj1{\Theta}{\Gamma}{\adj-down{\alpha}} }
+    | \derive?:!{${\adj-down{}}E}
+             {| \adj1{\Theta}{\Gamma}{\adj-down{\alpha}}
+              | \adj1{\Theta, \alpha}{\Gamma}{A}
+              |}
+             { \adj1{\Theta}{\Gamma}{A} }
+    |});
+>
 
-let adj-rules =
-    {
-      \figure {二階層の論理の導出規則} <
-      +p {
-        \math-list (
-        ${
-        | \derive{| \adj1{\Theta}{\Gamma, A}{B} |}
-                 { \adj1{\Theta}{\Gamma}{A \imp B} }
-        | \derive{| \adj1{\Theta}{\Gamma}{A \imp B}
-                  | \adj1{\Theta}{\Gamma}{A}
-                  |}
-                 { \adj1{\Theta}{\Gamma}{B} }
-        |});
+let adj-rules-down-lr = '<
+  +math-list (${
+    | \derive?:!{${\adj-down{}}E}
+             {| \derive?:!{${\adj-down{}}I}
+                       {| \adj2{\Theta}{\alpha} |}
+                       { \adj1{\Theta}{\Gamma}{\adj-down{\alpha}} }
+              | \adj1{\Theta, \alpha}{\Gamma}{B}
+              |}
+             { \adj1{\Theta}{\Gamma}{B} }
+    | \Rightarrow_R
+    | \adj1{\Theta}{\Gamma}{B}
+    |});
+>
 
-        \math-list (
-        ${
-        | \derive{| \adj2{\Theta, \alpha}{\beta} |}
-                 { \adj2{\Theta}{\alpha \imp2 \beta} }
-        | \derive{| \adj2{\Theta}{\alpha \imp2 \beta}
-                  | \adj2{\Theta}{\alpha}
-                  |}
-                 { \adj2{\Theta}{\beta} }
-        |});
-
-        \math-list (
-        ${
-        | \derive{| \adj1{\Theta}{\cdot}{A} |}
-                 { \adj2{\Theta}{\adj-up{A}} }
-        | \derive{| \adj2{\Theta}{\adj-up{A}}
-                  |}
-                 { \adj1{\Theta}{\Gamma}{A} }
-        |});
-
-        \math-list (
-        ${
-        | \derive{| \adj2{\Theta}{\alpha} |}
-                 { \adj1{\Theta}{\Gamma}{\adj-down{\alpha}} }
-        | \derive{| \adj1{\Theta}{\Gamma}{\adj-down{\alpha}}
-                  | \adj1{\Theta, \alpha}{\Gamma}{A}
-                  |}
-                 { \adj1{\Theta}{\Gamma}{A} }
-        |});
-        }
-      >
-    }
+let adj-rules-down-le = '<
+  +math-list (${
+    | \adj1{\Theta}{\Gamma}{\adj-down{\alpha}}
+    | \Rightarrow_E
+    | \derive?:!{${\adj-up{}}E}
+             {| \adj1{\Theta}{\Gamma}{\adj-down{\alpha}}
+              | \derive?:!{${\adj-up{}}I}
+                       ?:!(true)
+                       {| \derive?:!{hyp2}
+                                 ?:!(true)
+                                 {|  |}
+                                 { \adj2{\Theta, \alpha}{\alpha} }
+                        |}
+                       { \adj1{\Theta, \alpha}{\Gamma}{\adj-down{\alpha}} }
+              |}
+             { \adj1{\Theta}{\Gamma}{\adj-down{\alpha}} }
+    |});
+>
 
 let ipckm-symbols = '<
     +align [
