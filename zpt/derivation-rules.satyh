@@ -257,7 +257,7 @@ let adj-rules-down-le = '<
 let ipckm-symbols = '<
     +align [
       ${|| \text !{命題変数} || p, q, \ldots || |};
-      ${|| \text !{の命題} || A, B || \coloneq p \mid A \imp B \mid \adj-up{A} |};
+      ${|| \text !{の命題} || A, B || \coloneq p \mid A \imp B \mid \fmodal{A} |};
       ${|| \text !{文脈} || \Gamma, \Delta || \coloneq \cdot \mid \Gamma, A|};
       ${|| \text !{文脈スタック} || \Psi, \Phi || \coloneq \Gamma \mid \Psi \semicolon \Gamma|};
     ];
@@ -310,61 +310,30 @@ let ipckm-structure2 = '<
   |});
 >
 
-let neko = {
-      \figure {Fitch-styleの様相論理の構造} <
-      +p {
-        構造規則
-        \math-list (
-        ${
-        | \derive{| \ipckm{| \Psi | \Gamma, A | \Phi |}{B} |
-                  | \ipckm{| \Psi | \Gamma |}{A}
-                  |}
-                 { \ipckm{| \Psi | \Gamma | \Phi |}{B} }
-        | \derive{| \ipckm{| \Psi |}{A} |}
-                 { \ipckm{|| \Psi |}{A} }
-        | \derive{| \ipckm{|| \Psi |}{A} |}
-                 { \ipckm{| \Psi |}{A} }
-        |});
 
-        \math-list (
-        ${
-        | \derive{| \ipckm{| \Psi | \Gamma | \Phi |}{B} |}
-                 { \ipckm{| \Psi | \Gamma, A | \Phi |}{B} }
-        | \derive{| \ipckm{| \Psi | \Gamma, A, A | \Phi |}{B} |}
-                 { \ipckm{| \Psi | \Gamma, A | \Phi |}{B} }
-        | \derive{| \ipckm{| \Psi | \Gamma_1, A, B, \Gamma_2 | \Phi |}{C} |}
-                 { \ipckm{| \Psi | \Gamma_1, B, A, \Gamma_2 | \Phi |}{C} }
-        |});
-      }
-      >
-    }
+let ipckm-rules = '<
+  +math-list (${
+  | \derive?:!{${\imp}I}
+           {| \ipckm{| \Psi | \Gamma, A |}{B}
+            |}
+           { \ipckm{| \Psi | \Gamma |}{A \imp B} }
+  | \derive?:!{${\imp}E}
+           {| \ipckm{| \Psi |}{ A \imp B }
+            | \ipckm{| \Psi |}{ A }
+            |}
+           { \ipckm{| \Psi |}{ B } }
+  |});
 
-let ipckm-rules =
-    {
-      \figure {Fitch-styleのK様相論理の導出規則} <
-      +p {
-        \math-list (
-        ${
-        | \derive{| \ipckm{| \Psi | \Gamma, A |}{B}
-                  |}
-                 { \ipckm{| \Psi | \Gamma |}{A \imp B} }
-        | \derive{| \ipckm{| \Psi |}{ A \imp B }
-                  | \ipckm{| \Psi |}{ A }
-                  |}
-                 { \ipckm{| \Psi |}{ B } }
-        |});
-
-        \math-list (
-        ${
-        | \derive{| \ipckm{| \Psi | \cdot |}{A}
-                  |}
-                 { \ipckm{| \Psi |}{ \fmodal{A} } }
-        | \derive{| \ipckm{| \Psi |}{ \fmodal{A} } |}
-                 { \ipckm{| \Psi | \Gamma |}{ A } }
-        |});
-        }
-      >
-    }
+  +math-list (${
+  | \derive?:!{${\fmodal{}}I}
+           {| \ipckm{| \Psi | \cdot |}{A}
+            |}
+           { \ipckm{| \Psi |}{ \fmodal{A} } }
+  | \derive?:!{${\fmodal{}}E}
+           {| \ipckm{| \Psi |}{ \fmodal{A} } |}
+           { \ipckm{| \Psi | \Gamma |}{ A } }
+  |});
+>
 
 let modald-symbols =
     {

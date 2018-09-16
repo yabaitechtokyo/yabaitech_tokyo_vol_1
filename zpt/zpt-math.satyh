@@ -66,8 +66,8 @@ end = struct
 
   let-math \adj-down p = ${\downarrow #p}
 
-  let-math \fmodal p = let box = bin `□` in ${#box #p}
-  let-math \dmodal p = let box = bin `■` in ${#box #p}
+  let-math \fmodal p = let box = bin `▲` in ${#box #p}
+  let-math \dmodal p = let box = bin `▼` in ${#box #p}
 
   let-inline ctx \todo text =
     let ctx-red = ctx |> set-text-color Color.red in
