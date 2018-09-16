@@ -1,0 +1,48 @@
+@import: ../main/book-class
+
+let zpt-bibliography = [
+  (`Kavvos17`, InProceedings(|
+    author = {| G. A. Kavvos |};
+    title = {Dual-Context Calculi for Modal Logic};
+    booktitle = {2017 32nd Annual ACM/IEEE Symposium on Logic in Computer Science (LICS)};
+    series = None; 
+    volume = None; 
+    number = None; 
+    pages = (1,12);
+    year = 2017;
+  |));
+  (`Kavvos18`, WebSite(|
+    author = {| G. A. Kavvos|};
+    title  = {Dual-Context Calculi for Modal Logic};
+    url    = `https://arxiv.org/abs/1602.04860`;
+    year   = 2018;
+  |));
+  (`Davies01`, Article(|
+    author  = {| Rowan Davies | Frank Pfenning|};
+    title   = {A Modal analysis of Staged Computation};
+    journal = {Journal of the ACM};
+    volume  = Some 48;
+    number  = Some {3};
+    pages   = (555, 604);
+    year    = 2001;
+  |));
+  (`Clouston18`, InProceedings(|
+    author = {| Ranald Clouston |};
+    title = {Fitch-Style Modal Lambda Calculi};
+    booktitle = {21st International Conference on Foundations of Software Science and Computation Structures (FoSSaCS)};
+    series = None; 
+    volume = None; 
+    number = None; 
+    pages = (258,275);
+    year = 2018;
+    |));
+  (`Martini96`, Article(|
+    author  = {| Simone Martini | Andrea Masini |};
+    title   = {A Computational Interpretation of Modal Proofs};
+    journal = {Proof Theory of Modal Logic};
+    volume  = Some 2;
+    number  = None;
+    pages   = (213, 241);
+    year    = 1996;
+  |));
+]

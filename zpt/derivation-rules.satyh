@@ -186,6 +186,7 @@ let adj-rules-up-lr = '<
   +math-list (${
     | \derive?:!{${\adj-up{}}E}
              {| \derive?:!{${\adj-up{}}I}
+                       ?:!(true)
                        {| \adj1{\Theta}{\cdot}{A} |}
                        { \adj2{\Theta}{\adj-up{A}} }
               |}
@@ -201,6 +202,7 @@ let adj-rules-up-le = '<
     | \Rightarrow_E
     | \derive?:!{${\adj-up{}}E}
              {| \derive?:!{${\adj-up{}}I}
+                       ?:!(true)
                        {| \adj2{\Theta}{\adj-up{A}} |}
                        { \adj1{\Theta}{\cdot}{A} } |}
              { \adj2{\Theta}{\adj-up{A}} }
@@ -239,9 +241,9 @@ let adj-rules-down-le = '<
   +math-list (${
     | \adj1{\Theta}{\Gamma}{\adj-down{\alpha}}
     | \Rightarrow_E
-    | \derive?:!{${\adj-up{}}E}
+    | \derive?:!{${\adj-down{}}E}
              {| \adj1{\Theta}{\Gamma}{\adj-down{\alpha}}
-              | \derive?:!{${\adj-up{}}I}
+              | \derive?:!{${\adj-down{}}I}
                        ?:!(true)
                        {| \derive?:!{hyp2}
                                  ?:!(true)
@@ -257,7 +259,7 @@ let adj-rules-down-le = '<
 let ipckm-symbols = '<
     +align [
       ${|| \text !{命題変数} || p, q, \ldots || |};
-      ${|| \text !{の命題} || A, B || \coloneq p \mid A \imp B \mid \fmodal{A} |};
+      ${|| \text !{命題} || A, B || \coloneq p \mid A \imp B \mid \fmodal{A} |};
       ${|| \text !{文脈} || \Gamma, \Delta || \coloneq \cdot \mid \Gamma, A|};
       ${|| \text !{文脈スタック} || \Psi, \Phi || \coloneq \Gamma \mid \Psi \semicolon \Gamma|};
     ];
@@ -282,21 +284,20 @@ let ipckm-structure1 = '<
                   | \ipckm{| \Psi | \Gamma |}{A}
                   |}
                  { \ipckm{| \Psi | \Gamma | \Phi |}{B} }
-        | \derive?:!{weak}
-                 {| \ipckm{| \Psi | \Gamma | \Phi |}{B} |}
-                 { \ipckm{| \Psi | \Gamma, A | \Phi |}{B} }
+        % | \derive?:!{weak}
+        %          {| \ipckm{| \Psi | \Gamma | \Phi |}{B} |}
+        %          { \ipckm{| \Psi | \Gamma, A | \Phi |}{B} }
         |});
 
-        +math-list (
-        ${
-        | \derive?:!{contr}
-                 {| \ipckm{| \Psi | \Gamma, A, A | \Phi |}{B} |}
-                 { \ipckm{| \Psi | \Gamma, A | \Phi |}{B} }
-        | \derive?:!{exchg}
-                 {| \ipckm{| \Psi | \Gamma_1, A, B, \Gamma_2 | \Phi |}{C} |}
-                 { \ipckm{| \Psi | \Gamma_1, B, A, \Gamma_2 | \Phi |}{C} }
-        |});
-
+        % +math-list (
+        % ${
+        % | \derive?:!{contr}
+        %          {| \ipckm{| \Psi | \Gamma, A, A | \Phi |}{B} |}
+        %          { \ipckm{| \Psi | \Gamma, A | \Phi |}{B} }
+        % | \derive?:!{exchg}
+        %          {| \ipckm{| \Psi | \Gamma_1, A, B, \Gamma_2 | \Phi |}{C} |}
+        %          { \ipckm{| \Psi | \Gamma_1, B, A, \Gamma_2 | \Phi |}{C} }
+        % |});
 >
 
 let ipckm-structure2 = '<
@@ -335,67 +336,129 @@ let ipckm-rules = '<
   |});
 >
 
-let modald-symbols =
-    {
-      \figure {Dual-Contextの様相論理の記号} <
-        +p{ふぃっくすみー}
-      >
-    }
+let ipc2m-symbols = '<
+  +align [
+    ${|| \text !{命題変数} || p, q, \ldots || |};
+    ${|| \text !{命題} || A, B || \coloneq p \mid A \imp B \mid \dmodal{A} |};
+    ${|| \text !{文脈} || \Gamma, \Delta || \coloneq \cdot \mid \Gamma, A|};
+  ];
+>
 
-let modald-structure =
-    {
-      \figure {Dual-Contextの様相論理の構造} <
-      +p {
-        仮定の使用
-        \math-list (
-        ${| \derive{| A \in \Gamma |}
-                   { \modald{ \Delta }{ \Gamma }{A}}
-        |});
-      }
-      +p {
-        構造規則
-        \math-list (
-        ${
-        | \derive{| \modald{\Delta}{\Gamma, A}{B}
-                  | \modald{\Delta}{\Gamma}{A}
-                  |}
-                 { \modald{\Delta}{\Gamma}{B}}
-        | \derive{| \modald{\Delta, A}{\Gamma}{B}
-                  | \modald{\cdot}{\Delta}{A}
-                  |}
-                  { \modald{\Delta}{\Gamma}{B}}
+let ipc2m-judgment = '<
+  +math (${\ipc2m{\Delta}{\Gamma}{A}});
+>
 
-        |});
-        (それぞれの仮定について弱化、縮約、交換が入る)
-      }
-      >
-    }
+let ipc2-adj-judgment = {
+  \align [
+    ${| \adj1{\Theta}{\Gamma}{A} | \Rightarrow \ipc2m{\Theta}{\Gamma}{A} |};
+    ${| \adj2{\Theta}{\alpha} | \Rightarrow \ipc2m{\cdot}{\Theta}{\alpha} |};
+  ];
+}
 
-let modald-rules =
-    {
-      \figure {Dual-ContextのK様相論理の導出規則} <
-      +p {
-        \math-list (
-        ${
-        | \derive{| \modald{\Delta}{\Gamma, A}{B}
-                  |}
-                 { \modald{ \Delta }{ \Gamma }{ A \imp B } }
-        | \derive{| \modald{ \Delta }{ \Gamma }{ A \imp B }
-                  | \modald{ \Delta }{ \Gamma }{ A }
-                  |}
-                 { \modald{ \Delta }{ \Gamma }{ B } }
-        |});
+let ipc2m-hyp = '<
+  +math-list (
+  ${| \derive?:!{hyp}
+             {| A \in \Gamma |}
+             { \ipc2m{ \Delta }{ \Gamma }{A}}
+  |});
+>
 
-        \math-list (
-        ${
-        | \derive{| \modald{ \cdot }{ \Gamma }{ A }
-                  |}
-                 { \modald{ \Gamma }{ \Delta }{ \dmodal{A} } }
-        | \derive{| \modald{\Delta}{\Gamma}{ \dmodal{A} }
-                  | \modald{\Delta, A}{\Gamma}{ B }
-                  |}
-                 { \modald{\Delta}{\Gamma}{ B } }
-        |});
-        }
-      >
-    }
+let ipc2m-structure = '<
+  +math-list (
+  ${
+  | \derive?:!{subst1}
+           {| \modald{\Delta}{\Gamma, A}{B}
+            | \modald{\Delta}{\Gamma}{A}
+            |}
+           { \modald{\Delta}{\Gamma}{B}}
+  | \derive?:!{subst2}
+           {| \modald{\Delta, A}{\Gamma}{B}
+            | \modald{\cdot}{\Delta}{A}
+            |}
+           { \modald{\Delta}{\Gamma}{B}}
+   |});
+>
+
+let ipc2m-rules = '<
+  +math-list (
+  ${
+  | \derive?:!{${\imp}I}
+           {| \modald{\Delta}{\Gamma, A}{B}
+            |}
+           { \modald{ \Delta }{ \Gamma }{ A \imp B } }
+  | \derive?:!{${\imp}E}
+           {| \modald{ \Delta }{ \Gamma }{ A \imp B }
+            | \modald{ \Delta }{ \Gamma }{ A }
+            |}
+           { \modald{ \Delta }{ \Gamma }{ B } }
+  |});
+
+  +math-list (
+  ${
+  | \derive?:!{${\dmodal{}}I}
+           {| \modald{ \cdot }{ \Gamma }{ A }
+            |}
+           { \modald{ \Gamma }{ \Delta }{ \dmodal{A} } }
+  | \derive?:!{${\dmodal{}}E}
+           {| \modald{\Delta}{\Gamma}{ \dmodal{A} }
+            | \modald{\Delta, A}{\Gamma}{ B }
+            |}
+           { \modald{\Delta}{\Gamma}{ B } }
+  |});
+>
+
+let ipc2m-dmodal-lr = '<
+  +local-reduction
+    (${
+      \derive?:!{${\dmodal{}}E}
+             {| \derive?:!{${\dmodal{}}I}
+                       {| \ipc2m{\cdot}{\Delta}{A} |}
+                       { \ipc2m{\Delta}{\Gamma}{\dmodal{A}} }
+              | \ipc2m{\Delta, A}{\Gamma}{B}
+              |}
+             { \ipc2m{\Delta}{\Gamma}{B} }
+      })
+    (${\ipc2m{\Delta}{\Gamma}{B}});
+>
+
+let ipc2m-dmodal-le = '<
+  +local-expansion
+    (${\ipc2m{\Delta}{\Gamma}{\dmodal{A}}})
+    (${
+      \derive?:!{${\dmodal{}}E}
+             {| \ipc2m{\Delta}{\Gamma}{\dmodal{A}}
+              | \derive?:!{${\dmodal{}}I}
+                       ?:!(true)
+                       {| \derive?:!{hyp}
+                                 ?:!(true)
+                                 {|  |}
+                                 { \ipc2m{\cdot}{\Delta, A}{A} }
+                        |}
+                       { \ipc2m{\Delta, A}{\Gamma}{\dmodal{A}} }
+              |}
+             { \ipc2m{\Delta}{\Gamma}{\dmodal{A}} }
+      });
+>
+
+let ipckm-fmodal-lr = '<
+  +local-reduction
+    (${\derive?:!{${\fmodal{}}E}
+              {| \derive?:!{${\fmodal{}}I}
+                        ?:!(true)
+                       {| \ipckm{|\Delta|\cdot|}{A} |}
+                       { \ipckm{|\Delta|}{\fmodal{A}} }
+              |}
+             { \ipckm{|\Delta|\Gamma|}{A} }})
+    (${\ipckm{|\Delta|\Gamma|}{A} });
+>
+
+let ipckm-fmodal-le = '<
+  +local-expansion
+    (${\ipckm{|\Delta|}{\fmodal{A}}})
+    (${\derive?:!{${\fmodal{}}E}
+             {| \derive?:!{${\fmodal{}}I}
+                       ?:!(true)
+                       {| \ipckm{|\Delta|}{\fmodal{A}} |}
+                       { \ipckm{|\Delta|\cdot|}{A} } |}
+             { \ipckm{|\Delta|}{\fmodal{A}} }});
+>
