@@ -4,12 +4,15 @@
 
 let automata = '<+section{形式言語とオートマトン} <
 +p {
-  本章では有限集合${\alphabet}を\emph{文字}の集合として用います。例えば電話番号の様な数字の列を考える場合、${\alphabet}としてアラビア数字の集合${\{0,1,2,3,4,5,6,7,8,9\}}を用います。文字の有限列を\emph{文字列}と定義します。文字列${w,w'}を結合するときには演算子${\cdot}を用いて${w\cdot w'}と表記します。
-例えば文字の集合${\alphabet}が${\alphabet=\{0,1,2,3,4,5,6,7,8,9\}}のとき、${110}や${0120444444}などは文字列となります。これらを結合した${110\cdot 0120444444=1100120444444}も文字列です。また、長さ0の特別な文字列として${\epsilon}を用います。任意の文字列${w}について${\epsilon}は${w\cdot\epsilon=\epsilon\cdot w=w}の性質が成り立ちます。
-以後長さ${n}の文字列${a_1a_2\cdots a_n}の集合を${\alphabet^n}、有限長についての集合和を${\alphabet^\ast=\bigcup_{i=0}^{\infty}\alphabet^n}と書きます。また、文字の集合として以後主に${\alphabet = \{\text!{a,b}\}}を用います。
+  本章では有限集合${\alphabet}を\emph{文字}の集合として用います。例えば電話番号の様な数字の列を考える場合、${\alphabet}としてアラビア数字の集合${\set{0,1,2,3,4,5,6,7,8,9}}を用います。文字の有限列を\emph{文字列}と定義します。文字列${w,w'}を結合するときには演算子${\cdot}を用いて${w\cdot w'}と表記します。
+例えば文字の集合${\alphabet}が${\alphabet=\set{0,1,2,3,4,5,6,7,8,9}}のとき、${110}や
+%\promote-linebreak;
+${0120444444}などは文字列となります。これらを結合した${110\cdot 0120444444}、つまり
+${1100120444444}も文字列です。また、長さ0の特別な文字列として${\epsilon}を用います。任意の文字列${w}について${\epsilon}は${w\cdot\epsilon=\epsilon\cdot w=w}の性質が成り立ちます。
+以後長さ${n}の文字列${a_1a_2\cdots a_n}の集合を${\alphabet^n}、有限長についての集合和を${\alphabet^\ast=\bigcup_{i=0}^{\infty}\alphabet^n}と書きます。また、文字の集合として以後主に${\alphabet = \set{\text!{a,b}}}を用います。
 }
 +p {
-  文字列の集合を\emph{言語}と言います。例えば文字の集合${\alphabet}が${\alphabet=\{0,1,2,3,4,5,6,7,8,9\}}のときに${\alphabet^\ast}の部分集合である、3桁の電話番号の集合やフリーダイアルの電話番号の集合などは言語の例です。偶数の集合や回文となっている文字列の集合も言語の例です。
+  文字列の集合を\emph{言語}と言います。例えば文字の集合${\alphabet}が${\alphabet=\set{0,1,2,3,4,5,6,7,8,9}}のときに${\alphabet^\ast}の部分集合である、3桁の電話番号の集合やフリーダイアルの電話番号の集合などは言語の例です。偶数の集合や回文となっている文字列の集合も言語の例です。
 }
 +p {
   \figure ?:(`fig:mustHaveAA`){DFAの例${\mathcal{A}}。"aa"という部分列を含む文字列を受理する。}<
@@ -17,8 +20,8 @@ let automata = '<+section{形式言語とオートマトン} <
   >
 
   \emph{決定的有限オートマトン} (Deterministic Finite Automata, DFA)は、様々な言語の中でも\emph{正規言語}と呼ばれる言語を表現する方法の中の一つです。DFAは例えば\ref-figure(`fig:mustHaveAA`);にある、${\mathcal{A}}のような状態遷移図を用いて表されます。
-DFA${\mathcal{A}}が表現する言語を${L\(\mathcal{A}\)}と表記することとし、文字列${w\in\alphabet^\ast}が${L\(\mathcal{A}\)}に含まれるとき、${\mathcal{A}}が${w}を\emph{受理する}と言います。
-\ref-figure(`fig:mustHaveAA`);にあるDFA${\mathcal{A}}は、文字集合${\{\text!{a,b}\}}の上で定義されたDFAで、「abという部分列が存在する文字列」を受理します。
+DFA${\mathcal{A}}が表現する言語を${L\paren{\mathcal{A}}}と表記することとし、文字列${w\in\alphabet^\ast}が${L\paren{\mathcal{A}}}に含まれるとき、${\mathcal{A}}が${w}を\emph{受理する}と言います。
+\ref-figure(`fig:mustHaveAA`);にあるDFA${\mathcal{A}}は、文字集合${\set{\text!{a,b}}}の上で定義されたDFAで、「abという部分列が存在する文字列」を受理します。
 このDFAには状態が${q_0,q_1,q_2}の3つありますがその中に特別な役割をする状態が二種類あります。
 一つ目は\emph{初期状態}と呼ばれる状態で、一つのDFAにつき常に一つ存在します。
 本章では初期状態は"start"と書かれた矢印で外から指すことで表すこととします。
@@ -35,17 +38,19 @@ DFAではまず始めに初期状態${q_0}にいるところから始めて、�
 最後に四文字目のbを読むと、${q_2}が始点でbのラベルが付いている辺の終点は${q_2}なので、最後の状態も${q_2}となります。
 全ての文字を読み込んだ後で、現在居る状態が受理状態であるかどうかを調べます。
 今回の最後にいる状態${q_2}は二重丸の付いている受理状態なので、DFA${\mathcal{A}}は${w=\text!{baab}}を受理する、ということがわかります。
-同様の手順を踏むことで、任意の文字列${w'\in\{\text!{a,b}\}^\ast}について${\mathcal{A}}が${w'}を受理するかどうかを調べることができます。
+同様の手順を踏むことで、任意の文字列${w'\in\set{\text!{a,b}}^\ast}について${\mathcal{A}}が${w'}を受理するかどうかを調べることができます。
 }
 +p {
   DFAの形式的な定義は以下の様になります。
 }
 +definition ?:({決定的有限オートマトン}) ?:(`def:DFA`)
 {
-  文字集合${\alphabet}上の決定的有限オートマトン${\mathcal{A}}は5つ組${\(\alphabet,Q,q_0,Q_F,\mathrm{\Delta}\)}である。但し${\alphabet}は有限の文字集合、${Q}は有限の状態集合、${q_0\in Q}は初期状態、${Q_F\subseteq Q}は受理状態の集合、${\mathrm{\Delta}\colon Q\times\alphabet\to Q}は状態遷移関数である。
+  文字集合${\alphabet}上の決定的有限オートマトン${\mathcal{A}}は5つ組${\paren{\alphabet,Q,q_0,Q_F,\mathrm{\Delta}}}である。但し${\alphabet}は有限の文字集合、${Q}は有限の状態集合、${q_0\in Q}は初期状態、${Q_F\subseteq Q}は受理状態の集合、${\mathrm{\Delta}\colon Q\times\alphabet\to Q}は状態遷移関数である。
 }
 +p {
-  文字列 ${w=a_1a_2\cdots a_n\in\alphabet^\ast} に対して、${q_i}を各${i\in\{1,2,\ldots,n\}}について帰納的に${q_i=\mathrm{\Delta}\(q_{i-1},a_i\)}と定める。${q_n\in F}が成り立つとき、${\mathcal{A}}は${w}を\emph{受理する}という。また、${\mathcal{A}}が受理する文字列の集合を${\mathcal{A}}の\emph{受理言語}といい、${L\(\mathcal{A}\)}と表記する。言い換えると${L\(\mathcal{A}\)=\{a_1a_2\cdots a_n\mid q_n\in F \,\text!{where ${q_i=\mathrm{\Delta}\(q_{i-1},a_i\)}}\}}である。また、DFA${\mathcal{A}}が言語${L\(\mathcal{A}\)}を\emph{認識する}、という。DFAによって受理される言語を\emph{正規言語} (regular language)という。以後文字列${w=a_1a_2\cdots a_n}について、${\mathrm{\Delta}\(q,w\)=\mathrm{\Delta}\(\mathrm{\Delta}\(\cdots\mathrm{\Delta}\(q,a_1\),\cdots,a_{n-1}\),a_{n}\)}と定める。
+  文字列 ${w=a_1a_2\cdots a_n\in\alphabet^\ast} に対して、${q_i}を各${i\in\set{1,2,\ldots,n}}について帰納的に${q_i=\mathrm{\Delta}\paren{q_{i-1},a_i}}と定める。${q_n\in F}が成り立つとき、${\mathcal{A}}は${w}を\emph{受理する}という。また、${\mathcal{A}}が受理する文字列の集合を${\mathcal{A}}の\emph{受理言語}といい、${L\paren{\mathcal{A}}}と表記する。言い換えると
+\promote-linebreak;
+${L\paren{\mathcal{A}}=\set{a_1a_2\cdots a_n\mid q_n\in F \,\text!{where ${q_i=\mathrm{\Delta}\paren{q_{i-1},a_i}}}}}である。また、DFA${\mathcal{A}}が言語${L\paren{\mathcal{A}}}を\emph{認識する}、という。DFAによって受理される言語を\emph{正規言語} (regular language)という。以後文字列${w=a_1a_2\cdots a_n}について、${\mathrm{\Delta}\paren{q,w}=\mathrm{\Delta}\paren{\mathrm{\Delta}\paren{\cdots\mathrm{\Delta}\paren{q,a_1},\cdots,a_{n-1}},a_{n}}}と定める。
 }
 +subsection{余談} <
 +p {
