@@ -38,6 +38,10 @@ value_t __add(value_t a, value_t b) {
   return make_int(any_int(a) + any_int(b));
 }
 
+value_t make_undef() {
+  return int_any(ANY_TAG0, 'u');
+}
+
 struct frame {
   value_t args[1];
   int nargs;
@@ -49,7 +53,16 @@ struct frame {
 
 #define PUSH(v) (*sp++ = (v))
 #define REG(n) (fp->regs[n])
-#define ARG(n) (fp->args[-(n)])
+
+static inline value_t get_arg(struct frame *fp, int depth, int index) {
+    while (depth > 0) {
+        fp = fp->static_link;
+        depth--;
+    }
+    return fp->args[-index];
+}
+
+#define ARG(l, n) (get_arg(fp, l, n))
 
 void push_frame(value_t **sp, struct frame **fp, int nargs, void *ret_addr, struct frame *ret_fp) {
   struct proc *proc = proc_ptr((*sp)[-1]);
@@ -89,57 +102,28 @@ void push_frame(value_t **sp, struct frame **fp, int nargs, void *ret_addr, stru
 value_t add;
 value_t f;
 
-/*
-(begin
-  (define f
-    (lambda (x)
-      (add (add (add x 3) 2) (add x 1))))
-  (f 2))
-*/
+#define ACRYL_BEGIN \
+int main(int argc, char *argv[]) {\
+  value_t *sp;\
+  struct frame *fp;\
+  value_t val0;\
+\
+  sp = malloc(4096);\
+  fp = (struct frame *) sp;\
+  val0 = make_undef();\
+\
+  add = PROC(L_add, 2, 0);\
+\
+  PUSH(PROC(L_start, 1, 0));\
+  CALL(1);\
+  printf("%d\n", any_int(val0));\
+  return 0;\
+\
+ L_add:\
+  val0 = __add(ARG(0, 1), ARG(0, 2));\
+  RET();\
+\
+ L_start:
 
-int main(int argc, char *argv[]) {
-  value_t *sp;
-  struct frame *fp;
-  value_t val0;
-
-  // init
-  sp = malloc(4096);
-  fp = (struct frame *) sp;
-  val0 = make_undef();
-
-  add = PROC(L_add, 2, 0);
-
-  PUSH(PROC(start, 1, 0));
-  CALL(1);
-  printf("%d\n", any_int(val0));
-  return 0;
-
- start:
-  f = PROC(L_f, 2, 1);
-  PUSH(make_int(2));
-  PUSH(f);
-  TAILCALL(2);
-
- L_f:
-  PUSH(make_int(1));
-  PUSH(ARG(1));
-  PUSH(add);
-  CALL(3);
-  REG(0) = val0;
-  PUSH(make_int(3));
-  PUSH(ARG(1));
-  PUSH(add);
-  CALL(3);
-  PUSH(make_int(2));
-  PUSH(val0);
-  PUSH(add);
-  CALL(3);
-  PUSH(REG(0));
-  PUSH(val0);
-  PUSH(add);
-  TAILCALL(3);
-
- L_add:
-  val0 = __add(ARG(1), ARG(2));
-  RET();
+#define ACRYL_END \
 }
