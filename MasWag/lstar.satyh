@@ -418,7 +418,7 @@ cellf {F};
 これらの点について次に説明していきます。
 }
 +p {
-  \figure ?:(`fig:evenDFAStep2`){\ref-figure(`fig:observationTable3`);の観察表に対応するDFA${\mathcal{A}_2}}<
+  \figure ?:(`fig:evenDFAStep2`){\ref-figure(`fig:observationTable3`);の観察表に対応するDFA${\mathcal{A}_2}及び${\mathcal{A}_3}}<
      +image-frame{\insert-pdf-image(7cm)(path-to-root ^ `figs/evenDFAStep2.pdf`)(1);}
      +image-frame{\insert-pdf-image(7cm)(path-to-root ^ `figs/evenDFA.pdf`)(1);}
   >
