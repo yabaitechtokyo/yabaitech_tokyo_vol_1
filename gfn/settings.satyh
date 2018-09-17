@@ -220,6 +220,8 @@ let make-graphics ctx grf =
       Gr.text-centering pt (read-inline ctx it));
     text-rightward = (fun pt it ->
       Gr.text-rightward pt (read-inline ctx it));
+    text-leftward = (fun pt it ->
+      Gr.text-leftward pt (read-inline ctx it));
   |)
 
 
@@ -553,3 +555,68 @@ let-inline ctx \stack len its =
       |> List.fold-left (+++) block-nil
   in
   embed-block-top ctx len bbf
+
+
+let structure-box r hw (x, y) it =
+  let rect = Gr.rectangle (x -' hw, y -' 0.25cm) (x +' hw, y +' 0.5cm) in
+  [
+    fill Color.white rect;
+    stroke 0.5pt Color.black rect;
+    r#text-centering (x, y) it;
+  ]
+
+
+let structure-arrow-color = Color.black
+let structure-arrow-half-width = 0.125cm
+let structure-arrow-head-length = 0.2cm
+let structure-arrow-head-width = 0.25cm
+
+
+let structure-arrow-down x y1 y2 =
+  let color = structure-arrow-color in
+  let hw = structure-arrow-half-width in
+  let trih = structure-arrow-head-length in
+  let trihw = structure-arrow-head-width in
+  [
+    fill color (Gr.rectangle (x -' hw, y1) (x +' hw, y2 +' trih));
+    fill color (Gr.polygon
+      (x -' trihw, y2 +' trih) [
+        (x +' trihw, y2 +' trih);
+        (x, y2);
+      ]);
+  ]
+
+
+let structure-arrow-left-head (x1, y) =
+  let color = structure-arrow-color in
+  let trih = structure-arrow-head-length in
+  let trihw = structure-arrow-head-width in
+  [
+    fill color (Gr.polygon
+      (x1, y +' trihw) [
+        (x1, y -' trihw);
+        (x1 -' trih, y);
+      ])
+  ]
+
+let structure-arrow-left x1 x2 y =
+  let color = structure-arrow-color in
+  let trih = structure-arrow-head-length in
+  let hw = structure-arrow-half-width in
+  List.append [
+    fill color (Gr.rectangle (x1 +' trih, y -' hw) (x2, y +' hw));
+  ] (structure-arrow-left-head (x1 +' trih, y))
+
+
+let structure-bend path =
+  let color = structure-arrow-color in
+  let hw = structure-arrow-half-width in
+%  let trih = 0.2cm in
+%  let trihw = 0.25cm in
+  [
+    stroke (hw *' 2.) color path;
+%    fill color (Gr.polygon (x -' trihw, y) [
+%        (x +' trihw, y);
+%        (x, y -' trih);
+%      ]);
+  ]

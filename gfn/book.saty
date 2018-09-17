@@ -369,13 +369,13 @@ document (|
         \val-explain?:(`start-path`)({start-path})%
           (Type.(point --> pre-path)) {
             第1引数に指定した点から未完パスを開始する．
-          }
+          }%
         \val-explain?:(`line-to`)({line-to})%
           (Type.(point --> (pre-path --> pre-path))) {
             \codem{\meta{prepath} \|\> line-to \meta{v}}で
             未完パス\codem{\meta{prepath}}を終点から
             点\codem{\meta{v}}へと線分で延長したものを返す．
-          }
+          }%
         \val-explain?:(`bezier-to`)({bezier-to})%
           (Type.(point --> (point --> (point --> (pre-path --> pre-path))))) {
             \codem{\meta{prepath} \|\>
@@ -383,11 +383,11 @@ document (|
             で未完パス\codem{\meta{prepath}}を
             終点から点\codem{\meta{v}}へとBézier曲線で延長したものを返す．
             \codem{\metasub(${1}){u}}と\codem{\metasub(${2}){u}}は制御点である．
-          }
+          }%
         \val-explain?:(`close-with-line`)({close-with-line})%
           (Type.(pre-path --> path)) {
             未完パスを受け取り，起点と終点を線分で結んで閉じてできるパスを返す．
-          }
+          }%
         \val-explain?:(`close-with-bezier`)({close-with-bezier})%
           (Type.(point --> (point --> (pre-path --> path)))) {
             \codem{\meta{prepath} \|\>
@@ -395,11 +395,11 @@ document (|
             未完パス\codem{\meta{prepath}}の起点と終点を
             制御点\codem{\metasub(${1}){u}}，\codem{\metasub(${2}){u}}の
             Bézier曲線で結んで閉じてできるパスを返す．
-          }
+          }%
         \val-explain?:(`terminate-path`)({terminate-path})%
           (Type.(pre-path --> path)) {
             未完パスを受け取り，開いたままのパスとして返す．
-          }
+          }%
         \val-explain?:(`unite-path`)({unite-path})%
           (Type.(path --> (path --> path))) {
             2つのパスを統合して1つにする．
@@ -407,12 +407,12 @@ document (|
               点がパスの “内側” であるか否かは，
               その点を囲んでいるパスの回転数の総和の偶奇によって決まっている．
             }．
-          }
+          }%
         \val-explain?:(`shift-path`)({shift-path})%
           (Type.(point --> (path --> path))) {
             \codem{\meta{path} \|\> shift-path \meta{v}}で
             パス\codem{\meta{path}}の位置を\codem{\meta{v}}だけずらす．
-          }
+          }%
         \val-explain?:(`get-path-bbox`)({get-path-bbox})%
           (Type.(path --> product [point; point])) {
             パスを受け取り，そのパスのバウンディングボックスの左下と右上の座標の組を返す．
@@ -541,13 +541,15 @@ document (|
         なお，上での説明からもわかるとおり，
         第4引数\codem{\meta{grf}}の “中身” が評価されるタイミングは
         注意が必要である．\REMAINS{続き}
-
       }
     >
     +section{囲み枠}<
       +p{ \REMAINS{囲み枠} }
     >
     +section{表組版}<
+      +p{
+        表組版は，全組版処理システムの泣き所である．
+      }
       +p{ \REMAINS{表組版} }
     >
     +section{画像}<
