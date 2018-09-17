@@ -57,7 +57,12 @@ type bib-item =
 
 module Book : sig
 
-  val document : block-text -> document
+  val document : 'a -> block-text -> document
+    constraint 'a :: (|
+      title: string;
+      date: string;
+      venue: string;
+    |)
 
   val font-latin-roman  : string * float * float
   val font-latin-italic : string * float * float
@@ -551,7 +556,11 @@ end = struct
       bb-title +++ bb-inner
 
 
-  let document inner =
+  let document record inner =
+    % -- constants --
+    let title = record#title in
+    let venue = record#venue in
+    let date = record#date in
     let page = paper-size in
     let txtorg = text-origin in
     let txtwid = text-width in
@@ -567,6 +576,35 @@ end = struct
         |> set-font-size 12pt
         |> set-leading 18pt
         |> set-hyphen-penalty 1000
+    in
+
+    % -- title --
+    let bb-title =
+      let ctx-title =
+        ctx-doc
+        |> set-font Latin font-latin-bold
+          |> set-font-size 32pt
+          |> set-paragraph-margin 8pt 8pt
+          |> set-every-word-break inline-fil inline-fil
+      in
+      let ctx-date =
+        ctx-doc
+          |> set-font-size 20pt
+          |> set-paragraph-margin 8pt 8pt
+          |> set-every-word-break inline-fil inline-fil
+      in
+      let centerf ctx it =
+        line-break false false ctx
+          (inline-fil ++ read-inline ctx it ++ inline-fil)
+      in
+      [
+        block-skip 54pt;
+        centerf ctx-title (embed-string title);
+        block-skip 30pt;
+        centerf ctx-date (embed-string (date ^ ` @ ` ^ venue));
+        block-skip 108pt;
+        clear-page;
+      ] |> List.fold-left (+++) block-nil
     in
 
     % -- main --
@@ -696,7 +734,7 @@ end = struct
           footer-content = footer;
         |)
     in
-      page-break page pagecontf pagepartsf (bb-toc +++ bb-main)
+      page-break page pagecontf pagepartsf (bb-title +++ bb-toc +++ bb-main)
 
 
   let-block ctx +p inner =
