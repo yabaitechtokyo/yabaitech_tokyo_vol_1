@@ -442,13 +442,13 @@ end = struct
         |> set-hyphen-penalty 1000
     in
     let ib-num =
-      read-inline ctx-title (embed-string (`Chapter `# ^ s-num))
+      read-inline ctx-title ({})
         ++ hook-page-break (fun pbinfo _ ->
              register-cross-reference (`chapter:` ^ label ^ `:page`) (arabic pbinfo#page-number))
     in
     let ib-title = read-inline ctx-title title in
     let ib-author = read-inline ctx-author author in
-    let bb-title = chapter-heading-with-author ctx None ib-title ib-author in
+    let bb-title = chapter-heading-with-author ctx (Some(ib-num)) ib-title ib-author in
     let bb-inner = read-block ctx inner in
 
     % -- bibliography --
