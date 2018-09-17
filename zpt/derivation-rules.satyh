@@ -27,9 +27,10 @@ let ipc-symbols =
       ];
     }
 
+let ipc-judgment = {\math-list (${|\ipc{\Gamma}{A}|});}
+
 let ipc-hyp =
     {
-      仮定の使用
       \math-list (
       ${
       | \derive{| A \in \Gamma |}
@@ -39,28 +40,84 @@ let ipc-hyp =
 
 let ipc-structure =
     {
-      構造規則
       \math-list (
       ${
-      | \derive{| \ipc{\Gamma, A}{B} | \ipc{\Gamma}{A} |}
-               {\ipc{\Gamma}{B}}
-      | \derive{| \ipc{\Gamma}{B} |}{ \ipc{\Gamma, A}{B} }
-      | \derive{| \ipc{\Gamma, A, A}{B} |}{ \ipc{\Gamma, A}{B} }
-      | \derive{| \ipc{\Gamma, A, B, \Delta}{C} |}
+      | \derive?:!{weak}
+               {| \ipc{\Gamma}{B} |}{ \ipc{\Gamma, A}{B} }
+      | \derive?:!{contr}
+               {| \ipc{\Gamma, A, A}{B} |}{ \ipc{\Gamma, A}{B} }
+      | \derive?:!{exchg}
+               {| \ipc{\Gamma, A, B, \Delta}{C} |}
                { \ipc{\Gamma, B, A, \Delta}{C} }
+      |});
+      \math-list (
+      ${
+      | \derive?:!{subst}
+               {| \ipc{\Gamma, A}{B} | \ipc{\Gamma}{A} |}
+               {\ipc{\Gamma}{B}}
       |});
     }
 
+let ipc-imp-i = ${\derive?:!{${\imp}I}{| \Gamma, A \vdash B |}{\Gamma \vdash A \rightarrow B}}
+
+let ipc-imp-e = ${\derive?:!{${\imp}E}{| \Gamma \vdash A \imp B | \Gamma \vdash A |}{\Gamma \vdash B}}
+
+let ipc-imp-e-wrong = ${\derive?:!{${\imp}E'}{| \Gamma \vdash A \imp B |}{\Gamma, A \vdash B}}
+
 let ipc-deriv =
     {
-      \figure {直観主義命題論理の${\rightarrow}断片} <
-      +math-list
-      (${| \derive{| A \in \Gamma |}{\Gamma \vdash A}
-           | \derive{| \Gamma, A \vdash B |}{\Gamma \vdash A \rightarrow B}
-           | \derive{| \Gamma \vdash A \rightarrow B | \Gamma \vdash A |}{\Gamma \vdash B}
+      \math-list
+      (${| #ipc-imp-i
+         | #ipc-imp-e
       |});
-      >
     }
+
+let ipc-def = {
+  \figure ?:(`figdefipc`) {IPCの定義} <
+    +p {記号の定義 #ipc-symbols;}
+    +p {判断の形 #ipc-judgment;}
+    +p {仮定の使用 #ipc-hyp;}
+    +p {期待される構造規則 #ipc-structure;}
+    +p {導出規則 #ipc-deriv;}
+  >
+}
+
+let ipc-imp-lr = '<
+  +local-reduction
+  (${ \derive?:!{${\imp}E}{
+        | \derive?:!{${\imp}I}
+                 {| \derive{| \mathcal{D} |}{ \ipc{\Gamma, A}{B} } |}
+                 { \ipc{\Gamma}{A \imp B} }
+        | \derive{| \mathcal{E} |}{ \ipc{\Gamma}{A} }
+        |}
+        {\ipc{\Gamma}{B}}
+  })
+  (${ \derive?:!{subst}
+             {| \derive{| \mathcal{D} |}{ \ipc{\Gamma, A}{B} }
+              | \derive{| \mathcal{E} |}{ \ipc{\Gamma}{A}} |}
+             { \ipc{\Gamma}{B} }});
+>
+
+let ipc-imp-le = '<
+  +local-reduction
+  (${ \derive{| \mathcal{D} |}{ \ipc{\Gamma}{A \imp B} }})
+  (${ \derive?:!{${\imp}I}{
+        | \derive?:!{${\imp}E}
+                 ?:!(true)
+                 {| \derive?:!{weak}
+                           {| \derive{| \mathcal{D} |}
+                                     { \ipc{\Gamma}{ A \imp B} }
+                            |}
+                           { \ipc{\Gamma,A}{A \imp B} }
+                  | \derive?:!{hyp}?:!(true){||}{ \ipc{\Gamma, A}{A} }
+                  |}
+                 { \ipc{\Gamma, A}{ B} }
+        |}
+        {\ipc{\Gamma}{A \imp B}}
+  });
+>
+
+
 
 let adj-symbols = '<
     +align [

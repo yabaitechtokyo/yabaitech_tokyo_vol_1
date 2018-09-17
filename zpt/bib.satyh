@@ -1,6 +1,12 @@
 @import: ../main/book-class
 
 let zpt-bibliography = [
+  (`Yatabe17`, WebSite(|
+    author = {| Shunsuke Yatabe |};
+    title  = {証明論的意味論入門};
+    url    = `http://www.academia.edu/31173006/証明論的意味論入門`;
+    year   = 2017;
+  |));
   (`Kavvos17`, InProceedings(|
     author = {| G. A. Kavvos |};
     title = {Dual-Context Calculi for Modal Logic};
@@ -44,5 +50,14 @@ let zpt-bibliography = [
     number  = None;
     pages   = (213, 241);
     year    = 1996;
+  |));
+  (`Pfenning01`, Article(|
+    author = {|Frank Pfenning, Rowan Davies|};
+    title = {A judgmental reconstruction of modal logic.};
+    journal = {Mathematical Structures in Computer Science};
+    volume = Some(11);
+    number = Some({4});
+    pages = (511,540);
+    year = 2001;
   |));
 ]
