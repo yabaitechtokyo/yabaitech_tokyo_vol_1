@@ -11,7 +11,7 @@ let alias-command-definition = '<
   }
   +p{
     これを実現するために，プリアンブルに手を加えよう．文書ファイルの
-    \code(`@require`);や\code(`@import`);が並ぶ箇所と\codem{document}との間には，
+    \codem{\@require}や\codem{\@import}が並ぶ箇所と\codem{document}との間には，
     コマンド定義を書くことができる．
     \ref-chapter(`getting-started`);で扱った例の
     本文中の\codem{\\dfn}を\codem{\\new-word}に書き換え，

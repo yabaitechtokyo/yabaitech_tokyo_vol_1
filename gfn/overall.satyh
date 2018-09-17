@@ -15,9 +15,103 @@ let overall = '<
   +p{
     模式的に描くと，\SATySFi;の全体像は\ref-figure(`overall-structure`);のようになっている．
     \figure?:(`overall-structure`){\SATySFi;の全体像}<
-      +p{
-        \REMAINS{全体像の図}
-      }
+      +centered-graphics(15cm)(15cm)(fun r -> (
+        let xL = 2.25cm in
+        let xF = 4cm in
+        let xM = 6cm in
+        let xB = 8.5cm in
+        let xB2 = 12.75cm in
+        let hwF = 1.25cm in
+        let hwB = 1.75cm in
+        let framef path =
+          [
+            fill (Gray(0.875)) path;
+            dashed-stroke 0.5pt (3pt, 2pt, 0pt) (Gray(0.5)) path;
+          ]
+        in
+        List.concat [
+          framef (Gr.rectangle (6.3cm, 2cm) (15cm, 13.25cm));
+          framef (Gr.rectangle (2.625cm, 6.5cm) (5.5cm, 13.25cm));
+
+          [
+%            stroke 0.5pt Color.black (Gr.rectangle (0cm, 0cm) (15cm, 15cm));
+
+            r#text-leftward (3.5cm, 6cm) {フロントエンド};
+            r#text-leftward (15cm, 1.5cm) {バックエンド};
+
+            r#text-centering (xF, 14cm) {入力ソース};
+            r#text-leftward (xL -' 0.125cm, 12cm) {構文エラー};
+            r#text-leftward (xL -' 0.125cm, 11cm) {構文エラー};
+            r#text-leftward (xL -' 0.125cm, 8.5cm) {型エラー};
+          ];
+          structure-arrow-down xF 13.825cm 10.25cm;
+          structure-arrow-left xL xF 12.125cm;
+          structure-arrow-left xL xF 11.125cm;
+          structure-box r hwF (xF, 12cm) {字句解析器};
+          structure-box r hwF (xF, 11cm) {構文解析器};
+          [
+            r#text-centering (xF, 9.75cm) {抽象構文木};
+          ];
+          structure-arrow-down xF 9.5cm 7.5cm;
+          structure-arrow-left xL xF 8.625cm;
+          structure-box r hwF (xF, 8.5cm) {型検査器};
+          [
+            r#text-centering (xF, 7cm){評価用形式};
+          ];
+
+          structure-bend
+            (start-path (xF, 6.75cm)
+              |> line-to (xF, 6.5cm)
+              |> bezier-to (xF, 5.5cm) (xM, 5.5cm) (xM, 6.75cm)
+              |> line-to (xM, 13.25cm)
+              |> bezier-to (xM, 14.75cm) (xB, 14.75cm) (xB, 13.5cm)
+              |> line-to (xB, 10cm)
+              |> terminate-path);
+          ( let rect = Gr.rectangle (6.5cm, 13cm) (14.75cm, 5cm) in
+          [
+            fill Color.white rect;
+            stroke 0.5pt Color.black rect;
+            r#text-centering (10.5cm, 12.5cm) {評価器};
+          ]);
+
+          [
+            r#text-centering (xB, 11cm) {インラインテキスト};
+          ];
+          structure-arrow-down xB 10.75cm 9.25cm;
+          structure-box r hwB (xB, 10cm) {インライン変換器};
+          [
+            r#text-centering (xB, 8.75cm) {インラインボックス列};
+          ];
+          structure-arrow-down xB 8.5cm 7cm;
+          structure-box r hwB (xB, 7.75cm) {行分割処理};
+
+          [
+            r#text-centering (xB2, 10cm) {ブロックテキスト};
+          ];
+          structure-bend
+            (start-path (xB2, 9.75cm)
+              |> line-to (xB2, 8cm)
+              |> bezier-to (xB2, 7cm) (xB2 -' 1cm, 6.625cm) (xB +' 2cm, 6.625cm)
+              |> terminate-path);
+          structure-arrow-left-head (xB +' 2cm, 6.625cm);
+          structure-box r hwB (xB2, 9cm) {ブロック変換器};
+
+          [
+            r#text-centering (xB, 6.5cm) {ブロックボックス列};
+          ];
+          structure-arrow-down xB 6.25cm 4.25cm;
+          structure-box r hwB (xB, 5.5cm) {ページ分割処理};
+
+          [
+            r#text-centering (xB, 3.75cm) {各ページの内容};
+          ];
+          structure-arrow-down xB 3.5cm 1.5cm;
+          structure-box r hwB (xB, 2.75cm) {PDF出力機構};
+          [
+            r#text-centering (xB, 1cm) {PDF};
+          ];
+        ]
+      ));
     >
     図中で\SATySFi;処理系の構造は左右に大別されて描かれているが，このうち
     入力に近い左側を\dfnje{フロントエンド}{front-end}，
@@ -136,7 +230,8 @@ let overall = '<
         \ref-figure(`conversion-to-inline-boxes`);のように表すことができる．
         「ボックス列」という命名は，この図のような直観から来ている．
         \figure?:(`conversion-to-inline-boxes`){インラインボックス列への変換}<
-          +centered-graphics(15cm)(6.5cm)(fun r ->
+          +centered-graphics(15cm)(6.5cm)(fun r -> (
+            let arrowf = Gr.arrow 2pt Color.black 12pt 10pt 3pt in
             List.concat [
               [
                 stroke 0.5pt Color.black (Gr.rectangle (0cm, 0cm) (15cm, 6.5cm));
@@ -145,8 +240,15 @@ let overall = '<
                   \size(20pt){\codem{\{The quick brown fox jumps ${\cdots}\}}}
                 };
               ];
-              Gr.arrow 2pt Color.black 12pt 10pt 3pt (7.5cm, 4cm) (7.5cm, 2.5cm);
+              arrowf (7.5cm, 4cm) (7.5cm, 2.5cm);
+              arrowf (9cm, 3.5cm) (7.5cm, 3.25cm);
               [
+                r#text-rightward (9.25cm, 3.5cm) {
+                  \stack(4cm){
+                    | フォント，文字サイズ，
+                    | 文字色，${\ldots}
+                    |}
+                };
                 r#text-centering (7.5cm, 1.75cm) {
                   \BoxGraphics.roman{|T|h|e|}%
                   \BoxGraphics.space;%
@@ -162,7 +264,7 @@ let overall = '<
                 r#text-centering (7.5cm, 1cm) {インラインボックス列};
               ];
             ]
-          );
+          ));
         >
       }
     >
@@ -188,7 +290,8 @@ let overall = '<
         それが段落の進む方向に積み重なっているので行分割された後の内容は
         ブロックボックス列なのである．
         \figure?:(`line-breaking`){行分割処理の直観}<
-          +centered-graphics(15cm)(8cm)(fun r ->
+          +centered-graphics(15cm)(8cm)(fun r -> (
+            let arrowf = Gr.arrow 2pt Color.black 12pt 10pt 3pt in
             List.concat [
               [
                 stroke 0.5pt Color.black (Gr.rectangle (0cm, 0cm) (15cm, 8cm));
@@ -205,8 +308,15 @@ let overall = '<
                   \ \size(20pt){${\cdots}}
                 };
               ];
-              Gr.arrow 2pt Color.black 12pt 10pt 3pt (7.5cm, 6cm) (7.5cm, 4cm);
+              arrowf (7.5cm, 6cm) (7.5cm, 4cm);
+              arrowf (9cm, 5.25cm) (7.5cm, 5cm);
               [
+                r#text-rightward (9.25cm, 5.25cm) {
+                  \stack(4cm){
+                    | 段落の幅，
+                    | 行送り，${\ldots}
+                    |}
+                };
                 r#text-centering (7.5cm, 3cm) {
                   \BoxGraphics.justify(8cm){|
                     \BoxGraphics.line{
@@ -232,7 +342,7 @@ let overall = '<
                 }
               ];
             ]
-          );
+          ));
         >
       }
       +p{

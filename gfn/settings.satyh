@@ -7,6 +7,17 @@
 @import: book-class
 
 
+% ---- constants ----
+
+let code-background = Gray(0.875)
+let quote-indent-1 = 24pt
+let quote-indent-2 = 12pt
+let val-margin = 12pt
+let val-explain-margin = 6pt
+
+% ---- ----
+
+
 let-inline ctx \REMAINS msg =
   let pads = (2pt, 2pt, 2pt, 2pt) in
   let ctx =
@@ -64,7 +75,7 @@ let-inline ctx \codem it =
       ib-strut ++ read-inline ctx it
   in
   let pads = (2pt, 2pt, 2pt, 2pt) in
-  let decoset = HDecoSet.rectangle-round-fill 4pt 2pt (Color.gray 0.9) in
+  let decoset = HDecoSet.rectangle-round-fill 4pt 2pt code-background in
     script-guard Latin (inline-frame-breakable pads decoset ib)
 
 
@@ -80,22 +91,46 @@ let-inline \person-github itn itg =
   {#itn; (\github{#itg;})}
 
 
+let display-code-decoset =
+  let deco (x, y) w h d =
+    [
+      fill code-background (Gr.rectangle (x, y -' d) (x +' w, y +' h));
+    ]
+  in
+    (deco, deco, deco, deco)
+
+
 let display-code-scheme ctx s =
-    let decoset =
-      let back-color = Gray(0.875) in
-      let deco (x, y) w h d =
-        [
-          fill back-color (Gr.rectangle (x, y -' d) (x +' w, y +' h));
-        ]
-      in
-      (deco, deco, deco, deco)
-    in
-      Code.scheme decoset Color.black ctx s
+  Code.scheme display-code-decoset Color.black ctx s
 
 
 let-inline ctx \d-code s =
   let bb = display-code-scheme ctx s in
     inline-fil ++ embed-block-breakable ctx bb
+
+
+let-inline ctx \d-code-and-block s bt =
+  let pads = (5pt, 5pt, 5pt, 5pt) in
+  let wid = get-text-width ctx in
+  let bb =
+    display-code-scheme ctx s +++
+      block-frame-breakable ctx pads VDecoSet.paper (fun ctx ->
+        read-block ctx bt
+      )
+  in
+    inline-fil ++ embed-block-breakable ctx bb
+
+
+let-inline ctx \d-codem it =
+  let pads = (5pt, 5pt, 5pt, 5pt) in
+  let bb =
+    block-frame-breakable ctx pads display-code-decoset (fun ctx ->
+      line-break true true ctx
+        (read-inline (ctx |> set-mono-font) it ++ inline-fil)
+    )
+  in
+    inline-fil ++
+      embed-block-breakable ctx bb
 
 
 module BoxGraphics = struct
@@ -182,8 +217,11 @@ end
 let make-graphics ctx grf =
   grf (|
     text-centering = (fun pt it ->
-      Gr.text-centering pt (read-inline ctx it)
-    );
+      Gr.text-centering pt (read-inline ctx it));
+    text-rightward = (fun pt it ->
+      Gr.text-rightward pt (read-inline ctx it));
+    text-leftward = (fun pt it ->
+      Gr.text-leftward pt (read-inline ctx it));
   |)
 
 
@@ -195,19 +233,6 @@ let-block ctx +centered-graphics w h grf =
   in
   line-break true true (ctx |> set-paragraph-margin 0pt 0pt)
     (inline-fil ++ ib-gr ++ inline-fil)
-
-
-let-inline ctx \d-code-and-block s bt =
-  let pads = (5pt, 5pt, 5pt, 5pt) in
-  let wid = get-text-width ctx in
-  let bb =
-    display-code-scheme ctx s +++
-      block-frame-breakable ctx pads VDecoSet.paper (fun ctx ->
-        read-block ctx bt
-      )
-  in
-    inline-fil ++ embed-block-breakable ctx bb
-
 
 
 module Sample = struct
@@ -292,6 +317,7 @@ module Type : sig
   val deco-set : t
   val paren : t
   val script : t
+  val image : t
   val list : t -> t
   val option : t -> t
 end = struct
@@ -383,18 +409,13 @@ end = struct
   let deco-set     = base-type {deco-set}
   let paren        = base-type {paren}
   let script       = base-type {script}
+  let image        = base-type {image}
 
 
   let list ty = Ctr({list}, [ty])
   let option ty = Ctr({option}, [ty])
 
 end
-
-
-let quote-indent-1 = 24pt
-let quote-indent-2 = 12pt
-let val-margin = 12pt
-let val-explain-margin = 6pt
 
 
 let val-scheme ctx indexopt it-cmd ty explainopt =
@@ -463,6 +484,18 @@ let-inline ctx \metasub msub it =
   read-inline ctx {${\text!{\meta{#it;}}_{#msub}}}
 
 
+let-inline ctx \meta-star it =
+  embed-math ctx ${\sqbracket{\text!{#it;}}^{\ast}}
+
+
+let-inline ctx \meta-or its =
+  let m =
+    math-paren-with-middle Math.paren-left Math.paren-right Math.bar-middle
+      (its |> List.map (fun it -> ${\text!{#it;}}))
+  in
+    embed-math ctx m
+
+
 let-inline ctx \inline-frame inner =
   let pads = (2pt, 2pt, 2pt, 2pt) in
   let decoset = HDecoSet.simple-frame-stroke 0.5pt Color.black in
@@ -511,3 +544,79 @@ let-inline ctx \parbox ?:specopt wid ib =
 
 let-inline ctx \as-latin-word it =
   script-guard Latin (read-inline ctx it)
+
+
+let-inline ctx \stack len its =
+  let bbf ctx =
+    its
+      |> List.map (fun it ->
+        line-break true true (ctx |> set-paragraph-margin 4pt 4pt)
+          (read-inline ctx it ++ inline-fil))
+      |> List.fold-left (+++) block-nil
+  in
+  embed-block-top ctx len bbf
+
+
+let structure-box r hw (x, y) it =
+  let rect = Gr.rectangle (x -' hw, y -' 0.25cm) (x +' hw, y +' 0.5cm) in
+  [
+    fill Color.white rect;
+    stroke 0.5pt Color.black rect;
+    r#text-centering (x, y) it;
+  ]
+
+
+let structure-arrow-color = Color.black
+let structure-arrow-half-width = 0.125cm
+let structure-arrow-head-length = 0.2cm
+let structure-arrow-head-width = 0.25cm
+
+
+let structure-arrow-down x y1 y2 =
+  let color = structure-arrow-color in
+  let hw = structure-arrow-half-width in
+  let trih = structure-arrow-head-length in
+  let trihw = structure-arrow-head-width in
+  [
+    fill color (Gr.rectangle (x -' hw, y1) (x +' hw, y2 +' trih));
+    fill color (Gr.polygon
+      (x -' trihw, y2 +' trih) [
+        (x +' trihw, y2 +' trih);
+        (x, y2);
+      ]);
+  ]
+
+
+let structure-arrow-left-head (x1, y) =
+  let color = structure-arrow-color in
+  let trih = structure-arrow-head-length in
+  let trihw = structure-arrow-head-width in
+  [
+    fill color (Gr.polygon
+      (x1, y +' trihw) [
+        (x1, y -' trihw);
+        (x1 -' trih, y);
+      ])
+  ]
+
+let structure-arrow-left x1 x2 y =
+  let color = structure-arrow-color in
+  let trih = structure-arrow-head-length in
+  let hw = structure-arrow-half-width in
+  List.append [
+    fill color (Gr.rectangle (x1 +' trih, y -' hw) (x2, y +' hw));
+  ] (structure-arrow-left-head (x1 +' trih, y))
+
+
+let structure-bend path =
+  let color = structure-arrow-color in
+  let hw = structure-arrow-half-width in
+%  let trih = 0.2cm in
+%  let trihw = 0.25cm in
+  [
+    stroke (hw *' 2.) color path;
+%    fill color (Gr.polygon (x -' trihw, y) [
+%        (x +' trihw, y);
+%        (x, y -' trih);
+%      ]);
+  ]
