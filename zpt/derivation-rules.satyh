@@ -581,7 +581,7 @@ let ipckm-k-axiom =
   } in
   let neko = ${
      \derive?:!{${\fmodal{}}I}?:!(true)
-           {| \derive?:!{${\imp}I}?:!(true)
+           {| \derive?:!{${\imp}E}?:!(true)
                      {| #inu1
                       | #inu2
                       |}
