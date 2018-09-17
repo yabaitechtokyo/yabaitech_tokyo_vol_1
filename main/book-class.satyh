@@ -8,6 +8,29 @@
 @require: vdecoset
 @require: footnote-scheme
 
+let string-to-int str =
+    let-rec string-to-list-args str ls =
+      match string-length str with
+      | 0 -> ls
+      | 1 -> (string-sub str 0 1) :: ls
+      | len -> string-to-list-args (string-sub str 1 (len - 1)) ((string-sub str 0 1) :: ls)
+    in
+    let string-to-list str = string-to-list-args str [] in
+    let consume-one c i =
+    match c with
+      | `0` -> i * 10 
+      | `1` -> i * 10 + 1
+      | `2` -> i * 10 + 2
+      | `3` -> i * 10 + 3
+      | `4` -> i * 10 + 4
+      | `5` -> i * 10 + 5
+      | `6` -> i * 10 + 6
+      | `7` -> i * 10 + 7
+      | `8` -> i * 10 + 8
+      | `9` -> i * 10 + 9
+      | _   -> i
+    in
+    List.fold-right consume-one 0 (string-to-list str)
 
 type bib-in-proceedings =
   (|
@@ -624,7 +647,7 @@ end = struct
                   ctx-doc |> set-latin-font font-latin-bold
                 in
                 let it-num = embed-string (get-cross-reference-number `chapter:` label) in
-                let it-page = embed-string (get-cross-reference-page `chapter:` label) in
+                let it-page = embed-string (arabic ((string-to-int (get-cross-reference-page `chapter:` label)) - 2)) in
                 let ib-title =
                     read-inline ctx {#title;} ++ inline-skip 3pt
                 in
