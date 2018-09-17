@@ -110,8 +110,8 @@ end = struct
 
   type toc-element =
     | TOCElementChapter    of string * inline-text * inline-text
-    | TOCElementSection    of string * inline-text
-    | TOCElementSubsection of string * inline-text
+    % | TOCElementSection    of string * inline-text
+    % | TOCElementSubsection of string * inline-text
 
 
   let generate-fresh-label =
@@ -517,7 +517,7 @@ end = struct
     let () = num-theorems <- 0 in
     let s-num = arabic (!num-chapter) ^ `.` ^ arabic (!num-section) in
     let () = register-cross-reference (`section:` ^ label ^ `:num`) s-num in
-    let () = toc-acc-ref <- (TOCElementSection(label, title)) :: !toc-acc-ref in
+%    let () = toc-acc-ref <- (TOCElementSection(label, title)) :: !toc-acc-ref in
     let ib-num =
       read-inline ctx-title (embed-string (s-num ^ `.`))
         ++ hook-page-break (fun pbinfo _ ->
@@ -533,7 +533,7 @@ end = struct
     let () = num-subsection <- !num-subsection + 1 in
     let s-num = arabic (!num-chapter) ^ `.` ^ arabic (!num-section) ^ `.` ^ arabic (!num-subsection) in
     let () = register-cross-reference (`subsection:` ^ label ^ `:num`) s-num in
-    let () = toc-acc-ref <- (TOCElementSubsection(label, title)) :: !toc-acc-ref in
+%    let () = toc-acc-ref <- (TOCElementSubsection(label, title)) :: !toc-acc-ref in
     let ctx-title = make-subsection-title ctx in
     let ib-num =
       read-inline ctx-title (embed-string (s-num ^ `.`))
@@ -586,49 +586,53 @@ end = struct
                 let it-num = embed-string (get-cross-reference-number `chapter:` label) in
                 let it-page = embed-string (get-cross-reference-page `chapter:` label) in
                 let ib-title =
-                    read-inline ctx {#it-num;. #title;} ++ read-inline ctx {hogehoge. #author;}
-                      ++ inline-skip 3pt
+                    read-inline ctx {#title;} ++ inline-skip 3pt
                 in
+                let ctx-bf =
+                    ctx |> set-font Latin font-latin-bold
+                        |> set-cjk-font font-cjk-gothic
+                in
+                let ib-author = inline-skip 30pt ++ read-inline ctx-bf {#author;} in
                 let ib-page = inline-skip 3pt ++ read-inline ctx it-page in
                 let ib-middle =
                   let w = (get-text-width ctx) -' (get-natural-width ib-title) -' (get-natural-width ib-page) in
                     if w <' 0pt then inline-fil else
                       make-dots-line ctx w
                 in
-                  bbacc +++ line-break true true ctx (ib-title ++ ib-middle ++ ib-page)
+                  bbacc +++ line-break true true ctx (ib-title ++ ib-middle ++ ib-page) +++ line-break true true ctx (ib-author)
 
-            | TOCElementSection(label, title) ->
-                let ctx = ctx-doc in
-                let it-num = embed-string (get-cross-reference-number `section:` label) in
-                let it-page = embed-string (get-cross-reference-page `section:` label) in
-                let ib-title =
-                  inline-skip toc-section-indent
-                    ++ read-inline ctx {#it-num;. #title;} ++ inline-skip 3pt
-                in
-                let ib-page = inline-skip 3pt ++ read-inline ctx it-page in
-                let ib-middle =
-                  let w = (get-text-width ctx) -' (get-natural-width ib-title) -' (get-natural-width ib-page) in
-                    if w <' 0pt then inline-fil else
-                      make-dots-line ctx w
-                in
-                  bbacc +++ line-break true true ctx (ib-title ++ ib-middle ++ ib-page)
+            % | TOCElementSection(label, title) ->
+            %     let ctx = ctx-doc in
+            %     let it-num = embed-string (get-cross-reference-number `section:` label) in
+            %     let it-page = embed-string (get-cross-reference-page `section:` label) in
+            %     let ib-title =
+            %       inline-skip toc-section-indent
+            %         ++ read-inline ctx {#it-num;. #title;} ++ inline-skip 3pt
+            %     in
+            %     let ib-page = inline-skip 3pt ++ read-inline ctx it-page in
+            %     let ib-middle =
+            %       let w = (get-text-width ctx) -' (get-natural-width ib-title) -' (get-natural-width ib-page) in
+            %         if w <' 0pt then inline-fil else
+            %           make-dots-line ctx w
+            %     in
+            %       bbacc +++ line-break true true ctx (ib-title ++ ib-middle ++ ib-page)
 
-          | TOCElementSubsection(label, title) ->
-                let ctx = ctx-doc in
-                let it-num = embed-string (get-cross-reference-number `subsection:` label) in
-                let it-page = embed-string (get-cross-reference-page `subsection:` label) in
-                let ib-title =
-                  inline-skip toc-subsection-indent
-                    ++ read-inline ctx {#it-num;. #title;}
-                      ++ inline-skip 3pt
-                in
-                let ib-page = inline-skip 3pt ++ read-inline ctx it-page in
-                let ib-middle =
-                  let w = (get-text-width ctx) -' (get-natural-width ib-title) -' (get-natural-width ib-page) in
-                    if w <' 0pt then inline-fil else
-                      make-dots-line ctx w
-                in
-                  bbacc +++ line-break true true ctx (ib-title ++ ib-middle ++ ib-page)
+          % | TOCElementSubsection(label, title) ->
+          %       let ctx = ctx-doc in
+          %       let it-num = embed-string (get-cross-reference-number `subsection:` label) in
+          %       let it-page = embed-string (get-cross-reference-page `subsection:` label) in
+          %       let ib-title =
+          %         inline-skip toc-subsection-indent
+          %           ++ read-inline ctx {#it-num;. #title;}
+          %             ++ inline-skip 3pt
+          %       in
+          %       let ib-page = inline-skip 3pt ++ read-inline ctx it-page in
+          %       let ib-middle =
+          %         let w = (get-text-width ctx) -' (get-natural-width ib-title) -' (get-natural-width ib-page) in
+          %           if w <' 0pt then inline-fil else
+          %             make-dots-line ctx w
+          %       in
+          %         bbacc +++ line-break true true ctx (ib-title ++ ib-middle ++ ib-page)
 
           )) block-nil
         in
@@ -762,7 +766,6 @@ end = struct
           |> set-cjk-font font-cjk-gothic
     in
       read-inline ctx-emph inner
-
 
   let-inline \dfn inner = {\emph{#inner;}}
 
