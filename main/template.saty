@@ -4,9 +4,11 @@
 @import: ../MasWag/article
 @import: ../wasabiz/article
 @import: ../zpt/article
+@import: ../postscript/article
 
 document '<
   #maswag-article;
   #wasabiz-article;
   #zpt-article;
+  #postscript-article;
 >

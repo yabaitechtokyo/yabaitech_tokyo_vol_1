@@ -507,7 +507,9 @@ end = struct
       in
         (section-heading ctx-doc ib-bib-title) +++ bb-bib-main
     in
-      bb-title +++ bb-inner +++ bb-bib +++ clear-page
+      match bibliography with
+      | [] -> bb-title +++ bb-inner +++ clear-page
+      | bibliography -> bb-title +++ bb-inner +++ bb-bib +++ clear-page
 
 
   let section-scheme ctx label title inner =

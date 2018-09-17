@@ -1,0 +1,17 @@
+@import: ../main/book-class
+
+let postscript-article = '<
+  +chapter ?:(`postscript-article`) (|
+  bibliography = [];
+  title = {あとがき: \SATySFi; で技術系同人誌を書いた話};
+  author = {};
+  |) <
+  +section{Idea} <
+    +p{
+     \listing {
+       * 今回苦労した事、\SATySFi;について思うことなどを挙げておくと良さそう
+     }
+    }
+    >
+  >
+>
