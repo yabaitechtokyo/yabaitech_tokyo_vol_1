@@ -22,6 +22,7 @@ module ZptMath : sig
   direct \derive : [inline-text?; bool?; math list; math] math-cmd
   direct +local-reduction : [math; math] block-cmd
   direct +local-expansion : [math; math] block-cmd
+  direct +with-font-size : [length; block-text] block-cmd
 
 end = struct
   let bin = math-char MathBin
@@ -101,5 +102,9 @@ end = struct
       ${| #l | \Rightarrow_E #r |};
     ];
   >
+
+  let-block ctx +with-font-size l b =
+    let small-font-ctx = ctx |> set-font-size l in
+      read-block small-font-ctx b
 
 end

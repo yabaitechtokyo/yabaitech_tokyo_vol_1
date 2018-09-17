@@ -7,6 +7,16 @@ let zpt-bibliography = [
     url    = `http://www.academia.edu/31173006/証明論的意味論入門`;
     year   = 2017;
   |));
+  (`Benton94`, InProceedings(|
+    author = {|P. N. Benton|};
+    title = {A Mixed Linear and Non-Linear Logic: Proofs, Terms and Models (Extended Abstract).};
+    booktitle = {CSL};
+    series = None; 
+    volume = None; 
+    number = None; 
+    pages = (121,135);
+    year = 1994;
+  |));
   (`Kavvos17`, InProceedings(|
     author = {| G. A. Kavvos |};
     title = {Dual-Context Calculi for Modal Logic};

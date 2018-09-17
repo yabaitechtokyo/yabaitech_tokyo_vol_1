@@ -240,30 +240,27 @@ let adj-rules-up = '<
 >
 
 let adj-rules-up-lr = '<
-  +math-list (${
-    | \derive?:!{${\adj-up{}}E}
+  +local-reduction
+    (${ \derive?:!{${\adj-up{}}E}
              {| \derive?:!{${\adj-up{}}I}
                        ?:!(true)
-                       {| \adj1{\Theta}{\cdot}{A} |}
+                       {| \derive{| \mathcal{D} |}{\adj1{\Theta}{\cdot}{A}} |}
                        { \adj2{\Theta}{\adj-up{A}} }
               |}
-             { \adj1{\Theta}{\Gamma}{A} }
-    | \Rightarrow_R
-    | \adj1{\Theta}{\Gamma}{A} 
-    |});
+             { \adj1{\Theta}{\Gamma}{A} }})
+    (${ \derive?:!{weak1}{| \derive{| \mathcal{D} |}{\adj1{\Theta}{\cdot}{A}} |}{\adj1{\Theta}{\Gamma}{A}}});
 >
 
 let adj-rules-up-le = '<
-  +math-list (${
-    | \adj2{\Theta}{\adj-up{A}}
-    | \Rightarrow_E
-    | \derive?:!{${\adj-up{}}E}
-             {| \derive?:!{${\adj-up{}}I}
-                       ?:!(true)
-                       {| \adj2{\Theta}{\adj-up{A}} |}
-                       { \adj1{\Theta}{\cdot}{A} } |}
-             { \adj2{\Theta}{\adj-up{A}} }
-    |});
+  +local-expansion
+    (${ \derive{|\mathcal{D}|}{\adj2{\Theta}{\adj-up{A}}}})
+    (${\derive?:!{${\adj-up{}}E}
+             {| \derive{| \mathcal{D} |}
+                       {\derive?:!{${\adj-up{}}I}
+                          ?:!(true)
+                         {| \adj2{\Theta}{\adj-up{A}} |}
+                         { \adj1{\Theta}{\cdot}{A} }} |}
+             { \adj2{\Theta}{\adj-up{A}} }});
 >
 
 let adj-rules-down = '<
@@ -281,24 +278,21 @@ let adj-rules-down = '<
 >
 
 let adj-rules-down-lr = '<
-  +math-list (${
-    | \derive?:!{${\adj-down{}}E}
+  +local-reduction
+    (${\derive?:!{${\adj-down{}}E}
              {| \derive?:!{${\adj-down{}}I}
                        {| \adj2{\Theta}{\alpha} |}
                        { \adj1{\Theta}{\Gamma}{\adj-down{\alpha}} }
               | \adj1{\Theta, \alpha}{\Gamma}{B}
               |}
-             { \adj1{\Theta}{\Gamma}{B} }
-    | \Rightarrow_R
-    | \adj1{\Theta}{\Gamma}{B}
-    |});
+             { \adj1{\Theta}{\Gamma}{B} }})
+    (${\adj1{\Theta}{\Gamma}{B}});
 >
 
 let adj-rules-down-le = '<
-  +math-list (${
-    | \adj1{\Theta}{\Gamma}{\adj-down{\alpha}}
-    | \Rightarrow_E
-    | \derive?:!{${\adj-down{}}E}
+  +local-expansion
+    (${\adj1{\Theta}{\Gamma}{\adj-down{\alpha}}})
+    (${\derive?:!{${\adj-down{}}E}
              {| \adj1{\Theta}{\Gamma}{\adj-down{\alpha}}
               | \derive?:!{${\adj-down{}}I}
                        ?:!(true)
@@ -309,8 +303,7 @@ let adj-rules-down-le = '<
                         |}
                        { \adj1{\Theta, \alpha}{\Gamma}{\adj-down{\alpha}} }
               |}
-             { \adj1{\Theta}{\Gamma}{\adj-down{\alpha}} }
-    |});
+             { \adj1{\Theta}{\Gamma}{\adj-down{\alpha}} }});
 >
 
 let ipckm-symbols = '<
@@ -497,6 +490,55 @@ let ipc2m-dmodal-le = '<
       });
 >
 
+let ipc2m-k-axiom = let neko = ${
+  \derive?:!{${\imp}I}
+         ?:!(true)
+         {|
+           \derive
+           ?:!{${\dmodal{}}E}
+           ?:!(true)
+           {
+           | \derive
+               ?:!{hyp}
+               {||}
+               { \ipc2m{A \imp B}{\dmodal{\paren{A \imp B}}, \dmodal{A}}{\dmodal{A}} }
+           | \derive
+               ?:!{${\dmodal{}I}}?:!(true)
+               {| \derive?:!{${\imp}E}?:!(true)
+                    {
+                    | \derive?:!{hyp}{||}{\ipc2m{}{A \imp B, A}{A \imp B}}
+                    | \derive?:!{hyp}?:!(true){||}{\ipc2m{}{A \imp B, A}{A}}
+                    |}
+                    { \ipc2m{}{A \imp B, A}{B} }
+               |}
+               { \ipc2m{A \imp B, A}{\dmodal{\paren{A \imp B}}, \dmodal{A}}{\dmodal{B}} }
+           |}
+           {
+             \ipc2m{A \imp B}{\dmodal{\paren{A \imp B}}, \dmodal{A}}{\dmodal{B}}
+           }
+          |}
+         { \ipc2m{A \imp B}{\dmodal{\paren{A \imp B}}}{\dmodal{A} \imp \dmodal{B}} }
+  } in {
+  \figure?:(`ipc2m-k-axiom`)
+         {IPC2MにおけるKの公理の証明} <
+           +with-font-size (6pt) <
+           +math (${
+             \derive ?:!{${\imp}I}{
+             | \derive
+                 ?:!{${\dmodal{}}E}
+                 ?:!(true)
+                 {| \derive?:!{hyp}{||}{\ipc2m{}{\dmodal{\paren{A \imp B}}}{\dmodal{\paren{A \imp B}}}}
+                  | #neko
+                  |}
+                 { \ipc2m{}{\dmodal{\paren{A \imp B}}}{\dmodal{A}\imp\dmodal{B}} }
+             |}
+             { \ipc2m{}{}{\dmodal{\paren{A \imp B}} \imp \dmodal{A}\imp\dmodal{B}} }
+           });
+           >
+         >
+}
+
+
 let ipckm-fmodal-lr = '<
   +local-reduction
     (${\derive?:!{${\fmodal{}}E}
@@ -519,3 +561,42 @@ let ipckm-fmodal-le = '<
                        { \ipckm{|\Delta|\cdot|}{A} } |}
              { \ipckm{|\Delta|}{\fmodal{A}} }});
 >
+
+let ipckm-k-axiom =
+  let inu1 = ${
+    \derive?:!{${\fmodal{}}E}
+           {| \derive?:!{hyp}?:!(true)
+                {||}
+                { \ipckm{| \fmodal{\paren{A \imp B}}, \fmodal{A}|}{ \fmodal{A \imp B} } }
+            |}
+           { \ipckm{| \fmodal{\paren{A \imp B}}, \fmodal{A}| |}{ A \imp B } }
+  } in
+  let inu2 = ${
+    \derive?:!{${\fmodal{}}E}?:!(true)
+           {| \derive?:!{hyp}?:!(true)
+                {||}
+                { \ipckm{| \fmodal{\paren{A \imp B}}, \fmodal{A}|}{ \fmodal{A} } }
+            |}
+           { \ipckm{| \fmodal{\paren{A \imp B}}, \fmodal{A}| |}{ A } }
+  } in
+  let neko = ${
+     \derive?:!{${\fmodal{}}I}?:!(true)
+           {| \derive?:!{${\imp}I}?:!(true)
+                     {| #inu1
+                      | #inu2
+                      |}
+                     { \ipckm{| \fmodal{\paren{A \imp B}}, \fmodal{A}| |}{ B } }
+            |}
+           { \ipckm{| \fmodal{\paren{A \imp B}}, \fmodal{A} |}{ \fmodal{B}} }
+  } in {
+  \figure?:(`ipckm-k-axiom`)
+         {IPCkMにおけるKの公理の証明} <
+           +math (${
+             \derive?:!{${\imp}I}
+                    {| \derive?:!{${\imp}I}?:!(true)
+                         {| #neko |}
+                         { \ipckm{| \fmodal{\paren{A \imp B}} |}{\fmodal{A} \imp \fmodal{B}} }|}
+                    { \ipckm{|  |}{\fmodal{\paren{A \imp B}} \imp \fmodal{A} \imp \fmodal{B}}}
+           });
+         >
+}

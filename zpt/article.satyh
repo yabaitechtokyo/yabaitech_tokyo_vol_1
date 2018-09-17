@@ -50,7 +50,7 @@ let zpt-article = '<
         +p {気持ちとしてはこれは「${\imp}を導入した後に除去して得た結論は、そもそも導入と除去を行わなくて導くことができる」ことを表しています。除去則が導入則に対して強すぎる結論を導いているとこれが成り立たなくなってしまいます。\footnote{そのような例としてtonkという(壊れた)論理結合子が知られています。詳細は\cite[`Yatabe17`];をご覧ください。}}
         +p {local completenessは「除去則から得た結論から元の論理式を復元できる」という性質で、除去則が導入則より弱くならないことを要求します。この性質はlocal expansionという導出の変換によって示されます。${\imp}だと以下のようになり、実際に${\imp}除去をした後に${A \imp B}を復元できることがわかります。}
         #ipc-imp-le;
-        +p {以上のようにlocal soundnessとlocal completenessが成り立っていることをlocal reductionとlocal expansionので示すことで論理結合子の導入則と除去則が釣り合っていることを確認できます。\footnote{Curry-Howard同型においてlocal reductionとlocal expnasionは型付き${\lambda}計算の${\beta}簡約と${\eta}展開に対応します\cite[`Pfenning01`];。論理結合子が成立していることが計算が可能であることに対応してる事実、すごく面白くないですか??}}
+        +p {以上のようにlocal soundnessとlocal completenessが成り立っていることをlocal reductionとlocal expansionので示すことで論理結合子の導入則と除去則が釣り合っていることを確認できます。これらの事実から${\imp}が論理結合子としてちゃんと定義できているということができます。\footnote{Curry-Howard同型においてlocal reductionとlocal expnasionは型付き${\lambda}計算の${\beta}簡約と${\eta}展開に対応します\cite[`Pfenning01`];。論理結合子が成立していることが計算が可能であることに対応してる事実、すごく面白くないですか??}}
       >
       +subsection{論理を作る指針のまとめ} <
         +p {さて、ここまでのおさらいをしてみましょう。我々は以下のような手続きを踏んで直観主義論理の体系IPCを作ったのでした。
@@ -64,14 +64,14 @@ let zpt-article = '<
       >
     >
     +section {二つの階層の論理} <
-      +p {さて、先程のIPCを土台として新しい論理を作ってみましょう。これから作るものは歴史的にBentonの随伴論理とよばれるもの亜種ですが、ここではIPC2と呼ぶことにしましょう。}
+      +p {さて、先程のIPCを土台として新しい論理を作ってみましょう。これから作るものは歴史的にBentonの随伴論理\cite[`Benton94`];とよばれるもの亜種ですが、ここではIPC2と呼ぶことにしましょう。IPC2の基本的なアイデアは、二つの階層を持たせることです。}
 
       #adj-symbols;
-      +p {定義から明らかなように、2IPCでは二つの階層が存在し別々に記号が定義されています。レベル2がメタ、レベル1がオブジェクトの階層に対応しています。命題としては ${\adj-up{A}} と ${\adj-down{\alpha}} によって相互のレベルを行き来できるようになっています。二つの階層に応じて2IPCでは二つの判断が存在します。}
+      +p {定義から明らかなように、IPC2では二つの階層で別々に記号が定義されています。レベル2がメタ、レベル1がオブジェクトの階層に対応しています。命題としては ${\adj-up{A}} と ${\adj-down{\alpha}} によって相互のレベルを行き来できるようになっています。また、二つの階層に応じてIPC2では二つの判断が存在します。}
 
       #adj-judgments;
 
-      +p {階層の構造は非対称である点に注意してください。レベル1の判断ではレベル1と2の文脈がそれぞれあるのに対し、レベル2の判断ではレベル2の文脈しかありません。\todo{気持ちの説明を入れる。}仮定の使用に関しては以下の二つのルールが定義されます。}
+      +p {階層の構造は非対称である点に注意してください。レベル1の判断ではレベル1と2の文脈がそれぞれあるのに対し、レベル2の判断ではレベル2の文脈しかありません。仮定の使用に関しては階層に応じて以下の二つのルールが定義されます。}
 
       #adj-hyp;
 
@@ -92,7 +92,7 @@ let zpt-article = '<
       #adj-rules-up-lr;
       #adj-rules-up-le;
 
-      +p {${\adj-up{}}がレベル2からレベル1の命題を扱う論理結合子であったのに対し、${\adj-down{}}はレベル1からレベル2の命題を扱う論理結合です。}
+      +p {${\adj-up{}}がレベル2からレベル1の命題を扱う論理結合子であったのに対し、${\adj-down{}}はレベル1からレベル2の命題を扱う論理結合子です。}
 
       #adj-rules-down;
 
@@ -102,7 +102,6 @@ let zpt-article = '<
       #adj-rules-down-le;
 
       +p {さて、これで二階層の論理IPC2の定義が出揃いました。}
-      +p {\todo{例を書く}}
     >
 
     +section {階層の対称性とK様相} <
@@ -143,7 +142,7 @@ let zpt-article = '<
         #ipc2m-dmodal-lr;
         #ipc2m-dmodal-le;
 
-        +p{この${\dmodal{}}が実際にKの様相になっていることを示すには色々とリソースが足りないので、Kの公理${\dmodal{\paren{A \imp B}} \imp \dmodal{A} \imp \dmodal{B}}を示す程度でお茶を濁すことにします。(証明が読みたいという人はKavvosのarXiv論文\cite[`Kavvos18`];をあたるとよさそうです。)\todo{書く}}
+        +p{この${\dmodal{}}が実際にKの様相になっていることを示すには色々とリソースが足りないので、\ref-figure(`ipc2m-k-axiom`);でKの公理${\dmodal{\paren{A \imp B}} \imp \dmodal{A} \imp \dmodal{B}}を示す程度でお茶を濁すことにします。#ipc2m-k-axiom;\footnote{証明が読みたいという人はKavvosのarXiv論文\cite[`Kavvos18`];をあたるとよさそうです。}}
       >
       +subsection {${\adj-up{}}とFitch-style Modality} <
         +p {先ほどは2レベルの階層で「同じ論理を動かす」ことで${\adj-down{}}がKの様相になることを確認しました。実は別の方法で「異なる階層で同じ論理が動く」ようにすることで${\adj-up{}}もKの様相になります。歴史的には色々論文が出ていてKripe-style\cite[`Davies01`];とかFitch-style\cite[`Clouston18`];とか呼ばれますが、ここではIPCkMと呼ぶことにします。IPCkMの構造に関する基本的なアイデアは「階層の数を任意自然数個に拡張する」ことです。まずは記号の定義から。}
@@ -177,7 +176,7 @@ let zpt-article = '<
         #ipckm-fmodal-lr;
         #ipckm-fmodal-le;
 
-        +p{${\fmodal{}}もKの様相演算子になっているのですが、こちらもKの公理を示すにとどめておきます。証明を見たい方はMartiniとMasiniの論文\cite[`Martini96`];などを見るといいのではないかと思います。\todo{Kの公理を証明する}}
+        +p{${\fmodal{}}もKの様相演算子になっているのですが、こちらも\ref-figure(`ipckm-k-axiom`);にKの公理の証明を示すにとどめておきます。#ipckm-k-axiom;証明を見たい方はMartiniとMasiniの論文\cite[`Martini96`];などを見るといいのではないかと思います。}
       >
     >
 
