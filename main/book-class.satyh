@@ -448,7 +448,7 @@ end = struct
     in
     let ib-title = read-inline ctx-title title in
     let ib-author = read-inline ctx-author author in
-    let bb-title = chapter-heading-with-author ctx (Some(ib-num)) ib-title ib-author in
+    let bb-title = chapter-heading-with-author ctx None ib-title ib-author in
     let bb-inner = read-block ctx inner in
 
     % -- bibliography --
@@ -515,7 +515,7 @@ end = struct
     let () = increment num-section in
     let () = num-subsection <- 0 in
     let () = num-theorems <- 0 in
-    let s-num = arabic (!num-chapter) ^ `.` ^ arabic (!num-section) in
+    let s-num = arabic (!num-section) in
     let () = register-cross-reference (`section:` ^ label ^ `:num`) s-num in
 %    let () = toc-acc-ref <- (TOCElementSection(label, title)) :: !toc-acc-ref in
     let ib-num =
@@ -531,7 +531,7 @@ end = struct
 
   let subsection-scheme ctx label title inner =
     let () = num-subsection <- !num-subsection + 1 in
-    let s-num = arabic (!num-chapter) ^ `.` ^ arabic (!num-section) ^ `.` ^ arabic (!num-subsection) in
+    let s-num = arabic (!num-section) ^ `.` ^ arabic (!num-subsection) in
     let () = register-cross-reference (`subsection:` ^ label ^ `:num`) s-num in
 %    let () = toc-acc-ref <- (TOCElementSubsection(label, title)) :: !toc-acc-ref in
     let ctx-title = make-subsection-title ctx in
@@ -705,7 +705,7 @@ end = struct
 
   let figure-scheme ctx labelopt prefix category caption inner =
     let () = num-figure <- !num-figure + 1 in
-    let s-num = arabic !num-chapter ^ `.` ^ arabic !num-figure in
+    let s-num = arabic !num-figure in
     let () =
       match labelopt with
       | Some(label) -> register-cross-reference (prefix ^ label ^ `:num`) s-num
@@ -773,7 +773,7 @@ end = struct
   let theorem-scheme ctx ctxf category wordopt label inner =
     let () = increment num-theorems in
     let s-num =
-      (arabic (!num-chapter)) ^ `.` ^ (arabic (!num-theorems))
+      arabic (!num-theorems)
     in
     let () = register-cross-reference (label ^ `:num`) s-num in
     let it-num = embed-string s-num in
