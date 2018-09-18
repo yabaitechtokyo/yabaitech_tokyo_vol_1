@@ -76,10 +76,10 @@ G[o] inline-graphics
 G[ ] inline-graphics-outer
 
 -- フレーム --
-G[ ] inline-frame-outer
-G[ ] inline-frame-inner
-G[ ] inline-frame-fixed
-G[ ] inline-frame-breakable
+G[o] inline-frame-outer
+G[o] inline-frame-inner
+G[o] inline-frame-fixed
+G[o] inline-frame-breakable
 G[ ] block-frame-breakable
 
 -- 画像 --

@@ -4,6 +4,7 @@
 @require: color
 @require: itemize
 @require: hdecoset
+@require: table
 @import: book-class
 
 
@@ -287,13 +288,19 @@ module Sample = struct
     embed-string (arabic n)
 
 
+  let-inline ctx \simple-frame it =
+    let pads = (2pt, 2pt, 2pt, 2pt) in
+    let decoset = HDecoSet.simple-frame-stroke 1pt (Gray(0.5)) in
+      inline-frame-breakable pads decoset (read-inline ctx it)
+
+
 end
 
 
 module Type : sig
 
   type t
-  val to-math : t -> math
+  val to-math : bool -> t -> math
   val (-->) : t -> t -> t
   val base-type : inline-text -> t
   val product : t list -> t
@@ -320,6 +327,8 @@ module Type : sig
   val image : t
   val list : t -> t
   val option : t -> t
+  val paddings : t
+  val cell : t
 end = struct
 
   type t =
@@ -334,7 +343,7 @@ end = struct
     | Single
 
 
-  let-math \arr =
+  let-math \arr-display =
     let mbr =
       text-in-math MathOrd (fun ctx ->
         discretionary 100 inline-nil inline-fil inline-nil)
@@ -342,7 +351,21 @@ end = struct
       math-group MathBin MathBin (math-concat (math-char MathOrd `→`) mbr)
 
 
-  let to-math =
+  let-math \arr-inline =
+    let mbr =
+      text-in-math MathOrd (fun ctx -> (
+        let ib-space =
+          Option.from inline-nil
+            (space-between-maths ctx
+              (math-char MathOrd ` `) (math-char MathBin ` `))
+        in
+        discretionary 100 ib-space inline-nil inline-nil
+      ))
+    in
+      math-group MathBin MathOrd (math-concat (math-char MathOrd `→`) mbr)
+
+
+  let to-math is-inline =
     let-rec aux
       | mode (Ctr(it, tyargs)) =
           let marg =
@@ -364,7 +387,12 @@ end = struct
       | mode (Func(ty1, ty2)) =
           let m1 = aux Domain ty1 in
           let m2 = aux Normal ty2 in
-          let m = ${#m1 \arr #m2} in
+          let m =
+            if is-inline then
+              ${#m1 \arr-inline #m2}
+            else
+              ${#m1 \arr-display #m2}
+          in
           ( match mode with
             | Normal -> m
             | _      -> ${\paren{#m}}
@@ -410,6 +438,8 @@ end = struct
   let paren        = base-type {paren}
   let script       = base-type {script}
   let image        = base-type {image}
+  let paddings     = base-type {paddings}
+  let cell         = base-type {cell}
 
 
   let list ty = Ctr({list}, [ty])
@@ -419,7 +449,7 @@ end
 
 
 let val-scheme ctx indexopt it-cmd ty explainopt =
-  let m = Type.to-math ty in
+  let m = Type.to-math false ty in
   let it =
     match indexopt with
     | None    -> {\codem{#it-cmd;} : ${#m}}
@@ -461,6 +491,16 @@ let val-scheme ctx indexopt it-cmd ty explainopt =
         (bb-head +++ bb-explain)
 
 
+let-block ctx +example it =
+  let pads = (15pt, 15pt, 0pt, 0pt) in
+  let decoset = VDecoSet.simple-frame-stroke 1pt (Gray(0.75)) in
+    block-frame-breakable ctx pads decoset (fun ctx ->
+      block-skip 0pt
+        +++ read-block ctx '<+Book.example{#it;}>
+        +++ line-break false true (ctx |> set-paragraph-margin 0pt 0pt) inline-fil
+    )
+
+
 let-inline ctx \val ?:indexopt it-cmd ty =
   val-scheme ctx indexopt it-cmd ty None
 
@@ -470,7 +510,7 @@ let-inline ctx \val-explain ?:indexopt it-cmd ty it =
 
 
 let-inline ctx \type ty =
-  script-guard Latin (embed-math ctx (Type.to-math ty))
+  script-guard Latin (embed-math ctx (Type.to-math true ty))
 
 
 let-inline ctx \meta it =
