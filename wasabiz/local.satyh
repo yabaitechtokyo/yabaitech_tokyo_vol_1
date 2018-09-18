@@ -1,0 +1,40 @@
+@require: code
+@require: hdecoset
+
+% Most of the followings contents are taken from the satysfi book.
+
+let display-code-scheme ctx s =
+    let decoset =
+      let back-color = Gray(0.875) in
+      let deco (x, y) w h d =
+        [
+          fill back-color (Gr.rectangle (x, y -' d) (x +' w, y +' h));
+        ]
+      in
+      (deco, deco, deco, deco)
+    in
+      Code.scheme decoset Color.black ctx s
+
+let-inline ctx \code s =
+  let bb = display-code-scheme ctx s in
+    inline-fil ++ embed-block-breakable ctx bb
+
+let strut h d =
+  inline-graphics 0pt h d (fun _ -> [])
+
+let set-mono-font ctx =
+  ctx |> set-font Latin (`lmmono`, 1., 0.)
+      |> set-hyphen-penalty 100000
+
+let-inline ctx \codem it =
+  let ib-strut = strut 8pt 3pt in
+  let ib =
+    let ctx =
+      ctx |> set-mono-font
+          |> set-every-word-break inline-nil ib-strut
+    in
+      ib-strut ++ read-inline ctx (embed-string it)
+  in
+  let pads = (2pt, 2pt, 2pt, 2pt) in
+  let decoset = HDecoSet.rectangle-round-fill 4pt 2pt (Color.gray 0.9) in
+    script-guard Latin (inline-frame-breakable pads decoset ib)

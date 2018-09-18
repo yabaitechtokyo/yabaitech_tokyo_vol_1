@@ -1,10 +1,11 @@
 @import: ../main/book-class
-@import: ../main/bib
+@import: local
+@import: bib
 % replace this to your bibliography!!
 
 let wasabiz-article = '<
   +chapter ?:(`wasabiz-article`) (|
-    bibliography = bibliography;
+    bibliography = wasabiz-bibliography;
     title = {"Schemeの実装におけるスタックフレーム(Draft)" を実装する};
     author = {wasabiz};
   |) <
@@ -39,14 +40,389 @@ let wasabiz-article = '<
       }
     >
     +section {背景: Schemeの実装におけるスタックフレーム(Draft)}<
-    >
-    +section {Cheney on the M.T.A.}<
+      +subsection {Cheney on the M.T.A.}<
+      >
     >
     +section {C言語でガベージコレクション (gc.h)}<
+      +p{
+        今回は動的なスクリプト言語であるSchemeをC言語にコンパイルするため，変換後のC言語のソースコード上でガベージコレクション(GC)を実装しておく必要があります．
+        一般的にはGCというとマークスイープGC(あるいはその変種)を実装することを含意することが多いです．
+        その場合特に問題となるのはroot setの管理で，ナイーブにやるとアセンブリなどを用いてレジスタを読み出したりスタックフレームを直接操作する必要が出てきたりします．
+        これを嫌ってroot setをC言語からアクセス出来る範囲で明示的に管理しようとすると今度はC言語のプログラムの書き方に大きな制限が課されることになります．
+        今回のようにC言語のプログラムはあくまで生成されるものであって人間が直接読み書きするものではないというスタンスをとればこの制限の存在はあまり問題にはなりません．
+        とはいえ，どうせC言語でGCを実装するわけですから，可能なかぎりポータブルに，他の用途にも使えるように書きたいものです．
+        そこで，今回はTreadmill GCのアイデアとLinuxのlist.hというライブラリのアイデアを組み合わせてC言語用のポータブルなGCライブラリを作成することにしました．
+      }
+      +p {
+        今回作成したライブラリにはgc.hと名付けました．
+        名前のとおり，gc.hという名前のファイルをインクルードするだけで使えるヘッダーのみのライブラリです．
+        また，実装自体は行数がコメントを除いて200行に満たない非常に小さなライブラリです．
+        gc.hの最大の特徴はnon-movingで正確なGCを実装していることです．
+        通常，C言語でGCを実装する場合，実行スタックの構造を正確に判断することが困難なため，おおざっぱにスタックを舐めてroot setを保守的に判定する保守的GCと呼ばれる手法が使用されることが多いですが，
+        今回はroot setを正確に判定するためにヒープ全体を二重連結リストとして管理することでそのような問題を解決しています(これがTreadmill GCのアイデアに相当する部分)．
+        Non-movingにしたのはC言語という言語の使われ方が低レベルプログラミングに寄っていて，movingな場合に支障をきたすことが多いだろうということが懸念されたからです．
+        また，GCのアルゴリズムとしてはCheneyのコピーGCを採用しています．
+        これはTreadmillと同じアプローチを取ることで通常のコピーとは異なりメモリ空間のうち半分が使えないという状況がおこらなくなったためです．
+        APIはLinuxのlist.hに非常に近い見た目になっています．
+        ある構造体をgcで管理したい場合はstruct gc_head型のメンバを追加するだけで大丈夫です．
+        他にはヒープに対するアプリオリな知識を仮定していないという特徴があります．
+        結果として(実際にそれが必要になることはほとんどないと思いますが)このGCを動作させるだけであればlibcも必要ありません．
+      }
+      +p{
+        また，この章の内容の古いバージョンはQiitaに公開されています．\cite([`qiitanoyatu`]);
+      }
+      +subsection{list.h}<
+        +p{
+          まず，APIのデザインのベースとしたLinuxのlist.hの使い方について簡単に説明します．
+          Linuxのlist.hは非常に綺麗なAPIを持つC言語のための連結リストライブラリです．
+          例えば構造体\codem(`foo`);の連結リストを作成する場合，構造体\codem(`foo`);に\codem(`struct list_head`);型のメンバを(どんな位置でもいいので)追加するだけです．
+
+          \code(```
+            struct foo {
+                ...
+                struct list_head head;
+                ...
+            };
+          ```);
+
+          fooを作成したら\codem(`head`);メンバを\codem(`INIT_LIST_HEAD`);で初期化してあげます．
+
+          \code(```
+            struct foo *foo = malloc(sizeof *foo);
+            INIT_LIST_HEAD(&foo->head);
+          ```);
+
+          リスト自体も\codem(`struct list_head`);型で表されます．
+
+          \code(```
+            struct list_head list_of_foo;
+            INIT_LIST_HEAD(&list_of_foo);
+          ```);
+
+          追加や削除はfooそのものではなくfooのheadメンバに対して行います．
+
+          \code(```
+            list_add(&foo->head, &list_of_foo);
+            list_del(&foo->head);
+          ```);
+
+          list_headのポインタから，それが属する構造体のポインタを得るには\codem(`list_entry`);マクロを用います．
+
+          \code(```
+            struct list_head *h = list_of_foo.next; // list_of_fooの1個目の要素
+            struct foo *f = list_entry(h, struct foo, head); // hが属する構造体へのポインタ
+          ```);
+
+          ちなみにAPIから明らかですが，\codem(`struct foo`);自体はどんな方法でアロケートされていても構いません．
+          例えばスタックに確保した構造体であっても正しくリストのメンバとして扱われます．
+
+          \code(```
+            struct foo foo;
+            INIT_LIST_HEAD(&foo.head);
+            list_add(&foo.head, &list_of_foo);
+          ```);
+        }
+      >
+      +subsection{gc.h}<
+        +p{
+          今回作ったgc.h(そういえばファイル名がBoehmGCと被ってますね)は\cite([`gc-h`]);に置いてあります．
+          gc.hの使い方はlist.hと概ね同じです．
+          GC対象にしたい構造体があればそれに\codem(`struct gc_head`);型のメンバを追加します．
+
+          \code(```
+            struct foo {
+                ...
+                struct gc_head head;
+                ...
+            };
+          ```);
+
+          次がポイントですが，\codem(`struct foo`);型のオブジェクトをまず自分でアロケートしてから，GCに登録します．
+
+          \code(```
+            struct foo *foo = malloc(sizeof *foo);
+            INIT_GC_HEAD(&foo->head, &foo_type);
+          ```);
+
+          ただし，この\codem(`foo_type`);というのは事前に定義しておいた定数で，foo型がどのようにmarkされるか，freeされるかの情報を保持します．
+
+          \code(```
+            void foo_mark(struct gc_head *head) {
+                struct foo *foo = gc_entry(head, struct foo, head);
+                ...
+                /* mark members of foo using `gc_mark` (if any) */
+                ...
+            }
+
+            void foo_free(struct gc_head *head) {
+                struct foo *foo = gc_entry(head, struct foo, head);
+                ...
+                /* free members of foo (if any) */
+                ...
+                free(foo);
+            }
+
+            const struct gc_object_type foo_type = { foo_mark, foo_free };
+          ```);
+
+          ここで\codem(`foo_free`);の中で\codem(`foo`);自体をfreeしています．
+          このように，ネイティブヒープからのアロケーションはプログラマが自分で行います．
+          gc.hが管理するのは参照の生死だけです．
+          オブジェクトが死んだ場合は事前に\codem(`INIT_GC_HEAD`);で登録しておいたfree関数が呼ばれるので，その中で適切にネイティブヒープへメモリを返却するのもプログラマの責任です．
+          そのようなデザインのおかげで，gc.hはlibcの関数を使用していません．
+
+          通常のGCではヒープの管理までGCが行うので，GCはもともと設定されたタイミングで自動で走ります．
+          しかし，gc.hはネイティブヒープについて一切感知しないというデザインのため，GCが走るタイミングはプログラマが自分で制御する必要があります．
+          \codem(`malloc`);でアロケートしたメモリの総量を数えておき，域値を越えればGCを走らせるというのが通常の戦略になると思います．
+          GCは\codem(`gc_run`);関数を呼べば走ります．
+
+          \code(```
+          gc_run();
+          ```);
+
+          さて，参照の生死の管理について説明します．
+          gc.hではroot setを管理するAPIが3種類用意されています．
+          ひとつは\codem(`gc_pin`);と\codem(`gc_unpin`);です．
+          これを使うと，特定のオブジェクトがGC後に生き残ります．
+
+          \code(```
+          // オブジェクトを2つ作成
+          INIT_GC_HEAD(gc, &obj1->gc_head, ...);
+          INIT_GC_HEAD(gc, &obj2->gc_head, ...);
+
+          // obj1だけをpin
+          gc_pin(gc, &obj1->gc_head);
+
+          // GC
+          gc_run(gc);
+
+          // obj2は開放される．obj1は生き残る．
+          ```);
+
+          この方法では簡単にroot setを管理できますが，複雑な方法で定まるroot set(たとえば，GC時点でのシステムコールの戻り値に依存して開放されるかそうでないかが決まる，等)を管理することができません．
+          これに対処するためのAPIとして\codem(`gc_add_root`);と\codem(`gc_del_root`);というAPIが用意されています．
+          これが2種類目です．
+          このAPIではGCのroot setのmark時によばれるハンドラ(関数)を登録することができます．
+          これにより柔軟にroot setを管理することができます．
+
+          3つ目の方法としてgc.hには簡単なスコープ管理の機能が備わっています．
+          スコープは\codem(`gc_scope_open`);で作成，\codem(`gc_scope_close`);で破棄できます．
+
+          \code(```
+          struct gc_scope s;
+          struct gc_head *heads[10];
+          gc_push_scope(gc, &s, heads);
+
+          ...
+
+          gc_pop_scope(gc);
+          ```);
+
+          スコープを使用すると複数のオブジェクトへの参照を一度に効率的に減らすことができます．
+          使い方は以下の通りです．
+          まず，スコープを開きます．
+          スコープを開くときはオブジェクトを登録するための配列も同に渡さなければなりません．
+          そのスコープ中で参照が生き残ってほしいオブジェクトを\codem(`gc_protect`);でスコープに登録します．
+          このとき，\codem(`gc_push_scope`);に渡した配列の長さよりも多い数のオブジェクトをスコープの中でprotectすることはできません．
+          スコープが閉じられると，その中で確保されたオブジェクトの参照が切れます．
+          ここで，他からの参照が一切なくなってしまったオブジェクトは次回の\codem(`gc_run`);で回収されます．
+          下のようなコードを実行した場合(make_fooの定義は普通だとして)\codem(`a`);は次回のGCで回収されます．
+
+          \code(```
+          struct gc_scope s;
+          struct gc_head *heads[1];
+          {
+            struct foo *a = make_foo();
+            gc_protect(&a->head);
+
+            ...
+          }
+          gc_pop_scope(gc);
+          ```);
+        }
+      >
+      +subsection{解説}<
+        +p{
+          CheneyのコピーGC(以下単にコピーGC)の詳細についてはWikipedia\cite([`cheney-wiki`]);などを参照してください．
+          実際には基本的にはコピーGCと全く同じです．
+          ただし，non-movingにするためにTreadmill GCの考え方を用いています．
+          Treadmill GCについてはこのWiki\cite([`treadmill-gc-wiki`]);などをみてください．
+
+          \codem(`struct gc_head`);の中身は以下のようになっています．
+          大きさは3ワードと多少大きくなっています．
+
+          \code(```
+            struct gc_head {
+                struct list_head head;
+                unsigned long type_mark;
+            };
+          ```);
+
+          \codem(`head`);は全オブジェクト(生きているか，もしくは死んでいるが回収されていない)への二重連結リストにつながっています．
+          \codem(`type_mark`);はこのオブジェクトに対してどのようなmarkとfreeを施すかの情報が入っているポインタを整数値にキャストしたものに，下位ビットとしてこのオブジェクトがマークされているかどうかを打ちこんだものです．
+          \codem(`gc_head`);を扱うAPIの実装はlist.hの場合とおおむね同じです．
+
+          \code(```
+          #define gc_entry(ptr, type, field) (typecheck(struct gc_head *, ptr), container_of(ptr, type, field))
+
+          static inline void INIT_GC_HEAD(struct gc_state *gc, struct gc_head *head, const struct gc_object_type *type) {
+              INIT_LIST_HEAD(&head->list_head);
+              head->type_mark = (unsigned long) type;
+              list_add(&head->list_head, &gc->heap);
+          }
+
+          static inline const struct gc_object_type *gc_type(struct gc_head *head) {
+              return (const struct gc_object_type *) (head->type_mark & ~1ul);
+          }
+
+          static inline void gc_mark(struct gc_state *gc, struct gc_head *head) {
+              if (head->type_mark & 1)
+                  return;
+              head->type_mark |= 1ul;
+              list_move_tail(&head->list_head, gc->stage);
+          }
+          ```);
+
+          ただし，\codem(`gc_mark`);はGCのしくみと関連して非自明な処理を含んでいます．
+          最後の行の\codem(`list_move_tail`);オブジェクトをコピー元の領域(\codem(`head->list_head`);から繋る二重連結リスト)からコピー先の領域(\codem(`gc->stage`);から繋る二重連結リスト)へとコピーしています．
+          この実装はコピーGCと言いつつも，オブジェクトのコピーは実際には行われず，単にリンクをつけかえるだけでコピーされたことを表すことに注意してください．
+
+          GC全体の状態は一つの変数にまとまっています．
+
+          \code(```
+          struct gc_state {
+            struct list_head heap, *stage;
+            struct list_head pinned, root;
+            struct stack_head scope;
+          };
+          ```);
+
+          \codem(`heap`);はすべてのアロケート済みのオブジェクトが繋がる二重連結リストです．
+          \codem(`stage`);はコピーGC中のコピー先空間を表す二重連結リストです．
+          \codem(`stage`);はGC中にしか必要にならないのですが，関数を跨いで参照が共有される必要があるのでポインタとなっています．
+          GC中でなければNULLです．
+          \codem(`pinned`);と\codem(`root`);はroot setを指定するためのフィールドです．
+          特定のオブジェクトがroot setに常に入っている場合は\codem(`pinnned`);を使うのがよいでしょう．
+          \codem(`pinned`);はrootとなるオブジェクトが繋がった連結リストです．
+          一方で，特定のデータや状況に応じてなにがroot setかが変化する場合があります．
+          また，一時的に参照が失なわれたオブジェクトがGCされないようにするのにも便利です．
+          \codem(`gc_pin`);と\codem(`gc_unpin`);というAPIが用意されています．
+
+          \code(```
+            static inline void gc_pin(struct gc_state *gc, struct gc_head *head) {
+                head->type_mark |= 1ul;
+                list_move(&head->list_head, &gc->pinned);
+            }
+
+            static inline void gc_unpin(struct gc_state *gc, struct gc_head *head) {
+                head->type_mark &= ~1ul;
+                list_move(&head->list_head, &gc->heap);
+            }
+          ```);
+
+          そのようなrootに対しては\codem(`root`);を使うのがよいでしょう．
+          \codem(`root`);はGCの度にroot setを計算するために起動されるハンドラの連結リストです．
+          任意の関数(データも登録できるので，正確にはクロージャ)を登録できるのでGC時のroot setの計算を柔軟にカスタマイズできます．
+          以下のAPIが用意されています．
+
+          \code(```
+            struct gc_root {
+                struct list_head list_head;
+                void (*mark)(struct gc_state *, struct gc_root *);
+            };
+
+            #define gc_root_entry(ptr, type, field) (typecheck(struct gc_root *, ptr), container_of((ptr), type, field))
+
+            static inline void gc_add_root(struct gc_state *gc, struct gc_root *root, void (*mark)(struct gc_state *, struct gc_root *)) {
+                root->mark = mark;
+                INIT_LIST_HEAD(&root->list_head);
+                list_add(&root->list_head, &gc->root);
+            }
+
+            static inline void gc_del_root(struct gc_root *root) {
+                list_del(&root->list_head);
+            }
+          ```);
+
+          \codem(`scope`);はスコープ管理のためのデータを保持するスタックです．
+          APIの実装はおそらく使い方から推測される通りです．
+
+          \code(```
+          struct gc_scope {
+              struct gc_head **pool, **top;
+              struct stack_head stack_head;
+          };
+
+          static inline void gc_push_scope(struct gc_state *gc, struct gc_scope *scope, struct gc_head *pool[]) {
+              scope->pool = scope->top = pool;
+              stack_push(&scope->stack_head, &gc->scope);
+          }
+
+          static inline void gc_pop_scope(struct gc_state *gc) {
+              stack_pop(&gc->scope);
+          }
+
+          static inline void gc_protect(struct gc_state *gc, struct gc_head *head) {
+              *stack_top_entry(&gc->scope, struct gc_scope, stack_head)->top++ = head;
+          }
+          ```);
+
+          さて，肝の\codem(`gc_run`);のコードは以下のとおりです．
+          まずGCの開始時にコピー先の領域(=二重連結リスト)を用意します．
+          ここでは\codem(`stage`);という変数です．
+          そして，root setのマークを順に行います．
+          その後，コピー先領域に移ったオブジェクトから参照されているオブジェクトを順にマークします．
+          そして，最後にコピー先領域に移ったオブジェクトのマークビットを落として，コピー元領域に残ったオブジェクトを削除して終わりです．
+
+          \code(```
+          static void gc_run(struct gc_state *gc) {
+              LIST_HEAD(stage);
+              gc->stage = &stage;
+              /* copy objects */
+              struct gc_scope *scope;
+              stack_for_each_entry(scope, &gc->scope, stack_head) {
+                  for (struct gc_head **head = scope->pool; head != scope->top; head++)
+                      gc_mark(gc, *head);
+              }
+              struct gc_root *root;
+              list_for_each_entry (root,  &gc->root, list_head) {
+                  root->mark(gc, root);
+              }
+              struct gc_head *head;
+              list_for_each_entry (head, &gc->pinned, list_head) {
+                  if (gc_type(head)->mark) gc_type(head)->mark(gc, head);
+              }
+              list_for_each_entry (head, &stage, list_head) {
+                  if (gc_type(head)->mark) gc_type(head)->mark(gc, head);
+              }
+              /* clean up */
+              list_for_each_entry (head, &stage, list_head) {
+                  head->type_mark &= ~1ul;
+              }
+              struct gc_head *n;
+              list_for_each_entry_safe (head, n, &gc->heap, list_head) {
+                  gc_del(gc, head);
+              }
+              list_splice(&stage, &gc->heap);
+          }
+          ```);
+
+          執筆時点でgithubに載せている実装にはweak referenceを扱うためのコードも入っているのでこれよりもやや複雑です．
+          が，基本は同じです．
+        }
+      >
     >
-    +section {C言語でany型 (any.h)}<
-    >
-    +section {C言語で動的型付プログラミング (dy.h)}<
+    +section {C言語で動的型付プログラミング}<
+      +p{
+        このセクションではC言語で動的型付プログラミングをするためのライブラリを作成していきます．
+        実際のところ，このライブラリが真にポータブルと言えるかどうかはかなり怪しいところがあります．
+        というのも，動的型付プログラミングと一言で言っても，どのようなセマンティクスを用意するかにはかなりの自由度があるためです．
+        そのため，ここで紹介するライブラリはScheme以外の動的型付プログラミングには使用しづらいところが多くあるかもしれません．
+        しかし，可能なかぎり他のセマンティクスを導入する時に障害が発生しないように注意したので，移植することは簡単だろうと予想されます．
+        ともあれ，移植性という言葉自体が多分に自己満足の要素を含んでいます(そもそも同人誌ですから，全てが自己満足を最大の動機として書かれています)から，その意味では私が満足するように作ったと解釈してもらうのが一番誤解がないだろうと思われます．
+      }
+      +subsection {any.h}<
+      >
     >
     +section {実装} <
     >
