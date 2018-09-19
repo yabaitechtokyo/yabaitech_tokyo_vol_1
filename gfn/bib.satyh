@@ -46,6 +46,16 @@ let bibliography = [
     url = `http://miettal.hatenablog.com/entry/2018/02/15/133623`;
     year = 2018;
   |));
+  (`Ohori1995`, InProceedings(|
+    author = {| Atsushi Ohori |};
+    year = 1995;
+    title = {A polymorphic record calculus and its compilation};
+    booktitle = {ACM Transactions on Programming Languages and Systems};
+    volume = Some(17);
+    number = Some({6});
+    series = None;
+    pages = (844, 895);
+  |));
   (`satysfi-playground`, WebSite(|
     author = {| \github{pandaman64} |};
     title = {\SATySFi; Playground};

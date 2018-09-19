@@ -5,6 +5,227 @@
 @import: book-class
 
 
+let term-color = Color.black %Color.rgb 0. 0. 0.5
+let type-color = Color.rgb 0.75 0.25 0.
+
+
+  let bbrace-left hgt dpt hgtaxis fontsize color =
+
+    let t0 = fontsize *' 0.0125 in
+    let t4 = fontsize *' 0.025 in
+
+    let halflen = Math.half-length hgt dpt hgtaxis fontsize in
+    let h-straight =  halflen *' 0.9 -' fontsize *' 0.3 in
+    let w-straight = h-straight *' 0.15 in
+    let w1 = fontsize *' 0.0125 in
+    let w2 = fontsize *' 0.02 in
+    let w5 = fontsize *' 0.01 in
+    let w6 = fontsize *' 0.015 in
+    let w-extra = fontsize *' 0.1 in
+
+    let x0 = fontsize *' 0.125 in
+    let x1 = fontsize *' 0.25 in
+    let x2 = x1 -' w-straight in
+    let x3 = x2 +' fontsize *' 0.2 in
+    let x4 = x3 +' fontsize *' 0.01 in
+    let x5 = x2 +' fontsize *' 0.0625 in
+    let x6 = x5 +' w-straight in
+    let x7 = fontsize *' 0.225 in
+
+    let p0 = fontsize *' 0.2 in
+    let p1 = x1 +' w1 in
+    let p2 = x2 -' w2 in
+    let p3 = x3 -' fontsize *' 0.1 in
+    let p4 = x4 -' fontsize *' 0.09 in
+    let p5 = x5 -' w5 in
+    let p6 = x6 +' w6 in
+    let p7 = fontsize *' 0.3 in
+
+    let y0 = t0 in
+    let y1 = fontsize *' 0.125 in
+    let y2 = y1 +' h-straight in
+    let y3 = halflen in
+    let y4 = halflen -' t4 in
+    let y5 = halflen -' fontsize *' 0.175 in
+    let y6 = y5 -' h-straight in
+    let y7 = 0pt in
+
+    let q0 = y0 in
+    let q1 = y1 -' (y2 -' y1) *' ((x1 -' p1) /' (x2 -' x1)) in
+    let q2 = y2 +' (y2 -' y1) *' ((p2 -' x2) /' (x2 -' x1)) in
+    let q3 = halflen -' fontsize *' 0.00875 in
+    let q4 = halflen -' t4 -' fontsize *' 0.01 in
+    let q5 = y5 +' (y5 -' y6) *' ((p5 -' x5) /' (x5 -' x6)) in
+    let q6 = y6 -' (y5 -' y6) *' ((x6 -' p6) /' (x5 -' x6)) in
+    let q7 = fontsize *' 0.025 in
+
+    let path (xpos, ypos) =
+      let ycenter = ypos +' hgtaxis in
+      let fP (x, y) = (xpos +' x, ycenter +' y) in
+      let fN (x, y) = (xpos +' x, ycenter -' y) in
+        start-path   (fP (x0, y0))
+          |> bezier-to (fP (p0, q0)) (fP (p1, q1)) (fP (x1, y1))
+          |> line-to (fP (x2, y2))
+          |> bezier-to (fP (p2, q2)) (fP (p3, q3)) (fP (x3, y3))
+          |> line-to (fP (x4, y4))
+%          |> bezier-to (fP (p4, q4)) (fP (p5, q5)) (fP (x5, y5))
+%          |> line-to (fP (x6, y6))
+%          |> bezier-to (fP (p6, q6)) (fP (p7, q7)) (fP (x7, y7))
+%          |> bezier-to (fN (p7, q7)) (fN (p6, q6)) (fN (x6, y6))
+%          |> line-to (fN (x5, y5))
+%          |> bezier-to (fN (p5, q5)) (fN (p4, q4)) (fN (x4, y4))
+
+          |> line-to (fN (x4, y4))
+
+          |> line-to (fN (x3, y3))
+          |> bezier-to (fN (p3, q3)) (fN (p2, q2)) (fN (x2, y2))
+          |> line-to (fN (x1, y1))
+          |> bezier-to (fN (p1, q1)) (fN (p0, q0)) (fN (x0, y0))
+          |> close-with-line
+    in
+    let graphics point = [ fill color (path point); ] in
+    let kerninfo _ = 0pt in
+      (inline-graphics (x4 +' w-extra) (hgtaxis +' halflen) (halflen -' hgtaxis) graphics, kerninfo)
+
+
+  let bbrace-right hgt dpt hgtaxis fontsize color =
+
+    let t0 = fontsize *' 0.0125 in
+    let t4 = fontsize *' 0.025 in
+
+    let halflen = Math.half-length hgt dpt hgtaxis fontsize in
+    let h-straight =  halflen *' 0.9 -' fontsize *' 0.3 in
+    let w-straight = h-straight *' 0.15 in
+    let w1 = fontsize *' 0.0125 in
+    let w2 = fontsize *' 0.02 in
+    let w5 = fontsize *' 0.01 in
+    let w6 = fontsize *' 0.015 in
+    let w-extra = fontsize *' 0.1 in
+
+    let x0 = w-extra +' fontsize *' 0.125 in
+    let x1 = w-extra +' fontsize *' 0.25 in
+    let x2 = x1 -' w-straight in
+    let x3 = x2 +' fontsize *' 0.2 in
+    let x4 = x3 +' fontsize *' 0.01 in
+    let x5 = x2 +' fontsize *' 0.0625 in
+    let x6 = x5 +' w-straight in
+    let x7 = w-extra +' fontsize *' 0.225 in
+
+    let p0 = w-extra +' fontsize *' 0.2 in
+    let p1 = x1 +' w1 in
+    let p2 = x2 -' w2 in
+    let p3 = x3 -' fontsize *' 0.1 in
+    let p4 = x4 -' fontsize *' 0.09 in
+    let p5 = x5 -' w5 in
+    let p6 = x6 +' w6 in
+    let p7 = w-extra +' fontsize *' 0.3 in
+
+    let y0 = t0 in
+    let y1 = fontsize *' 0.125 in
+    let y2 = y1 +' h-straight in
+    let y3 = halflen in
+    let y4 = halflen -' t4 in
+    let y5 = halflen -' fontsize *' 0.175 in
+    let y6 = y5 -' h-straight in
+    let y7 = 0pt in
+
+    let q0 = y0 in
+    let q1 = y1 -' (y2 -' y1) *' ((x1 -' p1) /' (x2 -' x1)) in
+    let q2 = y2 +' (y2 -' y1) *' ((p2 -' x2) /' (x2 -' x1)) in
+    let q3 = halflen -' fontsize *' 0.00875 in
+    let q4 = halflen -' t4 -' fontsize *' 0.01 in
+    let q5 = y5 +' (y5 -' y6) *' ((p5 -' x5) /' (x5 -' x6)) in
+    let q6 = y6 -' (y5 -' y6) *' ((x6 -' p6) /' (x5 -' x6)) in
+    let q7 = fontsize *' 0.025 in
+
+    let path (xpos, ypos) =
+      let ycenter = ypos +' hgtaxis in
+      let fP (x, y) = (xpos +' x4 -' x +' w-extra, ycenter +' y) in
+      let fN (x, y) = (xpos +' x4 -' x +' w-extra, ycenter -' y) in
+        start-path   (fP (x0, y0))
+          |> bezier-to (fP (p0, q0)) (fP (p1, q1)) (fP (x1, y1))
+          |> line-to (fP (x2, y2))
+          |> bezier-to (fP (p2, q2)) (fP (p3, q3)) (fP (x3, y3))
+          |> line-to (fP (x4, y4))
+%          |> bezier-to (fP (p4, q4)) (fP (p5, q5)) (fP (x5, y5))
+%          |> line-to (fP (x6, y6))
+%          |> bezier-to (fP (p6, q6)) (fP (p7, q7)) (fP (x7, y7))
+%          |> bezier-to (fN (p7, q7)) (fN (p6, q6)) (fN (x6, y6))
+%          |> line-to (fN (x5, y5))
+%          |> bezier-to (fN (p5, q5)) (fN (p4, q4)) (fN (x4, y4))
+
+          |> line-to (fN (x4, y4))
+
+          |> line-to (fN (x3, y3))
+          |> bezier-to (fN (p3, q3)) (fN (p2, q2)) (fN (x2, y2))
+          |> line-to (fN (x1, y1))
+          |> bezier-to (fN (p1, q1)) (fN (p0, q0)) (fN (x0, y0))
+          |> close-with-line
+    in
+    let graphics point = [ fill color (path point); ] in
+    let kerninfo _ = 0pt in
+      (inline-graphics x4 (hgtaxis +' halflen) (halflen -' hgtaxis) graphics, kerninfo)
+
+
+  let bangle-left hgt dpt hgtaxis fontsize color =
+    let halflen = Math.half-length hgt dpt hgtaxis fontsize in
+    let widparen = halflen *' 0.375 in
+    let widextra = fontsize *' 0.05 in
+    let widouter = fontsize *' 0.1 in
+    let widinner = fontsize *' 0.1 in
+    let wid = widparen +' widextra +' widouter +' widinner in
+    let path (xpos, ypos) =
+      let yc = ypos +' hgtaxis in
+      start-path (xpos +' widparen, yc +' halflen)
+        |> line-to (xpos, yc)
+        |> line-to (xpos +' widparen, yc -' halflen)
+        |> line-to (xpos +' widparen +' widextra, yc -' halflen)
+        |> line-to (xpos +' widparen +' widextra, yc +' halflen)
+        |> close-with-line
+        |> shift-path (widouter, 0pt)
+    in
+    let graphics point = [ fill color (path point); ] in
+    let kerninfo y =
+      let widkern = widparen in
+      let r = 0. in
+      let gap = length-abs (y -' hgtaxis) in
+        if halflen *' r <' gap then
+          widkern *' ((gap -' halflen *' r) /' (halflen *' (1. -. r)))
+        else
+          0pt
+    in
+      (inline-graphics wid (hgtaxis +' halflen) (halflen -' hgtaxis) graphics, kerninfo)
+
+  let bangle-right hgt dpt hgtaxis fontsize color =
+    let halflen = Math.half-length hgt dpt hgtaxis fontsize in
+    let widparen = halflen *' 0.375 in
+    let widextra = fontsize *' 0.05 in
+    let widouter = fontsize *' 0.1 in
+    let widinner = fontsize *' 0.1 in
+    let wid = widparen +' widextra +' widouter +' widinner in
+    let path (xpos, ypos) =
+      let xr = xpos +' widinner +' widextra +' widparen in
+      let yc = ypos +' hgtaxis in
+      start-path (xr -' widparen, yc +' halflen)
+        |> line-to (xr, yc)
+        |> line-to (xr -' widparen, yc -' halflen)
+        |> line-to (xr -' widparen -' widextra, yc -' halflen)
+        |> line-to (xr -' widparen -' widextra, yc +' halflen)
+        |> close-with-line
+    in
+    let graphics point = [ fill color (path point); ] in
+    let kerninfo y =
+      let widkern = widparen in
+      let r = 0. in
+      let gap = length-abs (y -' hgtaxis) in
+        if halflen *' r <' gap then
+          widkern *' ((gap -' halflen *' r) /' (halflen *' (1. -. r)))
+        else
+          0pt
+    in
+      (inline-graphics wid (hgtaxis +' halflen) (halflen -' hgtaxis) graphics, kerninfo)
+
+
 let-math \subst mt mx me =
   open Math in
   let ms =
@@ -19,10 +240,6 @@ let-math \subst-hole mC me =
 
 let join-args =
   List.fold-left (fun macc m -> ${#macc\ #m}) ${}
-
-
-let term-color = Color.rgb 0. 0. 0.5
-let type-color = Color.rgb 0.75 0.25 0.
 
 
 type var = math
@@ -52,9 +269,12 @@ module Term : sig
   val readB : t -> t -> t
   val textI : t -> t
   val textB : t -> t
+  val boxI : t -> t
+  val boxB : t -> t
   val lamI : var -> bool?-> t -> t
   val lamB : var -> bool?-> t -> t
   val star : t -> t
+  val cat : t -> t -> t
 
 % ---- metavariables --
   val tmc : t
@@ -62,8 +282,17 @@ module Term : sig
   val tmv : t
   val tmctx : t
   val tmchar : t
-  val tmI : t
-  val tmB : t
+  val tmchi : t
+  val tmit : t
+  val tmbt : t
+  val tmib : t
+  val tmbb : t
+  val tmIt : t
+  val tmBt : t
+  val tmIb : t
+  val tmIbp : t
+  val tmBb : t
+  val tmBbp : t
   val tmesub : math -> t
   val tmvsub : math -> t
   val vx : var
@@ -153,10 +382,17 @@ end = struct
   let angleR = paren-scheme Math.empty-paren (Math.angle-right reset-thickness)
   let angle-pair m = ${\angle-bracket{#m}}
 
-
   let braceL = paren-scheme Math.brace-left Math.empty-paren
   let braceR = paren-scheme Math.empty-paren Math.brace-right
   let brace-pair m = ${\brace{#m}}
+
+  let bbraceL = paren-scheme bbrace-left Math.empty-paren
+  let bbraceR = paren-scheme Math.empty-paren bbrace-right
+  let bbrace-pair = math-paren bbrace-left bbrace-right
+
+  let bangleL = paren-scheme bangle-left Math.empty-paren
+  let bangleR = paren-scheme Math.empty-paren bangle-right
+  let bangle-pair = math-paren bangle-left bangle-right
 
 
   let paren t = Paren(paren-pair, parenL, parenR, t)
@@ -438,11 +674,19 @@ end = struct
 
   let textI t = Paren(brace-pair, braceL, braceR, t)
   let textB t = Paren(angle-pair, angleL, angleR, t)
+  let boxI t = Paren(bbrace-pair, bbraceL, bbraceR, t)
+  let boxB t = Paren(bangle-pair, bangleL, bangleR, t)
 
   let lamI mx ?:bopt t = Lambda(Some(${\token{I}}), mx, Option.from false bopt, t)
   let lamB mx ?:bopt t = Lambda(Some(${\token{B}}), mx, Option.from false bopt, t)
 
   let star t = Var(${\sqbracket!(show t)^{\ast}})
+
+  let cat t1 t2 =
+    let m1 = show t1 in
+    let m2 = show t2 in
+      Var(${#m1 \text!{・} #m2})
+
 
   % ---- metavariables ----
 
@@ -451,8 +695,17 @@ end = struct
   let tmv = Var(${v})
   let tmctx = Var(${ctx})
   let tmchar = Var(${ch})
-  let tmI = Var(${I})
-  let tmB = Var(${B})
+  let tmchi = Var(${\chi})
+  let tmit = Var(${it})
+  let tmbt = Var(${bt})
+  let tmib = Var(${ib})
+  let tmbb = Var(${bb})
+  let tmIt = Var(${It})
+  let tmBt = Var(${Bt})
+  let tmIb = Var(${Ib})
+  let tmIbp = Var(${Ib'})
+  let tmBb = Var(${Bb})
+  let tmBbp = Var(${Bb'})
   let tmesub m = Var(${e_{#m}})
   let tmvsub m = Var(${v_{#m}})
   let vx = ${x}
@@ -504,3 +757,4 @@ let-inline ctx \display-terms tlst =
 
 let-math \bs t1 t2 = ${\term!(t1) \mathrel{\downarrow} \term!(t2)}
 let-math \bsI tc t1 t2 = ${\term!(tc) \vdash^{\mathbf{I}} \term!(t1) \downarrow \term!(t2)}
+let-math \bsB tc t1 t2 = ${\term!(tc) \vdash^{\mathbf{B}} \term!(t1) \downarrow \term!(t2)}
