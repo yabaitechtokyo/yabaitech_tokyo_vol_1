@@ -6,6 +6,7 @@
 @require: hdecoset
 @require: table
 @require: bnf
+@require: proof
 @import: term
 @import: book-class
 

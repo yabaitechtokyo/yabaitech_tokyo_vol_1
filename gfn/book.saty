@@ -401,96 +401,140 @@ document (|
       それについて操作的意味論や型システムをフォーマルに記述することを試みた．
     }
     +section{テキストの扱いの形式的記述}<
-      +p{
-        この節では，\SATySFi;に於ける
-        テキストやボックス列の扱いを形式的に記述した，
-        ごく小さなサブセットの言語を与える．
-        項 ${\term!(Term.tme)}，値 ${\term!(Term.tmv)}，
-        インラインテキスト要素 ${\term!(Term.tmI)}，
-        ブロックテキスト要素 ${\term!(Term.tmB)}
-        は以下のBNFでそれぞれ定義される：
+      +subsection{構文}<
+        +p{
+          この節では，\SATySFi;に於ける
+          テキストやボックス列の扱いを形式的に記述した，
+          ごく小さなサブセットの言語を与える．
+          項 ${\term!(Term.tme)}，値 ${\term!(Term.tmv)}，
+          インラインテキスト要素 ${\term!(Term.tmI)}，
+          ブロックテキスト要素 ${\term!(Term.tmB)}
+          は以下のBNFでそれぞれ定義される：
 
-        \BNFs(Term.([
-          (show tme, [
-            List.map show [
-              tmv; !vx; app tme tme; readI tme tme; readB tme tme;
-            ];
-          ]);
-          (show tmv, [
-            List.map show [
-              tmc; lam vx tme; lamI vx tme; lamB vx tme;
-              tmctx; textI (star tmI); textB (star tmB);
-            ];
-          ]);
-          (show tmI, [
-            List.map show [
-              tmchar;
-              app tme (star tme);
-            ];
-          ]);
-          (show tmB, [
-            List.map show [
-              app tme (star tme);
-            ]
-          ]);
-        ]));%
+          \BNFs(Term.([
+            (show tme, [
+              List.map show [
+                tmv; !vx; app tme tme; readI tme tme; readB tme tme;
+              ];
+            ]);
+            (show tmv, [
+              List.map show [
+                tmc; lam vx tme; lamI vx tme; lamB vx tme;
+                tmctx; textI (star tmI); textB (star tmB);
+              ];
+            ]);
+            (show tmI, [
+              List.map show [
+                tmchar;
+                app tme (star tme);
+              ];
+            ]);
+            (show tmB, [
+              List.map show [
+                app tme (star tme);
+              ]
+            ]);
+          ]));%
 
-        ここで
-        メタな記法 ${\term!(Term.(star !${M}))} は
-        ${0} 回以上の有限個の ${M} の連接を表し，
-        ${\term!(Term.(!vx))} は変数を，
-        ${\term!(Term.tmc)} は定数やプリミティヴを，
-        ${\term!(Term.tmctx)} はテキスト処理文脈を，
-        ${\term!(Term.tmchar)} はUnicodeコードポイントなどテキストの要素としての文字を
-        それぞれ動くとする．
+          ここで
+          メタな記法 ${\term!(Term.(star !${M}))} は
+          ${0} 回以上の有限個の ${M} の連接を表し，
+          ${\term!(Term.(!vx))} は変数を，
+          ${\term!(Term.tmc)} は定数やプリミティヴを，
+          ${\term!(Term.tmctx)} はテキスト処理文脈を，
+          ${\term!(Term.tmchar)} はUnicodeコードポイントなどテキストの要素としての文字を
+          それぞれ動くとする．
 
-        ${\term!(Term.(paren (readI (ve +> ${1}) (ve +> ${2}))))} は
-        \codem{read-inline \metasub(${1}){e} \metasub(${2}){e}}に相当し，
-        同様に
-        ${\term!(Term.(paren (readB (ve +> ${1}) (ve +> ${2}))))} も
-        \codem{read-block \metasub(${1}){e} \metasub(${2}){e}}に相当する．
-        簡単のため部分適用できないようになっているが，
+          インラインテキスト要素およびブロックテキスト要素の
+          ${\term!(Term.(appseq (tmesub ${0})
+              [tmesub ${1}; !${\cdots}; tmesub ${n}]))}
+          はコマンドの適用である．
+          実際の\SATySFi;ではコマンドにあたる ${\term!(Term.(tmesub ${0}))} の部分は
+          簡単のためコマンド名しか構文的に受けつけないようになっているが，
+          ここでは定式化の都合上一般の項が書けるものとする．
 
-        \display-term(Term.(
-          let-in ${r} ?:[vx; vy]
-            (readI !vx !vy) None)
-        );%
+          ${\term!(Term.(paren (readI (tmesub ${1}) (tmesub ${2}))))} は
+          \codem{read-inline \metasub(${1}){e} \metasub(${2}){e}}に相当し，
+          同様に
+          ${\term!(Term.(paren (readB (tmesub ${1}) (tmesub ${2}))))} も
+          \codem{read-block \metasub(${1}){e} \metasub(${2}){e}}に相当する．
+          簡単のため部分適用できないようになっているが，
 
-        などと定義して ${r} を使えば部分適用できるので気にしなくてよい\footnote{
-          実際のプリミティヴの\codem{read-inline}も，正確にはこの ${r} に対応する．
-        }．
+          \display-term(Term.(
+            let-in ${r} ?:[vx; vy]
+              (readI !vx !vy) None)
+          );%
 
-        ${\term!(Term.(paren (lamI vx tme)))} は “インラインコマンド抽象” で，
-        ${x} はテキスト処理文脈を受け取るための変数である．
-        ${\term!(Term.(paren (lamI vx tme)))} 自体を直接書く方法は
-        \SATySFi;の処理系からは提供されておらず，
-        “インラインコマンド抽象” は
-        必ず\codem{let-inline}によってコマンド名に束縛する必要がある\footnote{
-          不必要な複雑化を避ける意図がある．
-          一応コマンド\codem{\meta{cmd}}に束縛されている
-          “インラインコマンド抽象” を
-          \codem{(command \meta{cmd})}で取り出すことはできるものの，
-          \codem{get-initial-context}や\codem{set-math-command}などの
-          プリミティヴに引数として渡す以外の本質的な用途はない．
-        }．
-        \codem{let-inline}によるコマンド定義の構文：
+          などと定義して ${r} を使えば部分適用できるので気にしなくてよい\footnote{
+            実際のプリミティヴの\codem{read-inline}も，正確にはこの ${r} に対応する．
+          }．
 
-        \d-codem{
-          let-inline \meta{x} \meta{cmd}
-            \metasub(${1}){y} ${\cdots} \metasub(${n}){y} = \meta{e}
-        }%
+          ${\term!(Term.(paren (lamI vx tme)))} は “インラインコマンド抽象” で，
+          ${x} はテキスト処理文脈を受け取るための変数である．
+          ${\term!(Term.(paren (lamI vx tme)))} 自体を直接書く方法は
+          \SATySFi;の処理系からは提供されておらず，
+          “インラインコマンド抽象” は
+          必ず\codem{let-inline}によってコマンド名に束縛する必要がある\footnote{
+            不必要な複雑化を避ける意図がある．
+            一応コマンド\codem{\meta{cmd}}に束縛されている
+            “インラインコマンド抽象” を
+            \codem{(command \meta{cmd})}で取り出すことはできるものの，
+            \codem{get-initial-context}や\codem{set-math-command}などの
+            プリミティヴに引数として渡す以外の本質的な用途はない．
+          }．
+          \codem{let-inline}によるコマンド定義の構文：
 
-        は以下の糖衣構文である：
+          \d-codem{
+            let-inline \meta{x} \meta{cmd}
+              \metasub(${1}){y} ${\cdots} \metasub(${n}){y} = \meta{e}
+          }%
 
-        \display-term(Term.(
-          let-in ${cmd}
-            (lamI vx (lam ${y_1} !${\ldots\ \term!(lam ${y_n} tme)}))
-          None
-        ));%
+          は以下の糖衣構文である：
 
+          \display-term(Term.(
+            let-in ${cmd}
+              (lamI vx (lam ${y_1} !${\ldots\ \term!(lam ${y_n} tme)}))
+            None
+          ));%
 
-      }
+          “ブロックコマンド抽象” についても同様に，
+
+          \d-codem{
+            let-block \meta{x} \meta{cmd}
+              \metasub(${1}){y} ${\cdots} \metasub(${n}){y} = \meta{e}
+          }%
+
+          は以下の糖衣構文：
+
+          \display-term(Term.(
+            let-in ${cmd}
+              (lamB vx (lam ${y_1} !${\ldots\ \term!(lam ${y_n} tme)}))
+            None
+          ));%
+        }
+      >
+      +subsection{操作的意味論}<
+        +p{
+          操作的意味論はいわゆるbig step semanticsで定式化する．
+        }
+        +math-list(Term.(${
+          | \derive?:{\text!{(E-Val)}}{||}{\bs!(tmv)!(tmv)}
+          | \derive?:{\text!{(E-App)}}{
+              | \bs!(tmesub ${1})!(lam vx tme)
+              | \bs!(tmesub ${2})!(tmvsub ${2})
+              | \bs!(subst (tmvsub ${2}) vx tme)!(tmv)
+              |}{\bs!(app (tmesub ${1}) (tmesub ${2}))!(tmv)}
+          | \derive?:{\text!{(E-ReadI)}}{
+              | \bs!(tmesub ${1})!(tmctx)
+              | \bs!(tmesub ${2})!(textI tmI)
+              | \bsI!(tmctx)!(tmI)!(!${REMAINS})
+              |}{\bs!(readI (tmesub ${1}) (tmesub ${2}))!(tmv)}
+          |}));
+        +p{ \REMAINS{} }
+      >
+      +subsection{型システム}<
+        +p{ \REMAINS{} }
+      >
     >
-    +p{ \REMAINS{} }
   >
 >

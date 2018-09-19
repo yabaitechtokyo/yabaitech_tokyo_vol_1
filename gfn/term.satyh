@@ -64,7 +64,8 @@ module Term : sig
   val tmchar : t
   val tmI : t
   val tmB : t
-  val ve : var
+  val tmesub : math -> t
+  val tmvsub : math -> t
   val vx : var
   val vy : var
 
@@ -452,7 +453,8 @@ end = struct
   let tmchar = Var(${ch})
   let tmI = Var(${I})
   let tmB = Var(${B})
-  let ve = ${e}
+  let tmesub m = Var(${e_{#m}})
+  let tmvsub m = Var(${v_{#m}})
   let vx = ${x}
   let vy = ${y}
 
@@ -498,3 +500,7 @@ let-block ctx +display-terms tlst =
 
 let-inline ctx \display-terms tlst =
   inline-fil ++ embed-block-breakable ctx (read-block ctx '<+display-terms(tlst);>)
+
+
+let-math \bs t1 t2 = ${\term!(t1) \mathrel{\downarrow} \term!(t2)}
+let-math \bsI tc t1 t2 = ${\term!(tc) \vdash^{\mathbf{I}} \term!(t1) \downarrow \term!(t2)}
