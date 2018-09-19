@@ -4,6 +4,10 @@
 @require: color
 @require: itemize
 @require: hdecoset
+@require: table
+@require: bnf
+@require: proof
+@import: term
 @import: book-class
 
 
@@ -29,6 +33,10 @@ let-inline ctx \REMAINS msg =
 
 
 let-math \defeq = ${\coloneq}
+
+
+let-math \overwrite mG mx mty =
+   ${#mG \sqbracket{#mx \mapsto #mty}}
 
 
 let-inline ctx \quad =
@@ -287,16 +295,29 @@ module Sample = struct
     embed-string (arabic n)
 
 
+  let-inline ctx \simple-frame it =
+    let pads = (2pt, 2pt, 2pt, 2pt) in
+    let decoset = HDecoSet.simple-frame-stroke 1pt (Gray(0.5)) in
+      inline-frame-breakable pads decoset (read-inline ctx it)
+
+
 end
 
 
 module Type : sig
 
   type t
-  val to-math : t -> math
+  val to-math : bool -> t -> math
+  val show : t -> math
+  val of-math : math -> t
   val (-->) : t -> t -> t
   val base-type : inline-text -> t
   val product : t list -> t
+  val cmdI : t list -> t
+  val cmdB : t list -> t
+  val forall : math -> t -> t
+  val star : t -> t
+
   val unit : t
   val bool : t
   val int : t
@@ -320,12 +341,26 @@ module Type : sig
   val image : t
   val list : t -> t
   val option : t -> t
+  val paddings : t
+  val cell : t
+
+  % ---- metavariables --
+
+  val tymb : t
+  val tymalpha : t
+  val tymsigma : t
+  val tymtau : t
+  val tymtaup : t
+  val tymtausub : math -> t
+
 end = struct
 
   type t =
-    | Ctr  of inline-text * t list
-    | Func of t * t
-    | Prod of t list
+    | Ctr    of inline-text * t list
+    | Func   of t * t
+    | Prod   of t list
+    | Cmd    of inline-text * t list
+    | Forall of math * t
 
 
   type paren-mode =
@@ -334,7 +369,7 @@ end = struct
     | Single
 
 
-  let-math \arr =
+  let-math \arr-display =
     let mbr =
       text-in-math MathOrd (fun ctx ->
         discretionary 100 inline-nil inline-fil inline-nil)
@@ -342,7 +377,21 @@ end = struct
       math-group MathBin MathBin (math-concat (math-char MathOrd `→`) mbr)
 
 
-  let to-math =
+  let-math \arr-inline =
+    let mbr =
+      text-in-math MathOrd (fun ctx -> (
+        let ib-space =
+          Option.from inline-nil
+            (space-between-maths ctx
+              (math-char MathOrd ` `) (math-char MathBin ` `))
+        in
+        discretionary 100 ib-space inline-nil inline-nil
+      ))
+    in
+      math-group MathBin MathOrd (math-concat (math-char MathOrd `→`) mbr)
+
+
+  let to-math is-inline =
     let-rec aux
       | mode (Ctr(it, tyargs)) =
           let marg =
@@ -364,7 +413,12 @@ end = struct
       | mode (Func(ty1, ty2)) =
           let m1 = aux Domain ty1 in
           let m2 = aux Normal ty2 in
-          let m = ${#m1 \arr #m2} in
+          let m =
+            if is-inline then
+              ${#m1 \arr-inline #m2}
+            else
+              ${#m1 \arr-display #m2}
+          in
           ( match mode with
             | Normal -> m
             | _      -> ${\paren{#m}}
@@ -372,21 +426,45 @@ end = struct
 
       | mode (Prod(tys)) =
           let ms = List.map (aux Single) tys in
-            Math.join ${\mathbin{\ast}} ms
+          let m = Math.join ${\mathbin{\ast}} ms in
+          ( match mode with
+            | Single -> ${\paren{m}}
+            | _      -> m
+          )
+
+      | mode (Cmd(it, tys)) =
+          let ms = List.map (aux Single) tys in
+          let m = Math.join ${\text!{・}} ms in
+            ${\sqbracket{#m}\ \text!(it)}
+
+      | mode (Forall(ma, ty)) =
+          let m = aux Normal ty in
+            ${\forall #ma.\ #m}
     in
     aux Normal
 
 
-  let base-type it =
-    Ctr(it, [])
+  let show = to-math true
 
 
-  let (-->) ty1 ty2 =
-    Func(ty1, ty2)
+  let of-math m = Ctr({${#m}}, [])
 
 
-  let product tys =
-    Prod(tys)
+  let base-type it = Ctr(it, [])
+
+  let (-->) ty1 ty2 = Func(ty1, ty2)
+
+  let product tys = Prod(tys)
+
+  let cmdI tys = Cmd({inline-cmd}, tys)
+
+  let cmdB tys = Cmd({block-cmd}, tys)
+
+  let forall ma ty = Forall(ma, ty)
+
+  let star t =
+    let m = show t in
+    Ctr({${\sqbracket{#m}^{\ast}}}, [])
 
 
   let unit         = base-type {unit}
@@ -410,16 +488,29 @@ end = struct
   let paren        = base-type {paren}
   let script       = base-type {script}
   let image        = base-type {image}
+  let paddings     = base-type {paddings}
+  let cell         = base-type {cell}
 
 
   let list ty = Ctr({list}, [ty])
   let option ty = Ctr({option}, [ty])
 
+
+  % ---- metavariables --
+
+  let meta m = Ctr({${#m}}, [])
+  let tymb = meta ${b}
+  let tymalpha = meta ${\alpha}
+  let tymsigma = meta ${\sigma}
+  let tymtau = meta ${\tau}
+  let tymtaup = meta ${\tau'}
+  let tymtausub m = meta ${\tau_{#m}}
+
 end
 
 
 let val-scheme ctx indexopt it-cmd ty explainopt =
-  let m = Type.to-math ty in
+  let m = Type.to-math false ty in
   let it =
     match indexopt with
     | None    -> {\codem{#it-cmd;} : ${#m}}
@@ -461,6 +552,16 @@ let val-scheme ctx indexopt it-cmd ty explainopt =
         (bb-head +++ bb-explain)
 
 
+let-block ctx +example it =
+  let pads = (15pt, 15pt, 0pt, 0pt) in
+  let decoset = VDecoSet.simple-frame-stroke 1pt (Gray(0.75)) in
+    block-frame-breakable ctx pads decoset (fun ctx ->
+      block-skip 0pt
+        +++ read-block ctx '<+Book.example{#it;}>
+        +++ line-break false true (ctx |> set-paragraph-margin 0pt 0pt) inline-fil
+    )
+
+
 let-inline ctx \val ?:indexopt it-cmd ty =
   val-scheme ctx indexopt it-cmd ty None
 
@@ -470,7 +571,16 @@ let-inline ctx \val-explain ?:indexopt it-cmd ty it =
 
 
 let-inline ctx \type ty =
-  script-guard Latin (embed-math ctx (Type.to-math ty))
+  script-guard Latin (embed-math ctx (Type.to-math true ty))
+
+
+let-math \mtype ty =
+  ${\text!{\type(ty);}}
+
+
+let-math \tj mG t ty = ${#mG \vdash \term!(t) : \mtype!(ty)}
+let-math \tjI mG t = ${#mG \vdash^{\mathbf{I}} \term!(t)}
+let-math \tjB mG t = ${#mG \vdash^{\mathbf{B}} \term!(t)}
 
 
 let-inline ctx \meta it =

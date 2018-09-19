@@ -11,7 +11,6 @@
 
  [ ] set-manual-rising
  [ ] raise-inline
- [ ] embed-string
 
 == コマンド定義：発展編 ==
 D[o] set-font-size
@@ -73,14 +72,14 @@ G[o] shift-graphics
 G[o] get-graphics-bbox
 G[o] draw-text
 G[o] inline-graphics
-G[ ] inline-graphics-outer
+G[/] inline-graphics-outer
 
 -- フレーム --
-G[ ] inline-frame-outer
-G[ ] inline-frame-inner
-G[ ] inline-frame-fixed
-G[ ] inline-frame-breakable
-G[ ] block-frame-breakable
+G[o] inline-frame-outer
+G[o] inline-frame-inner
+G[o] inline-frame-fixed
+G[o] inline-frame-breakable
+G[o] block-frame-breakable
 
 -- 画像 --
 G[o] load-pdf-image
@@ -88,7 +87,7 @@ G[o] load-image
 G[o] use-image-by-width
 
 -- 表 --
-G[ ] tabular
+G[o] tabular
 
 == 数式組版 ==
 -- 数式中の文字 --
@@ -189,6 +188,7 @@ A[ ] string-same
 A[ ] string-sub
 A[ ] string-length
 A[ ] string-unexplode
+A[ ] embed-string
 A[ ] regexp-of-string
 A[ ] string-match
 A[ ] split-into-lines

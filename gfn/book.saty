@@ -6,6 +6,7 @@
 @import: alias-command-definition
 @import: overall
 @import: line-breaking
+@import: graphics
 @import: cross-reference
 @import: bib
 
@@ -166,15 +167,15 @@ document (|
     >
   >
   +chapter?:(`overall-structure`){文書が処理される仕組み}< #overall; >
-  +chapter?:(`type-system`){型システム}<
-    +p{
-      既に\ref-chapter(`introduction`);で述べたとおり，
-      \SATySFi;の最大の特徴は型検査器を備えているおかげで
-      或る種の入力の誤りを実際に組版処理を始めるよりも前に検出してすばやく報告できることにある．
-      本章では，この型検査器を実現している型システムについて見ていくことにしよう．
-    }
-    +p{ \REMAINS{} }
-  >
+%  +chapter?:(`type-system`){型システム}<
+%    +p{
+%      既に\ref-chapter(`introduction`);で述べたとおり，
+%      \SATySFi;の最大の特徴は型検査器を備えているおかげで
+%      或る種の入力の誤りを実際に組版処理を始めるよりも前に検出してすばやく報告できることにある．
+%      本章では，この型検査器を実現している型システムについて見ていくことにしよう．
+%    }
+%    +p{ \REMAINS{} }
+%  >
   +chapter?:(`advanced-command-definition`){コマンド定義：発展編}<
     +p{
       \ref-chapter(`basic-command-definition`);
@@ -320,270 +321,7 @@ document (|
     }
     +p{ \REMAINS{} }
   >
-  +chapter?:(`graphics`){グラフィックス}<
-    +p{
-      版面を構成する文字以外の要素で重要なのがグラフィックスである．
-      本章では，本文の囲み枠，表の罫線，幾何図形，直交座標系のグラフ，グラフ理論のグラフ，可換図式，
-      さらには数式中の “連続的に伸縮する” 括弧といった多様な対象を描画する用途で活用できる
-      \SATySFi;のグラフィックスの機能について紹介する．
-      一読すればわかるようにグラフィックス用のプリミティヴは非常にプリミティヴなのだが，
-      そのプリミティヴさゆえに，思い立てばユーザの手によって非常に柔軟な描画が指定できる．
-      また，頻出する図形や囲み枠の指定については
-      \pkg{gr}，\pkg{deco}，\pkg{hdecoset}，\pkg{vdecoset}
-      などのライブラリで提供されており，図形定義に活用できる．
-    }
-    +section{パス}<
-      +p{
-        \dfnje{\index(`パス`){パス}}{path}は
-        曲線や閉曲線およびそれが占める領域を定めた情報であり，
-        グラフィックスを構成する最も基本的な単位だ．
-        パスの構築は
-
-        \listing{
-          * \index(`point`){\type(Type.(point));型}：
-              \type(Type.(product [length; length]));と同義，
-              “${2} 次元座標” や “${2} 次元ベクトル” の型として使う
-        }
-
-        という型シノニムと
-
-        \listing{
-          * \index(`pre-path`){\type(Type.(pre-path));型}：
-              \dfnje{\index(`ミカンパス`){未完パス}}{pre-path}，
-              すなわちまだ閉じたり終了したりしていない伸ばす途中のパスの型
-          * \index(`path`){\type(Type.(path));}型：
-              完成したパスの型
-        }%
-
-        という2つの基本型を用いて，以下に挙げるようなプリミティヴで行なう．
-        座標はページの左下を ${\tuple{|0|0|}} とする絶対座標で，
-        版面上の右向きが ${+x}方向，上向きが ${+y} 方向である\footnote{
-          ${y} 座標が上向きに伸びるのは違和感があるかもしれないが，
-          これはPDFの仕様の “最も基本的な座標系” にそのまま従ったものだ．
-        }．
-        これだけ聞くと絶対座標でパスの各点を指定することについては
-        あまりにもプリミティヴすぎるのではないかと違和感を覚えるかもしれないが，
-        以下で紹介するプリミティヴ\codem{shift-path}を用いて相対座標を扱うことができるので，
-        ひとまず心配しないでいただきたい．
-
-        \val-explain?:(`start-path`)({start-path})%
-          (Type.(point --> pre-path)) {
-            第1引数に指定した点から未完パスを開始する．
-          }%
-        \val-explain?:(`line-to`)({line-to})%
-          (Type.(point --> (pre-path --> pre-path))) {
-            \codem{\meta{prepath} \|\> line-to \meta{v}}で
-            未完パス\codem{\meta{prepath}}を終点から
-            点\codem{\meta{v}}へと線分で延長したものを返す．
-          }%
-        \val-explain?:(`bezier-to`)({bezier-to})%
-          (Type.(point --> (point --> (point --> (pre-path --> pre-path))))) {
-            \codem{\meta{prepath} \|\>
-              bezier-to \metasub(${1}){u} \metasub(${2}){u} \meta{v}}
-            で未完パス\codem{\meta{prepath}}を
-            終点から点\codem{\meta{v}}へとBézier曲線で延長したものを返す．
-            \codem{\metasub(${1}){u}}と\codem{\metasub(${2}){u}}は制御点である．
-          }%
-        \val-explain?:(`close-with-line`)({close-with-line})%
-          (Type.(pre-path --> path)) {
-            未完パスを受け取り，起点と終点を線分で結んで閉じてできるパスを返す．
-          }%
-        \val-explain?:(`close-with-bezier`)({close-with-bezier})%
-          (Type.(point --> (point --> (pre-path --> path)))) {
-            \codem{\meta{prepath} \|\>
-              close-with-bezier \metasub(${1}){u} \metasub(${2}){u}}で
-            未完パス\codem{\meta{prepath}}の起点と終点を
-            制御点\codem{\metasub(${1}){u}}，\codem{\metasub(${2}){u}}の
-            Bézier曲線で結んで閉じてできるパスを返す．
-          }%
-        \val-explain?:(`terminate-path`)({terminate-path})%
-          (Type.(pre-path --> path)) {
-            未完パスを受け取り，開いたままのパスとして返す．
-          }%
-        \val-explain?:(`unite-path`)({unite-path})%
-          (Type.(path --> (path --> path))) {
-            2つのパスを統合して1つにする．
-            これはドーナツ形など中空のパスをつくるのに必須である\footnote{
-              点がパスの “内側” であるか否かは，
-              その点を囲んでいるパスの回転数の総和の偶奇によって決まっている．
-            }．
-          }%
-        \val-explain?:(`shift-path`)({shift-path})%
-          (Type.(point --> (path --> path))) {
-            \codem{\meta{path} \|\> shift-path \meta{v}}で
-            パス\codem{\meta{path}}の位置を\codem{\meta{v}}だけずらす．
-          }%
-        \val-explain?:(`get-path-bbox`)({get-path-bbox})%
-          (Type.(path --> product [point; point])) {
-            パスを受け取り，そのパスのバウンディングボックスの左下と右上の座標の組を返す．
-            すなわち，与えられたパスが占める領域のうち
-            ${x} 座標がとる最小値と ${y} 座標がとる最小値の組
-            ${\tuple{|x_{\mathrm{min}}|y_{\mathrm{min}}|}}と，
-            ${x} 座標がとる最大値と ${y} 座標がとる最大値の組
-            ${\tuple{|x_{\mathrm{max}}|y_{\mathrm{max}}|}}との組を返す．
-          }
-      }
-    >
-    +section{グラフィックス指定}<
-      +p{
-        パス，つまり\type(Type.(path));型の値は，単に曲線や閉曲線のデータ，
-        さらにいえばどんな領域を占めているかの情報であり，それ自体が描けるものではない．
-        実際にそのパスに基づいて文書中に図形を挿入するには，
-        それがどんな色で塗られるかとか，あるいはどんな枠線で描かれるかといった情報を与える必要がある．
-        パスに加えてそれらの情報を持っているのが\type(Type.(graphics));型の値である．
-        これは以下のプリミティヴを用いてつくる．
-
-        \val-explain?:(`fill`)({fill})%
-          (Type.(color --> (path --> graphics))) {
-            \codem{fill \meta{color} \meta{path}}で
-            パス\codem{\meta{path}}の内側を色\codem{\meta{color}}で塗った
-            グラフィックスを返す．
-          }
-        \val-explain?:(`stroke`)({stroke})%
-          (Type.(length --> (color --> (path --> graphics)))) {
-            \codem{stroke \meta{t} \meta{color} \meta{path}}で
-            パス\codem{\meta{path}}を幅\codem{\meta{t}}，
-            色\codem{\meta{color}}の線として描いたグラフィックスを返す．
-          }
-        \val-explain?:(`draw-text`)({draw-text})%
-          (Type.(point --> (inline-boxes --> graphics))) {
-            \codem{draw-text \meta{v} \meta{ib}}で
-            位置\codem{\meta{v}}を参照点として
-            インラインボックス列\codem{\meta{ib}}を置いたグラフィックスを返す．
-          }
-        \val-explain?:(`shift-graphics`)({shift-graphics})%
-          (Type.(point --> (graphics --> graphics))) {
-            第1引数の分だけ第2引数のグラフィックスの座標をずらす．
-          }
-        \val-explain?:(`get-graphics-bbox`)({get-graphics-bbox})%
-          (Type.(graphics --> product [point; point])) {
-            \codem{get-path-bbox}と同じ要領で
-            与えられたグラフィックスのバウンディングボックスを返す．
-            ストロークの太さは考慮されないことに注意．
-          }
-      }
-      +p{
-        さて，グラフィックスの構成は上に掲げたプリミティヴを用いればよいが，
-        実際に本文中にグラフィックスを挿入するにはどうすればいいのだろうか．
-        このために用意されているのがプリミティヴ：
-
-        \val?:(`inline-graphics`)({inline-graphics})%
-          (Type.(length --> (length --> (length -->
-            ((point --> list graphics) --> inline-boxes)))));%
-
-        である．これは
-        \codem{inline-graphics \meta{w} \meta{h} \meta{d} \meta{grf}}
-        という形で使うことでインラインボックス列を得る．
-        最初の3つの引数は寸法の指定で，
-        \codem{\meta{w}}が横幅，
-        \codem{\meta{h}}が高さ，
-        \codem{\meta{d}}が深さである．
-        要するにグラフィックスは大きい1文字のようなものとして扱うのだが，
-        どのような寸法の文字として扱って欲しいかを指定しているのである．
-        そして重要なのは第4引数\codem{\meta{grf}}で，
-        これは座標を受け取ってグラフィックスのリストを返す函数である．
-        \SATySFi;はまずグラフィックスの内容が確定していない段階で
-        寸法だけを用いて（行分割処理やページ分割処理を経て）
-        実際に版面のどの位置に配置されるかを決定し，
-        位置が確定してからその参照点${\tuple{|x|y|}}を
-        指定されていた函数\codem{\meta{grf}}に引数として渡す．
-        そしてその返り値としてできたグラフィックスのリストをそこに描き込む，
-        という仕組みになっている．
-      }
-      +example{
-        指定されたテキストが現在のフォントで占める領域と同じ範囲をバツ印つきの長方形の枠にして
-        出力するコマンド，すなわち以下のような記述と組版結果を実現するコマンド
-        \codem{\\area}を考える：
-
-        \d-code-and-block(```
-          +p{ The quick brown fox jumps over the lazy dog. }
-          +p{ The quick \area{brown} fox jumps over the \area{lazy} dog. }
-        ```)(open Sample in '<
-          +p-alph{ The quick brown fox jumps over the lazy dog. }
-          +p-alph{ The quick \area{brown} fox jumps over the \area{lazy} dog. }
-        >);%
-
-        このような\codem{\\area}は次のように
-        \codem{inline-graphics}および
-        \index(`get-natural-metrics`)?:({\code(`get-natural-metrics`);})%
-          {\codem{get-natural-metrics}}
-        を用いて定義することができる：
-
-        \d-code(```
-          let-inline ctx \area it =
-            let ib = read-inline ctx it in
-            let (w, h, d) = get-natural-metrics ib in
-            let thickness = 0.5pt in
-            let color = Color.black in
-              inline-graphics w h d (fun (x, y) ->
-                [
-                  stroke thickness color
-                    (start-path (x, y -' d)
-                      |> line-to (x +' w, y -' d)
-                      |> line-to (x +' w, y +' h)
-                      |> line-to (x, y +' h)
-                      |> close-with-line);
-
-                  stroke thickness color
-                    (start-path (x, y -' d)
-                      |> line-to (x +' w, y +' h)
-                      |> terminate-path);
-
-                  stroke thickness color
-                    (start-path (x, y +' h)
-                      |> line-to (x +' w, y -' d)
-                      |> terminate-path);
-                ]
-              )
-        ```);
-      }
-      +p{
-        なお，上での説明からもわかるとおり，
-        第4引数\codem{\meta{grf}}の “中身” が評価されるタイミングは
-        注意が必要である．\REMAINS{続き}
-      }
-    >
-    +section{囲み枠}<
-      +p{ \REMAINS{囲み枠} }
-    >
-    +section{表組版}<
-      +p{
-        表組版は，全組版処理システムの泣き所である．
-      }
-      +p{ \REMAINS{表組版} }
-    >
-    +section{画像}<
-      +p{
-        まだ幾分か簡素であるものの，\SATySFi;は
-        （ベクタでない，ピクセルが四方に並んだ）画像を取り扱う方法も備えている．
-        画像のデータがもつ型として\type(Type.(image));型が用意されており，
-        以下のようなプリミティヴを使うことができる：
-
-        \val-explain?:(`load-image`)({load-image})%
-          (Type.(string --> image)) {
-            与えられたパスの画像を読み込む．
-            現在は色空間がCYMKでないJPEGのみ対応している．
-            ファイルが存在しない場合は実行時エラーを出して終了する．
-          }%
-
-        \val-explain?:(`load-pdf-image`)({load-pdf-image})%
-          (Type.(string --> (int --> image))) {
-            第1引数に与えられたパスのPDFを読み込み，
-            第2引数に与えられたページ番号の内容を画像として返す．
-            ページ番号は最初のページを ${1} とする．
-            与えられたファイルが存在しなかったり，
-            与えられたページ番号のページが存在しない場合は
-            実行時エラーを出して終了する．
-          }%
-
-        \val-explain?:(`use-image-by-width`)({use-image-by-width})%
-          (Type.(image --> (length --> inline-boxes))) {
-            第1引数に与えられた画像を第2引数に与えられた長さを幅とする寸法で
-            インラインボックス列として返す．
-          }%
-      }
-    >
-  >
+  +chapter?:(`graphics`){グラフィックス}< #graphics; >
   +chapter?:(`math`){数式組版}<
     +p{
       主に理工系の文書をしたためる者にとって，
@@ -662,6 +400,434 @@ document (|
       根幹となる部分だけを抜き出したサブセットをいくつか定義し，
       それについて操作的意味論や型システムをフォーマルに記述することを試みた．
     }
-    +p{ \REMAINS{} }
+    +section{テキストの扱いの形式的記述}<
+      +subsection{構文}<
+        +p{
+          この節では，\SATySFi;に於ける
+          テキストやボックス列の扱いを形式的に記述した，
+          ごく小さなサブセットの言語を与える．
+          項 ${\term!(Term.tme)}，値 ${\term!(Term.tmv)}，
+          インラインテキスト要素 ${\term!(Term.tmit)}，
+          ブロックテキスト要素 ${\term!(Term.tmbt)}
+          は以下のBNFでそれぞれ定義される：
+
+          \BNFs(Term.([
+            (show tme, [
+              List.map show [
+                tmv; !vx; app tme tme; let-in vx tme (Some(tme));
+                readI tme tme; readB tme tme;
+              ];
+            ]);
+            (show tmv, [
+              List.map show [
+                tmc; lam vx tme; lamI vx tme; lamB vx tme;
+                tmctx; textI (star tmit); textB (star tmbt);
+                boxI (star tmib); boxB (star tmbb);
+              ];
+            ]);
+            (show tmit, [
+              List.map show [
+                tmchar;
+                app tme (star tme);
+              ];
+            ]);
+            (show tmbt, [
+              List.map show [
+                app tme (star tme);
+              ]
+            ]);
+          ]));%
+
+          ここで
+          メタな記法 ${\term!(Term.(star !${M}))} は
+          ${0} 回以上の有限個の ${M} の連接を表し，
+          ${\term!(Term.(!vx))} は変数を，
+          ${\term!(Term.tmc)} は定数やプリミティヴを，
+          ${\term!(Term.tmctx)} はテキスト処理文脈を，
+          ${\term!(Term.tmchar)} はUnicodeコードポイントなどテキストの要素としての文字を
+          それぞれ動くとする．
+          ${\term!(Term.tmib)}は形式的には定義を与えないが，インラインボックス列の要素，すなわち
+          どんなサイズのどんなフォントで組まれるかといった情報を含む
+          “既に組めるようになっているテキスト” の要素にあたる．イメージとしては
+          \as-latin-word{\BoxGraphics.roman{|i|n|l|i|n|e|}}の
+          \as-latin-word{\BoxGraphics.roman{|i|}}とか
+          \as-latin-word{\BoxGraphics.roman{|n|}}などひとつひとつが
+          ${\term!(Term.tmib)} に該当する\footnote{
+            実際にはカーニングや合字の処理，さらにはハイフネーション辞書に基づく
+            ソフトハイフンの挿入などの処理があるため，“1文字1文字を別個に
+            インラインテキストからインラインボックス列に変換している” わけではないが，
+            ひとまずの近似的な理解としてはこれで十分である．
+          }．
+          ${\term!(Term.tmbb)} も同様に，形式的定義は与えないが
+          “すでに組版処理をするための情報がすべて入っている，段落中の1行を表すデータ”
+          におおよそ相当する．
+        }
+        +p{
+          インラインテキスト要素およびブロックテキスト要素の
+          ${\term!(Term.(appseq (tmesub ${0})
+              [tmesub ${1}; !${\cdots}; tmesub ${n}]))}
+          はコマンドの適用である．
+          実際の\SATySFi;ではコマンドにあたる ${\term!(Term.(tmesub ${0}))} の部分は
+          簡単のためコマンド名しか構文的に受けつけないようになっているが，
+          ここでは定式化の都合上一般の項が書けるものとする．
+
+          ${\term!(Term.(paren (readI (tmesub ${1}) (tmesub ${2}))))} は
+          \codem{read-inline \metasub(${1}){e} \metasub(${2}){e}}に相当し，
+          同様に
+          ${\term!(Term.(paren (readB (tmesub ${1}) (tmesub ${2}))))} も
+          \codem{read-block \metasub(${1}){e} \metasub(${2}){e}}に相当する．
+          簡単のため部分適用できないようになっているが，
+
+          \display-term(Term.(
+            let-in ${r} ?:[vx; vy]
+              (readI !vx !vy) None)
+          );%
+
+          などと定義して ${r} を使えば部分適用できるので気にしなくてよい\footnote{
+            実際のプリミティヴの\codem{read-inline}も，正確にはこの ${r} に対応する．
+          }．
+
+          ${\term!(Term.(paren (lamI vx tme)))} は “インラインコマンド抽象” で，
+          ${x} はテキスト処理文脈を受け取るための変数である．
+          計算上の振舞いは通常のラムダ抽象 ${\term!(Term.(paren (lam vx tme)))} と
+          全く同様の直観で理解できるものだが，型つけの都合上区別されている．
+          ${\term!(Term.(paren (lamI vx tme)))} 自体を直接書く方法は
+          \SATySFi;の処理系からは提供されておらず，
+          “インラインコマンド抽象” は
+          必ず\codem{let-inline}によってコマンド名に束縛する必要がある\footnote{
+            不必要な複雑化を避ける意図がある．
+            一応コマンド\codem{\meta{cmd}}に束縛されている
+            “インラインコマンド抽象” を
+            \codem{(command \meta{cmd})}で取り出すことはできるものの，
+            \codem{get-initial-context}や\codem{set-math-command}などの
+            プリミティヴに引数として渡す以外の本質的な用途はない．
+          }．
+          \codem{let-inline}によるコマンド定義の構文：
+
+          \d-codem{
+            let-inline \meta{x} \meta{cmd}
+              \metasub(${1}){y} ${\cdots} \metasub(${n}){y} = \metasub(${1}){e}
+            in \metasub(${2}){e}
+          }%
+
+          は以下の糖衣構文である：
+
+          \display-term(Term.(
+            let-in ${cmd}
+              (lamI vx (lam ${y_1} !${\ldots\ \term!(lam ${y_n} (tmesub ${1}))}))
+            (Some(tmesub ${2}))
+          ));%
+
+          “ブロックコマンド抽象” についても同様に，
+
+          \d-codem{
+            let-block \meta{x} \meta{cmd}
+              \metasub(${1}){y} ${\cdots} \metasub(${n}){y} = \metasub(${1}){e}
+            in \metasub(${2}){e}
+          }%
+
+          は以下の糖衣構文である：
+
+          \display-term(Term.(
+            let-in ${cmd}
+              (lamB vx (lam ${y_1} !${\ldots\ \term!(lam ${y_n} (tmesub ${1}))}))
+            (Some(tmesub ${2}))
+          ));%
+        }
+        +p{
+          最初に掲げたBNFを見てもしかすると意外に感じたかもしれないが，
+          インラインテキスト ${\term!(Term.(textI tmIt))} と
+          ブロックテキスト ${\term!(Term.(textB tmBt))} は
+          それ自体（単に項なのではなく）値である．
+          すなわち，プログラムの評価中に ${\term!(Term.(textI tmIt))} という形が出てきたら，
+          （たとえ中にインラインコマンドが残っている状態でも）
+          それ以上評価されずに函数やコマンドに渡されたりする．
+          これは\SATySFi;言語を理解する上で非常に重要な点である．
+          詳しくは次節の操作的意味論の際に説明する．
+        }
+      >
+      +subsection{操作的意味論}<
+        +p{
+          操作的意味論はいわゆるbig step semanticsで定式化する．
+          まず，項 ${\term!(Term.tme)} が値 ${\term!(Term.tmv)} へと評価されるという
+          2項関係 ${\bs!(Term.tme)!(Term.tmv)} は次のように定義される：
+
+          \math-list(Term.(${
+            | \derive?:{\text!{(E-Val)}}{||}{\bs!(tmv)!(tmv)}
+
+            | \derive?:{\text!{(E-App)}}{
+                | \bs!(tmesub ${1})!(lam vx tme)
+                | \bs!(tmesub ${2})!(tmvsub ${2})
+                | \bs!(subst (tmvsub ${2}) vx tme)!(tmv)
+                |}{\bs!(app (tmesub ${1}) (tmesub ${2}))!(tmv)}
+
+            | \derive?:{\text!{(E-LetIn)}}{
+                | \bs!(tmesub ${1})!(tmvsub ${1})
+                | \bs!(subst (tmvsub ${1}) vx (tmesub ${2}))!(tmvsub ${2})
+                |}{\bs!(let-in vx (tmesub ${1}) (Some(tmesub ${2})))!(tmvsub ${2})}
+
+            | \derive?:{\text!{(E-ReadI)}}{
+                | \bs!(tmesub ${1})!(tmctx)
+                | \bs!(tmesub ${2})!(textI tmIt)
+                | \bsI!(tmctx)!(tmIt)!(tmIb)
+                |}{\bs!(readI (tmesub ${1}) (tmesub ${2}))!(boxI tmIb)}
+
+            | \derive?:{\text!{(E-ReadB)}}{
+                | \bs!(tmesub ${1})!(tmctx)
+                | \bs!(tmesub ${2})!(textB tmBt)
+                | \bsB!(tmctx)!(tmBt)!(tmBb)
+                |}{\bs!(readB (tmesub ${1}) (tmesub ${2}))!(boxB tmBb)}
+            |}));%
+
+          インラインテキストの評価は以下のように定められる．すなわち，
+          テキスト処理文脈 ${\term!(Term.tmctx)} の下で
+          インラインテキスト ${\term!(Term.tmIt)} が
+          インラインボックス列 ${\term!(Term.tmIb)} へ評価されるという
+          3項関係 ${\bsI!(Term.tmctx)!(Term.tmIt)!(Term.tmIb)} は
+          以下のように定義される：
+
+          \math-list(Term.(${
+            | \derive?:{\text!{(EI-Empty)}}{||}{
+                \bsI!(tmctx)!(!${\epsilon})!(!${\epsilon})}
+
+            | \derive?:{\text!{(EI-Char)}}{
+                | \term!(tmib) \defeq
+                     \app{\mathrm{Typeface}}{\term!(tmctx), \term!(tmchar)}
+                | \bsI!(tmctx)!(tmIt)!(tmIb)
+                |}{
+                  \bsI!(tmctx)!(cat tmchar tmIt)!(cat tmib tmIb)
+                }
+
+            | \derive?:{\text!{(EI-Command)}}{
+                | \bs!(tmesub ${0})!(lamI vx tme)
+                | \bs!(appseq (paren (subst tmctx vx tme))
+                    [tmesub ${1}; !${\cdots}; tmesub ${n}])!(boxI tmIbp)
+                | \bsI!(tmctx)!(tmIt)!(tmIb)
+                |}{
+                  \bsI!(tmctx)!(cat (paren (appseq (tmesub ${0})
+                    [tmesub ${1}; !${\cdots}; tmesub ${n}])) tmIt)!(cat tmIbp tmIb)
+                }
+            |}));%
+
+          ここで
+          ${\app{\mathrm{Typeface}}{\term!(Term.tmctx), \term!(Term.tmchar)}}
+          はテキスト処理文脈 ${\term!(Term.tmctx)}（の文字サイズやフォントといった情報）
+          に基づいて文字 ${\term!(Term.tmchar)} を “組める状態にしたもの” を表す．
+
+          ブロックテキストについても，テキスト処理文脈 ${\term!(Term.tmctx)} の下で
+          ブロックテキスト ${\term!(Term.tmBt)} が
+          ブロックボックス列 ${\term!(Term.tmBb)} へ評価されるという3項関係
+          ${\bsB!(Term.tmctx)!(Term.tmBt)!(Term.tmBb)} が
+          同様に以下のように定義される：
+
+          \math-list(Term.(${
+            | \derive?:{\text!{(EB-Empty)}}{||}{
+                \bsB!(tmctx)!(!${\epsilon})!(!${\epsilon})}
+
+            | \derive?:{\text!{(EB-Command)}}{
+                | \bs!(tmesub ${0})!(lamB vx tme)
+                | \bs!(appseq (paren (subst tmctx vx tme))
+                    [tmesub ${1}; !${\cdots}; tmesub ${n}])!(boxB tmBbp)
+                | \bsB!(tmctx)!(tmBt)!(tmBb)
+                |}{
+                  \bsB!(tmctx)!(cat (paren (appseq (tmesub ${0})
+                    [tmesub ${1}; !${\cdots}; tmesub ${n}])) tmBt)!(cat tmBbp tmBb)
+                }
+            |}));
+        }
+        +p{
+          注目すべき評価規則は (E-ReadI) だ．
+          この規則では，まず第1引数のテキスト処理文脈が評価され，続いて
+          第2引数として渡された項 ${\term!(Term.tmesub ${2})} が評価され
+          インラインテキスト ${\term!(Term.(textI tmIt))} となる．
+          前節で述べたように，一般にこのインラインテキストの中にはコマンドの適用が含まれている．
+          これらのコマンド適用の評価を “起動する” のがまさに
+          ${\term!(Term.(paren (readI !${\text!{-}} !${\text!{-}})))}
+          の仕事なのである．
+          (E-ReadB) についても，同様のことが言える．
+        }
+        +p{
+          実際には
+          テキスト処理文脈 ${\term!(Term.tmctx)}
+          の保持する情報を更新するプリミティヴや，
+          テキスト処理文脈と
+          ${\term!(Term.(boxI tmIb))} の形の項（つまりインラインボックス列）を受け取って
+          適切に行分割し ${\term!(Term.(boxB tmBb))} の形の項（つまりブロックボックス列）
+          を返すようなプリミティヴが備わっていて，
+          これによって “意味のある” 処理が記述できるわけだが，
+          核としては上記のような体系が\SATySFi;の基礎をなしている．
+        }
+      >
+      +subsection{型システム}<
+        +p{
+          前節で定義した計算体系上に型システムを与える．
+          実際の\SATySFi;の型システムはそれなりに巨大で，
+          SML\#と同様のレコード \cite[`Ohori1995`];
+          やラベルなしのオプション引数を扱えるようになっているが，
+          一旦それらを除いて，テキストとボックス列に関わる根幹となる部分だけを
+          抜き出して扱うことにする．
+          基本型\type(Type.tymb);，
+          単相型\type(Type.tymtau);，
+          多相型\type(Type.tymsigma);
+          は以下のBNFでそれぞれ定義される：
+
+          \BNFs(Type.([
+            (show tymb, [
+              List.map show [
+                context; inline-text; block-text;
+                inline-boxes; block-boxes; of-math ${\cdots}
+              ]
+            ]);
+            (show tymtau, [
+              List.map show [
+                tymalpha; tymb; tymtau --> tymtau;
+                cmdI [star tymtau]; cmdB [star tymtau]
+              ]
+            ]);
+            (show tymsigma, [
+              List.map show [
+                tymtau; forall ${\alpha} tymsigma;
+              ]
+            ]);
+          ]));%
+
+          ただし，\type(Type.tymalpha);は型変数を動くとする．
+          型環境 ${\Gamma} の下で ${\term!(Term.tme)} に型\type(Type.tymtau);がつく
+          という型判定の3項関係 ${\tj{\Gamma}!(Term.tme)!(Type.tymtau)} は
+          以下の規則で与えられる：
+
+          \math-list(Term.(Type.(${
+            | \derive?:{\text!{(T-Const)}}{
+                | \app{\Delta}{\term!(tmc)} \synteq \mtype!(tymtau)
+                |}{\tj{\Gamma}!(tmc)!(tymtau)}
+
+            | \derive?:{\text!{(T-Var)}}{
+                | \app{\Gamma}{#vx} \geqslant \mtype!(tymtau)
+                |}{\tj{\Gamma}!(!vx)!(tymtau)}
+
+            | \derive?:{\text!{(T-Lam)}}{
+                | \tj{
+                    \overwrite{\Gamma}{#vx}{\mtype!(tymtaup)}
+                  }!(tme)!(tymtau)
+                |}{
+                  \tj{\Gamma}!(lam vx tme)!(tymtaup --> tymtau)
+                }
+
+            | \derive?:{\text!{(T-LetIn)}}{
+                | \tj{\Gamma}!(tmesub ${1})!(tymtausub ${1})
+                | \tj{
+                    \overwrite{\Gamma}{#vx}{
+                      \app{\mathrm{Gen}}{\Gamma, \mtype!(tymtausub ${1})}
+                    }
+                  }!(tmesub ${2})!(tymtausub ${2})
+                |}{
+                  \tj{\Gamma}!(let-in vx
+                    (tmesub ${1}) (Some(tmesub ${2})))!(tymtausub ${2})
+                }
+
+            | \derive?:{\text!{(T-App)}}{
+                | \tj{\Gamma}!(tmesub ${1})!(tymtaup --> tymtau)
+                | \tj{\Gamma}!(tmesub ${2})!(tymtaup)
+                |}{\tj{\Gamma}!(app (tmesub ${1}) (tmesub ${2}))!(tymtau)}
+
+            | \derive?:{\text!{(T-Context)}}{||}{
+                \tj{\Gamma}!(tmctx)!(context)}
+
+            | \derive?:{\text!{(T-ReadI)}}{
+                | \tj{\Gamma}!(tmesub ${1})!(context)
+                | \tj{\Gamma}!(tmesub ${2})!(inline-text)
+                |}{\tj{\Gamma}!(readI (tmesub ${1}) (tmesub ${2}))!(inline-boxes)}
+
+            | \derive?:{\text!{(T-ReadB)}}{
+                | \tj{\Gamma}!(tmesub ${1})!(context)
+                | \tj{\Gamma}!(tmesub ${2})!(block-text)
+                |}{\tj{\Gamma}!(readB (tmesub ${1}) (tmesub ${2}))!(block-boxes)}
+
+            | \derive?:{\text!{(T-BoxI)}}{||}{
+                \tj{\Gamma}!(boxI tmIb)!(inline-boxes)
+              }
+
+            | \derive?:{\text!{(T-BoxB)}}{||}{
+                \tj{\Gamma}!(boxB tmBb)!(block-boxes)
+              }
+
+            | \derive?:{\text!{(T-TextI)}}{
+                | \tjI{\Gamma}!(tmIt)
+                |}{
+                  \tj{\Gamma}!(textI tmIt)!(inline-text)
+                }
+
+            | \derive?:{\text!{(T-TextB)}}{
+                | \tjB{\Gamma}!(tmBt)
+                |}{
+                  \tj{\Gamma}!(textB tmBt)!(block-text)
+                }
+
+            | \derive?:{\text!{(T-LamI)}}{
+                | \tj{
+                    \overwrite{\Gamma}{#vx}{\mtype!(context)}
+                  }!(tme)!(
+                    tymtausub ${1} --> (of-math ${\cdots} -->
+                      (tymtausub ${n} --> inline-boxes)))
+                |}{
+                  \tj{\Gamma}!(lamI vx tme)!(cmdI
+                    [tymtausub ${1}; of-math ${\cdots}; tymtausub ${n}])
+                }
+
+            | \derive?:{\text!{(T-LamB)}}{
+                | \tj{
+                    \overwrite{\Gamma}{#vx}{\mtype!(context)}
+                  }!(tme)!(
+                    tymtausub ${1} --> (of-math ${\cdots} -->
+                      (tymtausub ${n} --> block-boxes)))
+                |}{
+                  \tj{\Gamma}!(lamB vx tme)!(cmdB
+                    [tymtausub ${1}; of-math ${\cdots}; tymtausub ${n}])
+                }
+
+            |})));%
+
+          ただし ${\Delta} は定数をその型に写す写像，
+          ${\mtype!(Type.tymsigma) \geqslant \mtype!(Type.tymtau)} は
+          単相型 ${\mtype!(Type.tymtau)} が多相型 ${\mtype!(Type.tymsigma)} の
+          インスタンスであること，
+          ${\app{\mathrm{Gen}}{\Gamma, \mtype!(Type.tymtau)}} は
+          単相型 ${\mtype!(Type.tymtau)} の
+          型環境 ${\Gamma} に基づいた閉包である多相型をそれぞれ表す．
+          インラインテキストおよびブロックテキストに対する型つけ規則は
+          以下で与えられる：
+
+          \math-list(Term.(Type.(${
+            | \derive?:{\text!{(TI-Empty)}}{||}{
+                \tjI{\Gamma}!(!${\epsilon})}
+
+            | \derive?:{\text!{(TI-Char)}}{
+                | \tjI{\Gamma}!(tmIt)
+                |}{\tjI{\Gamma}!(cat tmchar tmIt)}
+
+            | \derive?:{\text!{(TB-Empty)}}{||}{
+                \tjB{\Gamma}!(!${\epsilon})}
+
+            | \derive-multi?:{\text!{(TI-Command)}}!(7cm){
+                | \tj{\Gamma}!(tmesub ${0})!(cmdI
+                    [tymtausub ${1}; of-math ${\cdots}; tymtausub ${n}])
+                | \tj{\Gamma}!(tmesub ${i})!(tymtausub ${i})
+                    \text!{\quad;(for each ${i})}
+                | \tjI{\Gamma}!(tmIt)
+                |}{\tjI{\Gamma}!(cat (Term.paren (appseq (tmesub ${0})
+                    [tmesub ${1}; !${\cdots}; tmesub ${n}])) tmIt)}
+
+            | \derive-multi?:{\text!{(TB-Command)}}!(7cm){
+                | \tj{\Gamma}!(tmesub ${0})!(cmdB
+                    [tymtausub ${1}; of-math ${\cdots}; tymtausub ${n}])
+                | \tj{\Gamma}!(tmesub ${i})!(tymtausub ${i})
+                    \text!{\quad;(for each ${i})}
+                | \tjB{\Gamma}!(tmBt)
+                |}{\tjB{\Gamma}!(cat (Term.paren (appseq (tmesub ${0})
+                    [tmesub ${1}; !${\cdots}; tmesub ${n}])) tmBt)}
+            |})));%
+        }
+      >
+    >
   >
 >
