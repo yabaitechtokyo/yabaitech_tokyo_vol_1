@@ -7,18 +7,6 @@ let bibliography = [
     url = `https://www.lyx.org`;
     year = 1995;
   |));
-  (`satysfi-online`, WebSite(|
-    author = {| \twitter{miettal} |};
-    title = {\SATySFi;がWebで動くやつを作った — 暇な女子高専生のブログ};
-    url = `http://miettal.hatenablog.com/entry/2018/02/15/133623`;
-    year = 2018;
-  |));
-  (`satysfi-playground`, WebSite(|
-    author = {| \github{pandaman64} |};
-    title = {\SATySFi; Playground};
-    url = `http://satysfi-playground.tech/`;
-    year = 2018;
-  |));
   (`satysfi-cross-windows`, WebSite(|
     author = {| Masaki Hara |};
     title = {satysfi-cross-windows};
@@ -37,12 +25,6 @@ let bibliography = [
     url = `https://github.com/konn/satysfi-steamer`;
     year = 2018;
   |));
-  (`liang-knuth`, Book(|
-    author = {| Franklin M. Liang |};
-    title = {Word Hy-phen-a-tion by Com-put-er};
-    publisher = {Ph. D. Thesis};
-    year = 1983;
-  |));
   (`knuth-plass`, Article(|
     author = {| Donald E. Knuth | Michael F. Plass |};
     year = 1981;
@@ -51,6 +33,24 @@ let bibliography = [
     volume = Some(11);
     number = None;
     pages = (1119, 1184);
+  |));
+  (`liang-knuth`, Book(|
+    author = {| Franklin M. Liang |};
+    title = {Word Hy-phen-a-tion by Com-put-er};
+    publisher = {Ph. D. Thesis};
+    year = 1983;
+  |));
+  (`satysfi-online`, WebSite(|
+    author = {| \twitter{miettal} |};
+    title = {\SATySFi;がWebで動くやつを作った — 暇な女子高専生のブログ};
+    url = `http://miettal.hatenablog.com/entry/2018/02/15/133623`;
+    year = 2018;
+  |));
+  (`satysfi-playground`, WebSite(|
+    author = {| \github{pandaman64} |};
+    title = {\SATySFi; Playground};
+    url = `http://satysfi-playground.tech/`;
+    year = 2018;
   |));
  (`unicode-lb`, WebSite(|
    author = {| Unicode Consortium |};
@@ -62,6 +62,6 @@ let bibliography = [
     author = {| W3C日本語組版タスクフォース |};
     year = 2012;
     title = {W3C技術ノート 日本語組版処理の要件};
-    publisher = {\REMAINS{出版社}};
+    publisher = {東京電機大学出版局};
   |));
 ]

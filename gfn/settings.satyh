@@ -5,6 +5,8 @@
 @require: itemize
 @require: hdecoset
 @require: table
+@require: bnf
+@import: term
 @import: book-class
 
 

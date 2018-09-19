@@ -359,7 +359,11 @@ end = struct
 
 
   let-inline ctx \url it =
-    read-inline (ctx |> set-latin-font font-latin-mono) it
+    let ctx =
+      ctx |> set-latin-font font-latin-mono
+          |> set-font-size 11pt
+    in
+    read-inline ctx it
 
 
   let make-volume-and-number optvol optnum optseries =
@@ -469,6 +473,10 @@ end = struct
   let footer-origin = (16mm, 240mm)
   let footer-width = text-width
   let footnote-indent = 6mm
+
+
+  let-inline ctx \may-break =
+    discretionary 0 inline-nil inline-fil inline-nil
 
 
   let document record inner =
@@ -643,7 +651,8 @@ end = struct
                 let it-title = r#title in
                 let it-url = embed-string r#url in
                 let it-year = embed-string (arabic r#year) in
-                  {#it-authors;. \book-title{#it-title;}. \url{#it-url;}, #it-year;.}
+                  {#it-authors;. \book-title{#it-title;}.
+                    \may-break;\url{#it-url;}, #it-year;.}
 
           in
             bbacc +++ bib-entry ctx-doc (i + 1) (read-inline ctx-doc it)
