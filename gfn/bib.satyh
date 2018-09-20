@@ -31,6 +31,12 @@ let bibliography = [
     url = `https://github.com/konn/satysfi-steamer`;
     year = 2018;
   |));
+  (`TeXbook`, Book(|
+    author = {| Donald E. Knuth |};
+    year = 1986;
+    title = {The \TeX;book};
+    publisher = {Addison–Wisley};
+  |));
   (`knuth-plass`, Article(|
     author = {| Donald E. Knuth | Michael F. Plass |};
     year = 1981;
@@ -78,10 +84,16 @@ let bibliography = [
     url = `http://satysfi-playground.tech/`;
     year = 2018;
   |));
+  (`omega`, WebSite(|
+    author = {| John Plaice | Yannis Haralanbous |};
+    title = {Draft documentation for the ${\Omega} system};
+    url = `http://www.bakoma-tex.com/doc/omega/base/doc-18.pdf`;
+    year = 1999;
+  |));
   (`Remy1993`, Article(|
     author = {| Didier Rémy |};
-    title = {Type inference for records in natural extension of ML};
-    journal = {Theoretical Aspects of Object-oriented Programming.
+    title = {Type inference for records in a natural extension of ML};
+    journal = {Theoretical Aspects of Object-Oriented Programming.
                Types, Semantics and Language Design};
     number = None;
     volume = None;

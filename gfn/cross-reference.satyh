@@ -105,7 +105,4 @@ let cross-reference = '<
     \SATySFi;のリポジトリの\path{lib-satysfi/dist/packages}
     にある\pkg{stdjabook}などを参考にすると良いだろう．
   }
-  +p{
-    \REMAINS{余力があれば小さい例をつくる}
-  }
 >

@@ -553,12 +553,17 @@ let val-scheme ctx indexopt it-cmd ty explainopt =
         (bb-head +++ bb-explain)
 
 
-let-block ctx +example it =
+let-block ctx +example ?:labelopt it =
   let pads = (15pt, 15pt, 0pt, 0pt) in
   let decoset = VDecoSet.simple-frame-stroke 1pt (Gray(0.75)) in
+  let bt =
+    match labelopt with
+    | None        -> '<+Book.example{#it;}>
+    | Some(label) -> '<+Book.example?*?:(label){#it;}>
+  in
     block-frame-breakable ctx pads decoset (fun ctx ->
       block-skip 0pt
-        +++ read-block ctx '<+Book.example{#it;}>
+        +++ read-block ctx bt
         +++ line-break false true (ctx |> set-paragraph-margin 0pt 0pt) inline-fil
     )
 
@@ -749,3 +754,47 @@ let-block ctx +desc it-head it =
     in
       line-break true true ctx (ib ++ inline-fil)
   ))
+
+
+
+type file-entry =
+  | File      of inline-text
+  | Directory of inline-text * file-entry list
+
+
+let draw-directory-tree r pt dx dy fe =
+  let lx1 = 6pt in
+  let lx2 = 3pt in
+  let ly = 4pt in
+  let ydown = 3pt in
+  let thk = 1pt in
+  let-rec aux (x, y) fe =
+    match fe with
+    | File(it) ->
+        (1, [r#text-rightward (x, y) it])
+
+    | Directory(it, fes) ->
+        let gdir =
+          r#text-rightward (x, y) it
+        in
+        let xsub = x +' dx in
+        let (gsacc, cnt) =
+          fes |> List.fold-left (fun (gsacc, cnt) fe -> (
+            let ysub = y -' dy *' (float cnt) in
+            let gline =
+              stroke thk Color.black
+                (Gr.line (x +' lx1, ysub +' ly) (xsub -' lx2, ysub +' ly))
+            in
+            let (n, gs) = aux (xsub, ysub) fe in
+              ((gline :: gs) :: gsacc, cnt + n)
+          )) ([], 1)
+        in
+        let gdline =
+          stroke thk Color.black
+            (Gr.line (x +' lx1, y -' ydown)
+              (x +' lx1, y -' dy *' (float (cnt - 1)) +' ly -' thk *' 0.5))
+        in
+          (cnt, gdir :: gdline :: List.concat (List.reverse gsacc))
+  in
+  let (_, gs) = aux pt fe in
+  gs
