@@ -1,6 +1,12 @@
 @import: settings
 
 let bibliography = [
+  (`otfm`, WebSite(|
+    author = {| Daniel Bünzli | Takashi Suwa |};
+    title = {An extended version of Otfm};
+    url = `https://github.com/gfngfn/otfm`;
+    year = 2017;
+  |));
   (`LyX`, WebSite(|
     author = {| Matthias Ettrich |};
     title = {LyX – The Document Processor};
@@ -37,7 +43,7 @@ let bibliography = [
   (`liang-knuth`, Book(|
     author = {| Franklin M. Liang |};
     title = {Word Hy-phen-a-tion by Com-put-er};
-    publisher = {Ph. D. Thesis};
+    publisher = {Ph. D. thesis, Stanford University};
     year = 1983;
   |));
   (`satysfi-online`, WebSite(|
@@ -56,13 +62,39 @@ let bibliography = [
     series = None;
     pages = (844, 895);
   |));
+  (`Osinski2006`, Book(|
+    author = {| Edward Osinski |};
+    title = {A Polymorphic Type System and Compilation Scheme for Record Concatenation};
+    publisher = {Ph. D. thesis, New York University};
+%    advisor = {Goldberg, Benjamin F.},
+%    isbn = {978-0-542-75242-1},
+%    note = {AAI3221986},
+%    address = {New York, NY, USA},
+    year = 2006;
+  |));
   (`satysfi-playground`, WebSite(|
     author = {| \github{pandaman64} |};
     title = {\SATySFi; Playground};
     url = `http://satysfi-playground.tech/`;
     year = 2018;
   |));
- (`unicode-lb`, WebSite(|
+  (`Remy1993`, Article(|
+    author = {| Didier Rémy |};
+    title = {Type inference for records in natural extension of ML};
+    journal = {Theoretical Aspects of Object-oriented Programming.
+               Types, Semantics and Language Design};
+    number = None;
+    volume = None;
+    pages = (67, 95);
+%    editor = {Gunter, Carl A. and Mitchell, John C.},
+%    isbn = {0-262-07155-X},
+%    url = {http://dl.acm.org/citation.cfm?id=186677.186689},
+%    acmid = {186689},
+%    publisher = {MIT Press},
+%    address = {Cambridge, MA, USA},
+    year = 1993;
+  |));
+  (`unicode-lb`, WebSite(|
    author = {| Unicode Consortium |};
    title ={Unicode Standard Annex \#14: Unicode Line Breaking Algorithm (Unicode 10.0.0)};
    url = `http://unicode.org/reports/tr14/`;

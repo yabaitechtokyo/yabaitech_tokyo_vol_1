@@ -69,6 +69,7 @@ module Book : sig
   val font-latin-italic : string * float * float
   val font-latin-bold   : string * float * float
   val font-latin-mono   : string * float * float
+  val font-latin-sans   : string * float * float
   val font-cjk-mincho   : string * float * float
   val font-cjk-gothic   : string * float * float
   val set-latin-font : (string * float * float) -> context -> context

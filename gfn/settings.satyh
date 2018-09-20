@@ -14,10 +14,11 @@
 % ---- constants ----
 
 let code-background = Gray(0.875)
-let quote-indent-1 = 24pt
+let quote-indent-1 = 24pt *' 0.88
 let quote-indent-2 = 12pt
 let val-margin = 12pt
 let val-explain-margin = 6pt
+let desc-indent = 24pt *' 0.88
 
 % ---- ----
 
@@ -730,3 +731,21 @@ let structure-bend path =
 %        (x, y -' trih);
 %      ]);
   ]
+
+
+let-block ctx +desc it-head it =
+  let pads = (desc-indent, 0pt, 0pt, 0pt) in
+  let decoset = VDecoSet.empty in
+  block-frame-breakable ctx pads decoset (fun ctx -> (
+    let ctx-head =
+      ctx |> Book.set-cjk-font Book.font-cjk-gothic
+          |> Book.set-latin-font Book.font-latin-sans
+    in
+    let ib =
+      inline-skip (0pt -' desc-indent)
+        ++ read-inline ctx-head it-head
+        ++ inline-skip 12pt
+        ++ read-inline ctx it
+    in
+      line-break true true ctx (ib ++ inline-fil)
+  ))
