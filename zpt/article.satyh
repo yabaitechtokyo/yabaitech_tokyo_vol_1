@@ -15,7 +15,7 @@ let zpt-article = '<
       +p {構成は以下のようになっています。\ref-section(`ipc-jr`);ではJudgmental Reconstructionの概念を説明しながら例として直観主義論理の体系IPCを構築します。\ref-section(`adj`);ではIPCを拡張して二つの階層を持つ論理IPC2を構築します。その後\ref-section(`modality`);でIPC2を更に拡張してK様相論理の体系のIPC2MとIPCkMをそれぞれ構築します。最後に\ref-section(`conclusion`);でまとめておしまいです。}
     >
     +section ?:(`ipc-jr`) {直観主義論理をつくる} <
-      +p {判断(Judgment)とは「何を知っているか」を表すもののことを指します。例えばこの後に紹介するIPCという論理体系では${\ipc{\Gamma}{A}}という判断は「${\Gamma}が正しいならば${A}も正しい」という知識を表します。Judgmental Reconstructionとは判断の性質を土台として自然演繹の論理体系を構築する方法を指します。これががどのようなものかを理解してもらうために、${\imp}のみを論理結合子として含むような直観主義論理の体系IPC(Intuitionistic Propositional Calculus)つくってみることにします。この流れは基本的に元の論文\cite[`Pfenning01`];のそれと同じですが、一部手を加えていることにご留意ください。}
+      +p {判断(Judgment)とは「何を知っているか」を表すもののことを指します。例えばこの後に紹介するIPCという論理体系では${\ipc{\Gamma}{A}}という判断は「${\Gamma}が正しいならば${A}も正しい」という知識を表します。Judgmental Reconstructionとは判断の性質を土台として自然演繹の論理体系を構築する方法を指します。これががどのようなものかを理解してもらうために、${\imp}のみを論理結合子として含むような直観主義論理の体系IPC(Intuitionistic Propositional Calculus)をつくってみることにします。この流れは基本的に元の論文\cite[`Pfenning01`];のそれと同じですが、一部手を加えていることにご留意ください。}
 
       +subsection {判断の構造を決める} <
         +p{最初に全体の定義を\ref-figure(`figdefipc`);に示しておきます。#ipc-def;記号の定義をした後に最初にすることは「判断の構造を決める」ことです。}
@@ -43,7 +43,7 @@ let zpt-article = '<
         +p {気持ちとしてはこれは「${\imp}を導入した後に除去して得た結論は、そもそも導入と除去を行わなくて導くことができる」ことを表しています。除去則が導入則に対して強すぎる結論を導いているとこれが成り立たなくなってしまいます。\footnote{そのような例としてtonkという(壊れた)論理結合子が知られています。詳細は\cite[`Yatabe17`];をご覧ください。}}
         +p {local completenessは「除去則から得た結論から元の論理式を復元できる」という性質で、除去則が導入則より弱くならないことを要求します。この性質はlocal expansionという導出の変換によって示されます。${\imp}だと以下のようになり、実際に${\imp}除去をした後に${A \imp B}を復元できることがわかります。}
         #ipc-imp-le;
-        +p {以上のようにlocal soundnessとlocal completenessが成り立っていることをlocal reductionとlocal expansionので示すことで論理結合子の導入則と除去則が釣り合っていることを確認できます。これらの事実から${\imp}が論理結合子としてちゃんと定義できているということができます。\footnote{Curry-Howard同型においてlocal reductionとlocal expnasionは型付き${\lambda}計算の${\beta}簡約と${\eta}展開に対応します\cite[`Pfenning01`];。論理結合子が成立していることが計算が可能であることに対応してる事実、すごく面白くないですか??}}
+        +p {以上のようにlocal soundnessとlocal completenessが成り立っていることをlocal reductionとlocal expansionによってそれぞれ示すことで論理結合子の導入則と除去則が釣り合っていることを確認できます。これらの事実から${\imp}が論理結合子としてちゃんと定義できているということができます。\footnote{Curry-Howard同型においてlocal reductionとlocal expansionは型付き${\lambda}計算の${\beta}簡約と${\eta}展開に対応します\cite[`Pfenning01`];。論理結合子が成立していることが計算が可能であることに対応してる事実、すごく面白くないですか??}}
       >
       +subsection{論理を作る指針のまとめ} <
         +p {さて、ここまでのおさらいをしてみましょう。我々は以下のような手続きを踏んで直観主義論理の体系IPCを作ったのでした。
@@ -51,7 +51,7 @@ let zpt-article = '<
         * 判断の構造を定める
         * 論理結合子を定義する
         ** 判断の構造を壊さないように
-        ** local soundnessとlocalc completenessを満たすように
+        ** local soundnessとlocal completenessを満たすように
         }
         この論理体系を作る上でまず判断の構造を定めるというやり方は新しい論理体系を作る際に便利な指針となります。次の章からは実際にIPCの構造から拡張した判断を用いて新しい論理体系をつくります。}
       >
@@ -130,7 +130,7 @@ let zpt-article = '<
 
         #ipc2m-rules;
 
-        +p{${\imp}はIPCのそれとほぼ同じなので特に説明は必要ないでしょう。${\dmodal{}}の方もIPC2の${\adj-down{}}とほぼ同じですね。実際に${\dmodal{}}では以下のようにlocal reductionとlocal expansionが成り立つので論理結合子としてちゃんと動いているらしいということがわかります。}
+        +p{${\imp}はIPCのそれとほぼ同じなので特に説明は必要ないでしょう。${\dmodal{}}の方もIPC2の${\adj-down{}}とほぼ同じですね。実際に${\dmodal{}}では以下のようにlocal reductionとlocal expansionが成り立つので論理結合子として成り立っていることがわかります。}
 
         #ipc2m-dmodal-lr;
         #ipc2m-dmodal-le;
@@ -138,7 +138,7 @@ let zpt-article = '<
         +p{この${\dmodal{}}が実際にKの様相になっていることを示すには色々とリソースが足りないので、\ref-figure(`ipc2m-k-axiom`);でKの公理${\dmodal{\paren{A \imp B}} \imp \dmodal{A} \imp \dmodal{B}}を示す程度でお茶を濁すことにします。#ipc2m-k-axiom;\footnote{証明が読みたいという人はKavvosのarXiv論文\cite[`Kavvos18`];をあたるとよさそうです。}}
       >
       +subsection {${\adj-up{}}とFitch-style Modality} <
-        +p {先ほどは2レベルの階層で「同じ論理を動かす」ことで${\adj-down{}}がKの様相になることを確認しました。実は別の方法で「異なる階層で同じ論理が動く」ようにすることで${\adj-up{}}もKの様相になります。歴史的には色々論文が出ていてKripe-style\cite[`Davies01`];とかFitch-style\cite[`Clouston18`];とか呼ばれますが、ここではIPCkMと呼ぶことにします。IPCkMの構造に関する基本的なアイデアは「階層の数を任意自然数個に拡張する」ことです。まずは記号の定義から。}
+        +p {先ほどは2レベルの階層で「同じ論理を動かす」ことで${\adj-down{}}がKの様相になることを確認しました。実は別の方法で「異なる階層で同じ論理が動く」ようにすることで${\adj-up{}}もKの様相になります。歴史的には色々論文が出ていてKripke-style\cite[`Davies01`];とかFitch-style\cite[`Clouston18`];とか呼ばれますが、ここではIPCkMと呼ぶことにします。IPCkMの構造に関する基本的なアイデアは「階層の数を任意自然数個に拡張する」ことです。まずは記号の定義から。}
 
         #ipckm-symbols;
 

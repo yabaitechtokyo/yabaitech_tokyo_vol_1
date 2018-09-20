@@ -33,7 +33,8 @@ let ipc-hyp =
     {
       \math-list (
       ${
-      | \derive{| A \in \Gamma |}
+      | \derive?:!{hyp}
+               {| A \in \Gamma |}
                {\ipc{\Gamma}{A}}
       |});
     }
@@ -99,7 +100,7 @@ let ipc-imp-lr = '<
 >
 
 let ipc-imp-le = '<
-  +local-reduction
+  +local-expansion
   (${ \derive{| \mathcal{D} |}{ \ipc{\Gamma}{A \imp B} }})
   (${ \derive?:!{${\imp}I}{
         | \derive?:!{${\imp}E}
@@ -144,7 +145,7 @@ let adj-hyp = '<
              { \adj1{\Theta}{\Gamma}{A}}
     | \derive?:!{hyp2}
              {| \alpha \in \Theta |}
-             { \adj2{\Theta}{A}}
+             { \adj2{\Theta}{\alpha}}
     |});
 >
 
@@ -254,12 +255,12 @@ let adj-rules-up-lr = '<
 let adj-rules-up-le = '<
   +local-expansion
     (${ \derive{|\mathcal{D}|}{\adj2{\Theta}{\adj-up{A}}}})
-    (${\derive?:!{${\adj-up{}}E}
+    (${\derive?:!{${\adj-up{}}I}
              {| \derive{| \mathcal{D} |}
-                       {\derive?:!{${\adj-up{}}I}
-                          ?:!(true)
-                         {| \adj2{\Theta}{\adj-up{A}} |}
-                         { \adj1{\Theta}{\cdot}{A} }} |}
+                       {\derive?:!{${\adj-up{}}E}
+                               ?:!(true)
+                               {| \adj2{\Theta}{\adj-up{A}} |}
+                               { \adj1{\Theta}{\cdot}{A} }} |}
              { \adj2{\Theta}{\adj-up{A}} }});
 >
 
@@ -281,19 +282,30 @@ let adj-rules-down-lr = '<
   +local-reduction
     (${\derive?:!{${\adj-down{}}E}
              {| \derive?:!{${\adj-down{}}I}
-                       {| \adj2{\Theta}{\alpha} |}
+                       {| \derive{| \mathcal{D} |}
+                                 {\adj2{\Theta}{\alpha}}
+                       |}
                        { \adj1{\Theta}{\Gamma}{\adj-down{\alpha}} }
-              | \adj1{\Theta, \alpha}{\Gamma}{B}
+              | \derive{| \mathcal{E} |}
+                       { \adj1{\Theta, \alpha}{\Gamma}{B} }
               |}
              { \adj1{\Theta}{\Gamma}{B} }})
-    (${\adj1{\Theta}{\Gamma}{B}});
+    (${\derive?:!{subst12}
+              {| \derive{| \mathcal{D} |}
+                        {\adj2{\Theta}{\alpha}}
+               | \derive{| \mathcal{E} |}
+                       { \adj1{\Theta, \alpha}{\Gamma}{B} }
+               |}
+              {\adj1{\Theta}{\Gamma}{B}}});
 >
 
 let adj-rules-down-le = '<
   +local-expansion
-    (${\adj1{\Theta}{\Gamma}{\adj-down{\alpha}}})
+    (${\derive{| \mathcal{D} |}
+              {\adj1{\Theta}{\Gamma}{\adj-down{\alpha}}} })
     (${\derive?:!{${\adj-down{}}E}
-             {| \adj1{\Theta}{\Gamma}{\adj-down{\alpha}}
+             {| \derive{| \mathcal{D} |}
+                       {\adj1{\Theta}{\Gamma}{\adj-down{\alpha}}}
               | \derive?:!{${\adj-down{}}I}
                        ?:!(true)
                        {| \derive?:!{hyp2}
@@ -400,8 +412,8 @@ let ipc2m-judgment = '<
 
 let ipc2-adj-judgment = {
   \align [
-    ${| \adj1{\Theta}{\Gamma}{A} | \Rightarrow \ipc2m{\Theta}{\Gamma}{A} |};
-    ${| \adj2{\Theta}{\alpha} | \Rightarrow \ipc2m{\cdot}{\Theta}{\alpha} |};
+    ${| \adj1{\Theta}{\Gamma}{A} | \ \approx\ \ipc2m{\Theta}{\Gamma}{A} |};
+    ${| \adj2{\Theta}{\alpha} | \ \approx\ \ipc2m{\cdot}{\Theta}{\alpha} |};
   ];
 }
 
@@ -462,21 +474,29 @@ let ipc2m-dmodal-lr = '<
     (${
       \derive?:!{${\dmodal{}}E}
              {| \derive?:!{${\dmodal{}}I}
-                       {| \ipc2m{\cdot}{\Delta}{A} |}
+                       {| \derive{| \mathcal{D}|}
+                                 { \ipc2m{\cdot}{\Delta}{A} } |}
                        { \ipc2m{\Delta}{\Gamma}{\dmodal{A}} }
-              | \ipc2m{\Delta, A}{\Gamma}{B}
+              | \derive{| \mathcal{E} |}
+                       {\ipc2m{\Delta, A}{\Gamma}{B}}
               |}
              { \ipc2m{\Delta}{\Gamma}{B} }
       })
-    (${\ipc2m{\Delta}{\Gamma}{B}});
+    (${\derive?:!{subst2}
+              {| \derive{| \mathcal{D}|}
+                        { \ipc2m{\cdot}{\Delta}{A} }
+               | \derive{| \mathcal{E} |}
+                        {\ipc2m{\Delta, A}{\Gamma}{B}}
+               |}
+              {\ipc2m{\Delta}{\Gamma}{B}}});
 >
 
 let ipc2m-dmodal-le = '<
   +local-expansion
-    (${\ipc2m{\Delta}{\Gamma}{\dmodal{A}}})
+    (${\derive{|\mathcal{D}|}{\ipc2m{\Delta}{\Gamma}{\dmodal{A}}}})
     (${
       \derive?:!{${\dmodal{}}E}
-             {| \ipc2m{\Delta}{\Gamma}{\dmodal{A}}
+             {| \derive{| \mathcal{D} |}{\ipc2m{\Delta}{\Gamma}{\dmodal{A}}}
               | \derive?:!{${\dmodal{}}I}
                        ?:!(true)
                        {| \derive?:!{hyp}
@@ -544,20 +564,24 @@ let ipckm-fmodal-lr = '<
     (${\derive?:!{${\fmodal{}}E}
               {| \derive?:!{${\fmodal{}}I}
                         ?:!(true)
-                       {| \ipckm{|\Delta|\cdot|}{A} |}
+                       {| \derive{| \mathcal{D} |}{\ipckm{|\Delta|\cdot|}{A}} |}
                        { \ipckm{|\Delta|}{\fmodal{A}} }
               |}
              { \ipckm{|\Delta|\Gamma|}{A} }})
-    (${\ipckm{|\Delta|\Gamma|}{A} });
+    (${\derive?:!{weak}
+              {| \derive{| \mathcal{D} |}{\ipckm{|\Delta|\cdot|}{A}}
+               |}
+              {\ipckm{|\Delta|\Gamma|}{A}} });
 >
 
 let ipckm-fmodal-le = '<
   +local-expansion
-    (${\ipckm{|\Delta|}{\fmodal{A}}})
-    (${\derive?:!{${\fmodal{}}E}
-             {| \derive?:!{${\fmodal{}}I}
+    (${\derive{| \mathcal{D} |}{\ipckm{|\Delta|}{\fmodal{A}}}})
+    (${\derive?:!{${\fmodal{}}I}
+             {| \derive?:!{${\fmodal{}}E}
                        ?:!(true)
-                       {| \ipckm{|\Delta|}{\fmodal{A}} |}
+                       {| \derive{| \mathcal{D} |}
+                                 {\ipckm{|\Delta|}{\fmodal{A}}} |}
                        { \ipckm{|\Delta|\cdot|}{A} } |}
              { \ipckm{|\Delta|}{\fmodal{A}} }});
 >
@@ -567,9 +591,9 @@ let ipckm-k-axiom =
     \derive?:!{${\fmodal{}}E}
            {| \derive?:!{hyp}?:!(true)
                 {||}
-                { \ipckm{| \fmodal{\paren{A \imp B}}, \fmodal{A}|}{ \fmodal{A \imp B} } }
+                { \ipckm{| \fmodal{\paren{A \imp B}}, \fmodal{A}|}{ \fmodal{\paren{A \imp B}} } }
             |}
-           { \ipckm{| \fmodal{\paren{A \imp B}}, \fmodal{A}| |}{ A \imp B } }
+           { \ipckm{| \fmodal{\paren{A \imp B}}, \fmodal{A}| \cdot |}{ A \imp B } }
   } in
   let inu2 = ${
     \derive?:!{${\fmodal{}}E}?:!(true)
@@ -577,7 +601,7 @@ let ipckm-k-axiom =
                 {||}
                 { \ipckm{| \fmodal{\paren{A \imp B}}, \fmodal{A}|}{ \fmodal{A} } }
             |}
-           { \ipckm{| \fmodal{\paren{A \imp B}}, \fmodal{A}| |}{ A } }
+           { \ipckm{| \fmodal{\paren{A \imp B}}, \fmodal{A}| \cdot |}{ A } }
   } in
   let neko = ${
      \derive?:!{${\fmodal{}}I}?:!(true)
@@ -585,7 +609,7 @@ let ipckm-k-axiom =
                      {| #inu1
                       | #inu2
                       |}
-                     { \ipckm{| \fmodal{\paren{A \imp B}}, \fmodal{A}| |}{ B } }
+                     { \ipckm{| \fmodal{\paren{A \imp B}}, \fmodal{A}| \cdot |}{ B } }
             |}
            { \ipckm{| \fmodal{\paren{A \imp B}}, \fmodal{A} |}{ \fmodal{B}} }
   } in {
