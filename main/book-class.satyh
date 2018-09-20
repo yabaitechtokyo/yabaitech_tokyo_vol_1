@@ -85,6 +85,7 @@ module Book : sig
       title: string;
       date: string;
       venue: string;
+      toc-rest: block-text;
     |)
 
   val font-latin-roman  : string * float * float
@@ -697,9 +698,11 @@ end = struct
           %       in
           %         bbacc +++ line-break true true ctx (ib-title ++ ib-middle ++ ib-page)
 
-          )) block-nil
+          )) block-nil in
+        let bb-toc-rest = read-block ctx-doc record#toc-rest
         in
           bb-toc-title +++ bb-toc-main
+            +++ bb-toc-rest
             +++ clear-page
             +++ line-break false false (ctx-doc |> set-paragraph-margin 0pt 0pt)
               (hook-page-break (fun pbinfo _ -> (show-page-number-ref <- Some(pbinfo#page-number))) ++ inline-fil)
