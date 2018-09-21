@@ -534,9 +534,9 @@ document (|
         フォントサイズ ${s} をそのまま ${F_1} と ${F_2} の両方で素直に1emにすると，
         大抵の場合はラテン文字の方が小さく見えてしまう．
         そこで，通常は和文の方を小さくするように補正する．
-        本書では（フォントデータによらず）${r_1 = 1}，${r_2 = 0.88} という拡大率を
-        ラテン文字と漢字（＋仮名）にそれぞれ設定している．
-        なお，ベースライン調整率は，両者ともに ${0} にしている．
+        本書では${r_1 = 1}，${r_2 = 0.88} という拡大率を
+        ラテン文字に使うフォントと漢字や仮名に使うフォントにそれぞれ設定している．
+        なお，ベースライン調整率は両者ともに ${0} にしている．
         和文フォントは和欧混植を見越してか
         もともとベースラインを仮想ボディの下端よりも上に設定しているものが多く，
         改めて補正する必要がなかったためである．
@@ -547,7 +547,38 @@ document (|
         一般に，ラテン文字と漢字など，異なる文字体系の文字が隣接する際には
         字間を空けないと詰まりすぎて見える．
         \SATySFi;は，互いに異なる文字体系に属する文字が隣接している箇所に自動でグルーを挿入する．
-        \REMAINS{}
+        このグルーの各長さに関する情報は単語間空白と同様にフォントサイズに対する比率で
+        テキスト処理文脈が保持している．
+        デフォルトでは
+        \codem{Latin}と\codem{HanIdeographic}の間，\codem{Latin}と\codem{Kana}の間，
+        およびそれらの前後逆の4種類の組み合わせに対して\codem{(0.24, 0.08, 0.16)}が設定されているが，
+        以下のプリミティヴによって変更できる：
+
+        \val-explain?:(`set-space-ratio-between-scripts`)({set-space-ratio-between-scripts})%
+          (Type.(script --> (script --> (float --> (float --> (float --> (context --> context))))))) {
+            \codem{\meta{ctx} \|\> set-space-ratio-between-scripts
+              \metasub(${1}){script} \metasub(${2}){script}
+                \metasub(${0}){r} \metasub(${1}){r} \metasub(${2}){r}}
+            で前方が文字体系\codem{\metasub(${1}){script}}の文字，
+            後方が文字体系\codem{\metasub(${2}){script}}の文字の隣接箇所で
+            自然長，収縮基準長，伸長基準長の文字サイズに対する比率が
+            それぞれ
+            \codem{\metasub(${0}){r}}，
+            \codem{\metasub(${1}){r}}，
+            \codem{\metasub(${2}){r}}であるようなグルーを挿入するように
+            \codem{\meta{ctx}}を更新したテキスト処理文脈を返す．
+          }%
+
+        スペーシングに関してインラインボックス列を
+        特定の文字体系のテキストに “擬態させる” 方法として，
+        次のプリミティヴが使える：
+
+        \val-explain?:(`script-guard`)({script-guard})%
+          (Type.(script --> (inline-boxes --> inline-boxes))) {
+            \codem{script-guard \meta{script} \meta{ib}}で
+            インラインボックス列\codem{\meta{ib}}を前後のスペーシングに関して
+            文字体系\codem{\meta{script}}のテキストとして扱う．
+          }%
       }
     >
     +section{寡占的文字体系}<

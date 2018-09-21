@@ -44,13 +44,15 @@ L[ ] set-paragraph-margin
 L[ ] set-min-paragraph-ascender-and-descender
 
 == 文字組版 ==
-C[ ] set-font
-C[ ] get-font
+C[o] set-font
+C[o] get-font
 C[o] set-dominant-wide-script
 C[o] get-dominant-wide-script
 C[o] set-dominant-narrow-script
 C[o] get-dominant-narrow-script
-C[ ] script-guard
+C[o] script-guard
+C[o] set-space-ratio-between-scripts
+C[/] get-space-ratio-between-scripts
 
 == グラフィックス ==
 -- パス生成 --
