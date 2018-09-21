@@ -46,10 +46,10 @@ L[ ] set-min-paragraph-ascender-and-descender
 == 文字組版 ==
 C[ ] set-font
 C[ ] get-font
-C[ ] set-dominant-wide-script
-C[ ] get-dominant-wide-script
-C[ ] set-dominant-narrow-script
-C[ ] get-dominant-narrow-script
+C[o] set-dominant-wide-script
+C[o] get-dominant-wide-script
+C[o] set-dominant-narrow-script
+C[o] get-dominant-narrow-script
 C[ ] script-guard
 
 == グラフィックス ==
