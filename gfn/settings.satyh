@@ -798,3 +798,8 @@ let draw-directory-tree r pt dx dy fe =
   in
   let (_, gs) = aux pt fe in
   gs
+
+
+let-block ctx +centering it =
+  line-break true true ctx
+    (inline-fil ++ read-inline ctx it ++ inline-fil)

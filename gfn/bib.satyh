@@ -58,6 +58,12 @@ let bibliography = [
     url = `http://miettal.hatenablog.com/entry/2018/02/15/133623`;
     year = 2018;
   |));
+  (`yojson`, WebSite(|
+    author = {| \github{mjambon} |};
+    title = {Yojson};
+    url = `https://github.com/mjambon/yojson`;
+    year = 2010;
+  |));
   (`Ohori1995`, InProceedings(|
     author = {| Atsushi Ohori |};
     year = 1995;
@@ -106,10 +112,22 @@ let bibliography = [
 %    address = {Cambridge, MA, USA},
     year = 1993;
   |));
+  (`unicode-eaw`, WebSite(|
+   author = {| Unicode Consortium |};
+   title ={Unicode Standard Annex \#11: East Asian Width (Unicode 10.0.0)};
+   url = `http://unicode.org/reports/tr11/`;
+   year = 2017;
+  |));
   (`unicode-lb`, WebSite(|
    author = {| Unicode Consortium |};
    title ={Unicode Standard Annex \#14: Unicode Line Breaking Algorithm (Unicode 10.0.0)};
    url = `http://unicode.org/reports/tr14/`;
+   year = 2017;
+  |));
+  (`unicode-script`, WebSite(|
+   author = {| Unicode Consortium |};
+   title ={Unicode Standard Annex \#24: Unicode Script Property (Unicode 10.0.0)};
+   url = `http://unicode.org/reports/tr24/`;
    year = 2017;
   |));
   (`jlreq`, Book(|

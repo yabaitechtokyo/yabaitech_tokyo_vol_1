@@ -751,7 +751,7 @@ end = struct
 
 
   let-inline ctx \table ?:labelopt caption inner =
-    figure-scheme ctx labelopt `table:` {Table} caption inner
+    figure-scheme ctx labelopt `table:` {表} caption inner
 
 
   let-block ctx +chapter ?:labelopt title inner =

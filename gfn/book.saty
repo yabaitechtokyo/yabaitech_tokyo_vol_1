@@ -6,6 +6,7 @@
 @import: alias-command-definition
 @import: overall
 @import: line-breaking
+@import: system-and-config
 @import: graphics
 @import: cross-reference
 @import: future-work
@@ -317,207 +318,281 @@ document (|
     }
   >
   +chapter?:(`line-breaking`){行分割処理}< #line-breaking; >
-  +chapter?:(`system`){システムと設定ファイル}<
-    +p{
-      この章では\SATySFi;がどのようにフォントやパッケージや設定ファイルを
-      読み込んで使用するかといったシステムに関する説明を提供する．
-      \SATySFi;が使用するフォントファイル，標準パッケージ，設定ファイルなどの一式は，
-      次のような構造をもつ\dfnje{ライブラリルート}{library root}と呼ばれるディレクトリの
-      下に収められている：
-    }
-    +centered-graphics(15cm)(11cm)(fun r -> (
-      (stroke 0.5pt Color.black (Gr.rectangle (0cm, 0cm) (15cm, 11cm))) ::
-      draw-directory-tree r (1cm, 10.5cm) 0.75cm 0.5cm
-        (Directory({\path{\meta{LIBROOT/}}}, [
-          Directory({\path{dist/}}, [
-            Directory({\path{fonts/}}, [
-              File{\ ${\vdots}};
-            ]);
-            Directory({\path{hash/}}, [
-              File{\path{default-font.satysfi-hash}};
-              File{\path{fonts.satysfi-hash}};
-              File{\path{mathfonts.satysfi-hash}};
-            ]);
-            Directory({\path{hyph/}}, [
-              File{\path{english.satysfi-hyph}};
-              File{\ ${\vdots}};
-            ]);
-            Directory({\path{packages/}}, [
-              File{\path{gr.satyh}};
-              File{\path{list.satyg}};
-              File{\path{stdjareport.satyh}};
-              File{\ ${\vdots}};
-            ]);
-            Directory({\path{unidata/}}, [
-              File{\path{EastAsianWidth.txt}};
-              File{\path{LineBreak.txt}};
-              File{\path{Scripts.txt}};
-              File{\ ${\vdots}};
-            ]);
-          ]);
-        ]))
-    ));
-    +p{
-      \meta{LIBROOT/}は，UNIX系OSでは
-
-      \listing{
-        * \path{~/.satysfi/}
-        * \path{/usr/local/share/satysfi/}
-        * \path{/usr/share/satysfi/}
-      }%
-
-      のいずれかであり，\SATySFi;は設定ファイル\path{\meta{foo}}が必要となった際に
-      \no-break{\path{~/.satysfi/\meta{foo}}}，
-      \no-break{\path{/usr/local/share/satysfi/\meta{foo}}}，
-      \no-break{\path{/usr/share/satysfi/\meta{foo}}}
-      \ をこの優先度で探し，最初に存在したものを用いる．
-      すなわち，\path{\meta{LIBROOT/}}はファイル\path{\meta{foo}}ごとに決定される．
-      上記パスの2箇所以上にファイルを置く場合は，この点に注意する必要がある．
-      Windowsの場合は\path{\meta{LIBROOT/}}として
-
-      \listing{
-        * \path{\%userprofile\%\\.satysfi\\}
-        * \path{\%SATYSFI_RUNTIME\%\\}
-      }%
-
-      がこの優先度で使われる \cite[`satysfi-cross-windows`];．
-      以降，設定ファイル類は\path{\meta{LIBROOT/}}からの相対パスで書くこととする．
-    }
-    +section{各ディレクトリの役割}<
-      +p{
-        まず，\path{\meta{LIBROOT/}}の直下には\path{dist/}がある．
-        これは内容物が将来的にパッケージマネージャやディストリビューションによって操作される
-        （すなわち，ユーザが手で内容物を変更するべきでない）ことを意識して
-        “distribution” から命名されている．
-        現在はこのディレクトリ以下の内容をユーザが操作することは非推奨ではなく，
-        また（カレントディレクトリが\path{\meta{LIBROOT/}}以下の状態でSATySFiを起動しない限り）
-        \SATySFi;が内容を変更することはない．
-        将来的には\path{dist/}の他に\path{local/}を設け，
-        これにユーザが自身が作成したパッケージ類を格納できるようにすることを想定している．
-      }
-      +p{
-        \path{dist/hash/}と\path{dist/unidata/}は設定ファイルの格納場所であり，
-        どのような名前のファイルが直下に置かれている必要があるかも決められている．
-        他のディレクトリは直下にデータを格納する．
-      }
-      +p{
-        \path{dist/hash/}には\SATySFi;コードからデータにアクセスするための
-        いくつかの設定ファイルが格納されており，それぞれ\dfn{YOJSON形式}
-        （\dfn{yojson}パッケージにより拡張されたJSON形式をこう呼ぶことにする）
-        で記述されている．
-      }
-      +p{
-        \path{dist/unidata/}はUnicodeコードポイントを
-        組版処理中にどのように扱うかを規定したファイルを格納しており，
-        これはUnicode Databaseとして公開されているテキストファイル群の一部である．
-      }
-      +p{
-        \path{dist/fonts/}は\SATySFi;で使用するOpenTypeフォントファイルを直下に格納する．
-      }
-      +p{
-        \path{dist/hyph/}はハイフネーション辞書を直下に格納する．
-        現状では英語のハイフネーションのみに対応しており，
-        \path{dist/hyph/english.satysfi-hyph}というデータのみを利用するが，
-        将来的に多言語へと拡張し，\path{dist/hash/}以下でハイフネーション辞書の設定を扱う想定である．
-      }
-      +p{
-        \path{dist/packages/}はパッケージ類を格納する．
-        パッケージファイルを\path{dist/packages/\meta{path/to/foo}\meta-or{|.satyh|.satyg|}}
-        というパスに置くと，パッケージとして\codem{\@require: \meta{path/to/foo}}で読み込めるようになる．
-        拡張子が\path{.satyh}のものと\path{.satyg}のものが両方存在する場合は
-        \path{.satyh}が優先される\footnote{
-          拡張子\path{.satyg}は，
-          テキストモードとPDFモードとで
-          共通に使えるパッケージファイルにつけることを想定している．
-          これは将来的な拡張の都合であり，現在はどちらでも特に違いはない．
-        }．
-      }
-    >
-    +section{フォント設定}<
-      +p{
-        \SATySFi;で使用できるフォントは
-        \dfnje{フォントハッシュファイル}{font hash file}\path{dist/hash/fonts.satysfi-hash}
-        に設定の記載のあるフォントである．
-        ユーザが新しいフォントを\SATySFi;で使えるように設定したい場合は，
-        \path{dist/fonts/}直下に所望のフォントファイル\path{\meta{bar}.otf}を置き，
-        フォントハッシュファイル内のYOJSONのディクショナリに
-
-        \d-codem{
-            "\meta{bar}": \<Single \{"src-dist": "\meta{bar}.otf"\}\>
-        }%
-
-        というエントリを追記する．
-        この設定を加えることでフォント名\codem{\`bar\`}が\SATySFi;で使えるようになる．
-        フォントの（拡張子を除いた）ファイル名とフォント名は一致していなくても構わない．
-        所望のフォントがTrueType Collectionのフォントファイル
-        \path{\meta{baz}.ttc}の ${n} 番目の要素\footnote{番号は ${1}-originである．}である場合は
-
-        \d-codem{
-          "\meta{baz}": \<Collection \{"src-dist": "\meta{baz}.ttc", "index": \meta{n}\}\>
-        }%
-
-        と記述することでやはり\codem{\`baz\`}という名前でそのフォントが使えるようになる．
-        数式フォントについても\dfnje{数式フォントハッシュファイル}{math font hash file}
-        \path{dist/hash/mathfonts.satysfi-hash}に設定を記載する．
-        記述する形式はフォントハッシュファイルと同様である．
-      }
-    >
-    +section{デフォルトのフォント設定}<
-      +p{
-        組版処理中で，特にフォント指定がない場合に使われるフォント\footnote{
-          \codem{get-initial-context}が返すテキスト処理文脈に格納されているフォント設定の意．
-        }は\dfnje{デフォルトフォントハッシュファイル}{default font hash file}
-        \path{dist/hash/default-font.satysfi-hash}で設定されているものになる．
-        デフォルトフォントハッシュファイルの内容は文字体系ごとに初期値とするフォントを指定したディクショナリであり，
-        現状では文字体系として漢字，かな，ラテン文字，その他，の4つが定められている．
-        勿論今後より多くの文字体系をサポートする想定だが，
-        今のところは手前3つにあてはまらないUnicodeコードポイントはその他扱いになる．
-        デフォルトフォントハッシュファイルは，例えば以下のようにして記述する：
-
-        \d-code(```
-            {
-              "han-ideographic": {
-                "font-name": "ipaexm",
-                "ratio"    : 0.88,
-                "rising"   : 0.0
-              },
-              "kana": {
-                "font-name": "ipaexm",
-                "ratio"    : 0.88,
-                "rising"   : 0.0
-              },
-              "latin": {
-                "font-name": "Arno",
-                "ratio"    : 1.0,
-                "rising"   : 0.0
-              },
-              "other-script": {
-                "font-name": "Arno",
-                "ratio"    : 1.0,
-                "rising"   : 0.0
-              }
-            }
-        ```);%
-
-        \code(`ratio`);エントリは拡大率，
-        \code(`rising`);エントリは行方向に垂直な位置調整の指定である．
-        詳しくは\ref-chapter(`typography`);で扱うが，
-        \SATySFi;ではフォントを規定するのにOpenTypeフォントファイルだけでなく
-        拡大率とベースライン調整率という2つの値を用いる．
-        上の設定では漢字と仮名を（ラテン文字との混植を想定して）
-        ${0.88} 倍の大きさに調整している例である．
-      }
-      +p{
-        なお，現状ではデフォルトの数式フォントは\codem{\`lmodern\`}で固定されてしまっている．
-        勿論，近い将来に変更可能なように拡張する想定である．
-      }
-    >
-  >
+  +chapter?:(`system-and-config`){システムと設定ファイル}< #system-and-config; >
   +chapter?:(`typography`){文字組版}<
     +p{
       文字は組版処理の主役であり，そして最も人間くささゆえの複雑性を備えた組版処理対象だ．
+      現在の\SATySFi;はひとまず和欧混植がそれらしくできることを志向して開発したため
+      かなりアドホックな面も目立つのだが，
+      ひとまず文字をどのように分類して扱っているかについてここで説明する．
     }
-    +p{ \REMAINS{} }
+    +section{文字の分類}<
+      +p{
+        \SATySFi;はUnicodeコードポイントに対して以下の方法でそれぞれ分類する：
+
+        \listing{
+          * どの\dfnje{文字体系}{script}に属するか
+          * “東アジア的観点から” \dfnje{広い}{wide}文字か\dfnje{狭い}{narrow}文字か
+          * どの\dfnje{行分割クラス}{line breaking class}に属するか
+        }%
+
+        文字体系は\dfn{Unicode Script Property} \cite[`unicode-script`];により規定されているが，
+        現在の\SATySFi;は\code(`Hani`);，\code(`Kana`);，\code(`Latn`);と「それ以外」の4種類を
+
+        \d-code(```
+          type script =
+            | HanIdeographic
+            | Kana
+            | Latin
+            | OtherScript
+        ```);%
+
+        で定義されるような\type(Type.script);型で扱う．
+        勿論扱える文字体系は今後増やしていく想定であり，
+        或いは\type(Type.script);型のように文字体系があらかじめ言語にハードコードされた方法ではない，
+        より一般的な方法で文字体系を区別する方法に変更するかもしれない．
+      }
+      +p{
+        文字が “東アジア的観点から” 広いか狭いかは
+        \dfn{East Asian Width} \cite[`unicode-eaw`];に基づいて判断される．
+        East Asian Widthは東アジアのレガシーな文字表示に於いて
+        各文字が “いわゆる「全角」で表示されるものであるか，
+        いわゆる「半角」で表示されるものであるか” といったことを
+        規定しているプロパティなのだが，
+        \SATySFi;ではこのプロパティを
+        主に属する文字体系のないUnicodeコードポイントを扱うのに
+        有用な情報として転用している．
+        East Asian Widthは各Unicodeコードポイントを
+        Fullwidth (F)，Wide (W)，Ambiguous (A)，
+        Halfwidth (H)，Narrow (Na)，Neutral (N)
+        の6種類のいずれかに分類しており，\SATySFi;は
+        このうちの前2分類に該当するUnicodeコードポイントを\dfnje{広い}{wide}文字，
+        後ろ4分類に該当するものを\dfnje{狭い}{narrow}文字として扱う．
+      }
+      +p{
+        残る分類方法は行分割クラスである．これは
+        \dfn{Unicode Line Breaking Algorithm} \cite[`unicode-lb`];
+        で定義されたline breaking classとおおよそ一致する分類方法だが，
+        『日本語組版の要件』\cite[`jlreq`];，通称JLreqで定義されている
+        \dfn{文字クラス}の要素を取り込んで独自に少し上書きしたものだ．
+        すべて掲載すると長いので，
+        Unicode Line Breaking Algorithmが定義する
+        line breaking classとの差分を以下に述べる：
+      }
+      +listing{
+        * BK (Mandatory Break)，CR (Carriage Return)，LF (Line Feed)，NL (Next Line)を廃止し，
+          代わりにいずれもINBR (Input Break)という新しい分類に統一する．
+
+%        * \ucp(`2018`)(`LEFT SINGLE QUOTATION MARK`);
+
+        * JLreqが定義する文字クラス
+          cl-01（始め括弧類），
+          cl-02（終わり括弧類），
+%          cl-03（ハイフン類），
+%          cl-04（区切り約物），
+%          cl-05（中点類），
+          cl-06（句点類），
+          cl-07（読点類），
+          cl-10（長音記号）
+%          cl-11（小書きの仮名）
+          に相当する
+          JLOP (JL Open Punctuation)，
+          JLCP (JL Close Punctuation)，
+%          JLHY (JL Hyphens)，
+%          JLNS (JL Nonstarter)，
+%          JLMD (JL Middle Dot)，
+          JLFS (JL Full Stops)，
+          JLCM (JL Commas)，
+          JLPL (JL Prolonged Sound Mark)
+%          JLSM (JL Small Kanas)
+          という分類をそれぞれ新たに用意する．
+
+        * \ref-table(`lb`);のとおりに上書きする．
+          \table?:(`lb`){行分割クラスの上書き定義}<
+            +centering{\size(8.5pt){
+              \tabular(fun t -> (
+                let l = t#l in
+                let ucp snum sname itch itlbc =
+                  [ l {\code(`U+` ^ snum);}; l (embed-string sname);
+                      l {\fbox{#itch;}}; l itlbc ]
+                in
+                [
+                  ucp `2018` `LEFT SINGLE QUOTATION MARK             ` {‘} {OP};
+                  ucp `2019` `RIGHT SINGLE QUOTATION MARK            ` {’} {CP};
+                  ucp `201B` `SINGLE HIGH-REVERSED-9 QUOTATION MARK  ` {‛} {OP  };
+                  ucp `201C` `LEFT DOUBLE QUOTATION MARK             ` {“} {OP  };
+                  ucp `201D` `RIGHT DOUBLE QUOTATION MARK            ` {”} {CP  };
+                  ucp `201F` `DOUBLE HIGH-REVERSED-9 QUOTATION MARK  ` {‟} {OP  };
+                  ucp `3001` `IDEOGRAPHIC COMMA                      ` {、} {JLCM};
+                  ucp `3002` `IDEOGRAPHIC FULL STOP                  ` {。} {JLFS};
+                  ucp `3008` `LEFT ANGLE BRACKET                     ` {〈} {JLOP};
+                  ucp `3009` `RIGHT ANGLE BRACKET                    ` {〉} {JLCP};
+                  ucp `300A` `LEFT DOUBLE ANGLE BRACKET              ` {《} {JLOP};
+                  ucp `300B` `RIGHT DOUBLE ANGLE BRACKET             ` {》} {JLCP};
+                  ucp `300C` `LEFT CORNER BRACKET                    ` {「} {JLOP};
+                  ucp `300D` `RIGHT CORNER BRACKET                   ` {」} {JLCP};
+                  ucp `300E` `LEFT WHITE CORNER BRACKET              ` {『} {JLOP};
+                  ucp `300F` `RIGHT WHITE CORNER BRACKET             ` {』} {JLCP};
+                  ucp `3010` `LEFT BLACK LENTICULAR BRACKET          ` {【} {JLOP};
+                  ucp `3011` `RIGHT BLACK LENTICULAR BRACKET         ` {】} {JLCP};
+                  ucp `3014` `LEFT TORTOISE SHELL BRACKET            ` {〔} {JLOP};
+                  ucp `3015` `RIGHT TORTOISE SHELL BRACKET           ` {〕} {JLCP};
+                  ucp `3016` `LEFT WHITE LENTICULAR BRACKET          ` {〖} {JLOP};
+                  ucp `3017` `RIGHT WHITE LENTICULAR BRACKET         ` {〗} {JLCP};
+                  ucp `3018` `LEFT WHITE TORTOISE SHELL BRACKET      ` {〘} {JLOP};
+                  ucp `3019` `RIGHT WHITE TORTOISE SHELL BRACKET     ` {〙} {JLCP};
+                  ucp `301A` `LEFT WHITE SQUARE BRACKET              ` {〚} {JLOP};
+                  ucp `301B` `RIGHT WHITE SQUARE BRACKET             ` {〛} {JLCP};
+                  ucp `30FC` `KATAKANA-HIRAGARA PROLONGED SOUND MARK ` {ー} {JLPL};
+                  ucp `FF08` `FULLWIDTH LEFT PARENTHESIS             ` {（} {JLOP};
+                  ucp `FF09` `FULLWIDTH RIGHT PARENTHESIS            ` {）} {JLCP};
+                  ucp `FF0C` `FULLWIDTH COMMA                        ` {，} {JLCM};
+                  ucp `FF0E` `FULLWIDTH FULL STOP                    ` {．} {JLFS};
+                  ucp `FF3B` `FULLWIDTH LEFT SQUARE BRACKET          ` {［} {JLOP};
+                  ucp `FF3D` `FULLWIDTH RIGHT SQUARE BRACKET         ` {］} {JLCP};
+                  ucp `FF5B` `FULLWIDTH LEFT CURLY BRACKET           ` {｛} {JLOP};
+                  ucp `FF5D` `FULLWIDTH RIGHT CURLY BRACKET          ` {｝} {JLCP};
+                  ucp `FF5F` `FULLWIDTH LEFT WHITE PARENTHESIS       ` {｟} {JLOP};
+                  ucp `FF60` `FULLWIDTH RIGHT WHITE PARENTHESIS      ` {｠} {JLCP};
+                ]
+              ))(fun xs ys ->
+                []
+              );
+            }}
+          >
+      }
+      +p{
+        また，これに伴ってUnicode Line Breaking Algorithmも一部拡張する．
+        具体的には
+
+        \listing{
+          * LB13: ${\times} \meta-or{|CL|CP|EX|IS|SY|JLCP|JLCM|JLFS|}
+          * LB14: \meta-or{|OP|JLOP|} ${\text!{SP}^{\ast}} ${\times}
+          * LB16: \meta-or{|CL|CP|} ${\text!{SP}^{\ast}} ${\times} \meta-or{|NS|CJ|JLPL|}
+          * LB21: ${\times} \meta-or{|BA|HY|NS|CJ|JLPL|}，\quad;BB ${\times}
+        }%
+
+        と変更する．規則の読み方は\cite[`unicode-lb`];を参照されたい．
+        なお，INBRクラスとSPクラスに該当する文字，つまり “改行文字” や “空白文字” は，
+        行分割候補箇所を決定する前に以下に挙げるような規則に基づく正規化処理により除去される場合がある．
+        すなわち，\meta-or{|ID|CJ|IN|SA|JLOP|JLCP|JLFS|JLCM|JLPL|} を IDs と略記するとして，
+        各 SP または INBR の文字は前後が
+        以下のどのパターンに（先に挙げたものほど高い優先度で）マッチするかによって，
+        除去するか，残すか，置換するか等の処理を決定する．
+
+        \listing{
+          * 前方が IDs，後方が AL にそれぞれマッチする SP または INBR は除去する．
+          * 前方が AL，後方が IDs にそれぞれマッチする SP または INBR は除去する．
+          * 前方が IDs，後方が IDs にそれぞれマッチする INBR は除去する．
+          * 前方が IDs，後方が IDs にそれぞれマッチする SP は残す．
+          * 前方が IDs に合致する SP または INBR は除去する．
+          * 後方が IDs に合致する SP または INBR は除去する．
+          * INBR は SP に置換する．
+        }%
+
+        この正規化の処理は，和文の途中にある改行文字は特に何も書いていないのと同じだが，
+        欧文の途中にある改行文字は単語間空白と扱われることが期待されている，
+        という区別が必要であることを反映したものになっている．
+      }
+    >
+    +section{フォントの扱い}<
+      +p{
+        \SATySFi;に於ける「フォント」を規定するのは，
+        単にOpenTypeフォントファイル\footnote{
+          TrueType Collectionの場合も加味すると，
+          正確には「フォントファイル内の要素のひとつ」．
+        }に関連づけられたフォント名 ${F} ではなく，
+        これに\dfn{拡大率} ${r} と\dfn{ベースライン調整率} ${r'} という2つの数値が備えつけられた3つ組
+        ${\tuple{|F|r|r'|}} である．
+        フォントは文字体系ごとに別個に設定され，
+        次のようなプリミティヴを用いる：
+
+        \val-explain?:(`set-font`)({set-font})%
+          (Type.(script --> (product [string; float; float] --> (context --> context)))) {
+            \codem{\meta{ctx} \|\> set-font \meta{script} (\meta{fontname}, \meta{r}, \meta{rb})}
+            で文字体系\codem{\meta{script}}のフォント設定を\codem{(\meta{fontname}, \meta{r}, \meta{rb})}
+            に更新したテキスト処理文脈\codem{\meta{ctx}}を返す．
+          }%
+
+        \val-explain?:(`get-font`)({get-font})%
+          (Type.(context --> (script --> product [string; float; float]))) {
+            \codem{get-font \meta{script} \meta{ctx}}で
+            \codem{\meta{ctx}}に格納されている\codem{\meta{script}}のフォント設定を取り出す．
+          }%
+
+        拡大率が ${r} に設定されている場合，テキスト処理文脈設定されている文字サイズを ${s} としたとき，
+        ${F} のもつグリフやメトリックの情報は ${r s} を1emとするようなサイズで使われる．
+        すなわち，${r < 1} なら “標準的な大きさ” から縮小補正がかかり，
+        ${r > 1} なら拡大補正，${r = 1} ならばそのまま，ということである．
+        さらに，ベースライン調整率が ${r'} に設定されている場合，
+        ${F} のグリフは通常よりも ${r' s} だけベースラインを持ち上げた位置に描かれる．
+        すなわち，${r' = 0} なら補正せず，${r' < 0} ならば基準よりも下に，
+        ${r' > 0} ならば上に補正される．
+        これら拡大率とベースライン調整率は，
+        ラテン文字と漢字などベースラインに対する捉え方の異なる文字体系をスムーズに共存させるための補正である．
+        実際，ラテン文字と漢字で異なるフォントデータ ${F_1}，${F_2} を用いて組み，
+        フォントサイズ ${s} をそのまま ${F_1} と ${F_2} の両方で素直に1emにすると，
+        大抵の場合はラテン文字の方が小さく見えてしまう．
+        そこで，通常は和文の方を小さくするように補正する．
+        本書では（フォントデータによらず）${r_1 = 1}，${r_2 = 0.88} という拡大率を
+        ラテン文字と漢字（＋仮名）にそれぞれ設定している．
+        なお，ベースライン調整率は，両者ともに ${0} にしている．
+        和文フォントは和欧混植を見越してか
+        もともとベースラインを仮想ボディの下端よりも上に設定しているものが多く，
+        改めて補正する必要がなかったためである．
+      }
+    >
+    +section{異なる文字体系間の空白}<
+      +p{
+        一般に，ラテン文字と漢字など，異なる文字体系の文字が隣接する際には
+        字間を空けないと詰まりすぎて見える．
+        \SATySFi;は，互いに異なる文字体系に属する文字が隣接している箇所に自動でグルーを挿入する．
+        \REMAINS{}
+      }
+    >
+    +section{寡占的文字体系}<
+      +p{
+        文字の広い/狭いの区別は，文字体系が特に定まっていない約物などのUnicodeコードポイントを
+        特定の文字体系へと “吸収” するのに用いる．
+        \SATySFi;では，テキストは基本的に “代表となる文字体系” が意識されて書かれているという仮定のもと，
+        テキスト処理文脈に “現在の寡占的な文字体系” の情報を保持させるようになっている．
+        “寡占的な文字体系” は2つ設定することができ，
+        ひとつは特定の文字体系に属さない広い文字をどの文字体系に “吸収” して扱うかで，
+        もうひとつは特定の文字体系に属さない狭い文字をどの文字体系へと “吸収” して扱うかである．
+        前者に設定された文字体系を\dfnje{広い寡占的文字体系}{dominant wide script}，
+        後者を\dfnje{狭い寡占的文字体系}{dominant narrow script}と呼ぶ．
+        例えば和欧混植の場合，前者は\codem{Kana}，後者は\codem{Latin}に設定するとよい．
+        こうすることで，いわゆる “全角用の” 約物は仮名の仲間として扱われることになってフォントも仮名と揃えられ，
+        一方で “アルファベット用の” 約物はラテン文字の仲間として扱われ，
+        フォントがラテン文字のものと揃えられることになる．
+        このような設定に関与するのが以下のプリミティヴたちである：
+
+        \val-explain?:(`set-dominant-wide-script`)({set-dominant-wide-script})%
+          (Type.(script --> (context --> context))) {
+            第1引数に与えられた文字体系を広い寡占的文字体系に設定する．
+          }%
+
+        \val-explain?:(`get-dominant-wide-script`)({get-dominant-wide-script})%
+          (Type.(context --> script)) {
+            広い寡占的文字体系に設定されている文字体系を取得する．
+          }%
+
+        \val-explain?:(`set-dominant-narrow-script`)({set-dominant-narrow-script})%
+          (Type.(script --> (context --> context))) {
+            第1引数に与えられた文字体系を狭い寡占的文字体系に設定する．
+          }%
+
+        \val-explain?:(`get-dominant-narrow-script`)({get-dominant-narrow-script})%
+          (Type.(context --> script)) {
+            狭い寡占的文字体系に設定されている文字体系を取得する．
+          }%
+
+        以上の仕組みを知って「なんとアドホックな仕組みであることか」と驚かれる読者も多いかもしれない．
+        正直なところ著者もそう思うが，一応現状では和欧混植に関してよく効力を発揮している．
+        おそらく “より多言語な組版” を扱うには耐えない仕組みであろうから，
+        この仕組みが将来の非互換な変更で大きく形を変える可能性は高い．
+      }
+    >
   >
   +chapter?:(`graphics`){グラフィックス}< #graphics; >
   +chapter?:(`math`){数式組版}<
