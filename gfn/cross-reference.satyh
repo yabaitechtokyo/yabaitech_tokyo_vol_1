@@ -54,7 +54,8 @@ let cross-reference = '<
     実現方法からもわかるように，相互参照はかなり原始的な定式化によって成り立っている．
     これはひとえに相互参照を必ず “1回の処理” で整合させるのは本質的に困難であることに起因する．
     “1回の処理” で整合させる本質的な困難さを感じ取れる大雑把な例を以下に挙げてみよう：\quad;
-    相互参照で或る章節のページ番号を挿入したいとする．
+    相互参照で或る章節のページ番号を
+    （「${p} ページの第 ${m}.${n} 節を見よ」の ${p} として）挿入したいとする．
     そのページ番号がいくつなのかはページ分割をするまでわからないから，
     ページ番号としてどのような内容を本文中に挿入したらよいのか事前には決められない．
     \codem{inline-graphics}と同様の要領で内容をあらかじめ未定にしておいて
@@ -71,7 +72,7 @@ let cross-reference = '<
     \val-explain?:(`register-cross-reference`)({register-cross-reference})%
       (Type.(string --> (string --> unit))) {
         \codem{register-cross-reference \meta{key} \meta{value}}で
-        相互参照のID\codem{\meta{key}}から内容\codem{\meta{value}}への紐づけを登録する．
+        相互参照のID \codem{\meta{key}}から内容\codem{\meta{value}}への紐づけを登録する．
         既に\codem{\meta{key}}から何らかの内容への紐づけが登録されていた場合は
         上書きされ，また古い内容と新しい内容が文字列として異なっていた場合は
         相互参照が不動点に達していないという理由で\SATySFi;処理系に再処理を促す．
@@ -89,7 +90,7 @@ let cross-reference = '<
         \codem{None}を返す．
       }%
 
-    なお，登録されていない相互参照ID\codem{\meta{key}}が
+    なお，登録されていない相互参照ID \codem{\meta{key}}が
     \codem{get-cross-reference}によって取得を試みられ，
     そのまま相互参照が不動点に達して終了した場合，\SATySFi;は
 
@@ -103,6 +104,6 @@ let cross-reference = '<
     \codem{register-cross-reference}と\codem{get-cross-reference}を用いた
     相互参照コマンドの実装例は，
     \SATySFi;のリポジトリの\path{lib-satysfi/dist/packages}
-    にある\pkg{stdjabook}などを参考にすると良いだろう．
+    にある各種クラスファイルを参考にすると良いだろう．
   }
 >

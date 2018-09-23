@@ -544,11 +544,18 @@ end = struct
         in
         let bb-toc-title = (chapter-heading ctx-doc None ib-toc-title) in
         let bb-toc-main =
+          let lbf-chapter ctx =
+            line-break true true (ctx |> set-paragraph-margin 24pt 6pt)
+          in
+          let lbf ctx =
+            line-break true true (ctx |> set-paragraph-margin 6pt 6pt)
+          in
           (!toc-acc-ref) |> List.reverse |> List.fold-left (fun bbacc tocelem -> (
             match tocelem with
             | TOCElementChapter(label, title) ->
                 let ctx =
                   ctx-doc |> set-latin-font font-latin-bold
+                          |> set-cjk-font font-cjk-gothic
                 in
                 let it-num = embed-string (get-cross-reference-number `chapter:` label) in
                 let it-page = embed-string (get-cross-reference-page `chapter:` label) in
@@ -562,7 +569,7 @@ end = struct
                     if w <' 0pt then inline-fil else
                       make-dots-line ctx w
                 in
-                  bbacc +++ line-break true true ctx (ib-title ++ ib-middle ++ ib-page)
+                  bbacc +++ lbf-chapter ctx (ib-title ++ ib-middle ++ ib-page)
 
             | TOCElementSection(label, title) ->
                 let ctx = ctx-doc in
@@ -578,7 +585,7 @@ end = struct
                     if w <' 0pt then inline-fil else
                       make-dots-line ctx w
                 in
-                  bbacc +++ line-break true true ctx (ib-title ++ ib-middle ++ ib-page)
+                  bbacc +++ lbf ctx (ib-title ++ ib-middle ++ ib-page)
 
           | TOCElementSubsection(label, title) ->
                 let ctx = ctx-doc in
@@ -595,7 +602,7 @@ end = struct
                     if w <' 0pt then inline-fil else
                       make-dots-line ctx w
                 in
-                  bbacc +++ line-break true true ctx (ib-title ++ ib-middle ++ ib-page)
+                  bbacc +++ lbf ctx (ib-title ++ ib-middle ++ ib-page)
 
           )) block-nil
         in

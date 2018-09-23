@@ -4,7 +4,7 @@
 let getting-started = '<
   +p{
     ひとまず読者がすぐにさわれるものとして
-    \index(`stdjareport`){\pkg{stdjareport}}クラス\REMAINS{}があるので，
+    \index(`stdjareport`){\pkg{stdjareport}}クラスがあるので，
     これを土台に説明することとしよう．
     おそらく\LaTeX;の使用経験がある読者なら
     コード例を見ただけでおおよそ何を記述しているかは察しがつくであろうが，
@@ -33,7 +33,7 @@ let getting-started = '<
 
       の2種類がある．
       パッケージファイルのうちの一部には
-      文書のマークアップ方法や体裁等を規定しているものがあり，
+      文書全体のマークアップ方法や体裁等を規定しているものがあり，
       これは\dfnje{\index(`クラスファイル`){クラスファイル}}{class file}と呼ぶ．
       パッケージファイルは拡張子を\path{.satyh}にしておく必要がある\footnote{
         実際には\path{.satyh}のほかに\path{.satyg}などの拡張子が扱われるが，
@@ -384,7 +384,7 @@ let getting-started = '<
       ちなみに，上に掲げた例の箇条書きの部分\codem{\{ ${\cdots} \}}はインラインテキストではなく，
       itemize 型という箇条書き専用の型がつくテキストになっており，
       通常のインラインテキストを与えると型エラーとなる．
-      これについては\ref-chapter(`type-system`);で後述する．
+      これについては\ref-chapter(`basic-command-definition`);で後述する．
     }
   >
   +section{定理環境}<
