@@ -126,6 +126,7 @@ module Book : sig
   direct +definition : [inline-text?; string?; inline-text] block-cmd
   direct +theorem : [inline-text?; string?; inline-text] block-cmd
   direct +example : [inline-text?; string?; inline-text] block-cmd
+  direct +notation : [inline-text?; string?; inline-text] block-cmd
   direct +lemma : [inline-text?; string?; inline-text] block-cmd
   direct +corollary : [inline-text?; string?; inline-text] block-cmd
   direct +proof : [inline-text?; inline-text] block-cmd
@@ -887,6 +888,9 @@ end = struct
     let label = make-label `example:` labelopt in
       theorem-scheme ctx (fun x -> x) {例} wordopt label inner
 
+  let-block ctx +notation ?:wordopt ?:labelopt inner =
+    let label = make-label `example:` labelopt in
+      theorem-scheme ctx (fun x -> x) {記法} wordopt label inner
 
   let-block ctx +proof ?:wordopt inner =
     let ib-heading =
