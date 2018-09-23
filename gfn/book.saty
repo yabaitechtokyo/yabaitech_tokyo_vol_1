@@ -139,7 +139,7 @@ document (|
           \REMAINS{2項演算子の結合優先度}
         }
       >
-      +section{変数とその束縛}<
+      +subsection{変数とその束縛}<
         +p{
           \REMAINS{変数の概念とlet式}
         }
@@ -147,22 +147,22 @@ document (|
           \REMAINS{変数名}
         }
       >
-      +section{基本的なデータと型}<
+      +subsection{基本的なデータと型}<
         +p{
           \REMAINS{整数，文字列，浮動小数点数，長さ，真偽値}
         }
       >
-      +section{函数と条件分岐}<
+      +subsection{函数と条件分岐}<
         +p{
           \REMAINS{函数定義と条件分岐}
         }
       >
-      +section{代数的データ型}<
+      +subsection{代数的データ型}<
         +p{
           \REMAINS{代数的データ型}
         }
       >
-      +section{再帰函数}<
+      +subsection{再帰函数}<
         +p{
           \REMAINS{再帰函数}
         }
@@ -891,6 +891,13 @@ document (|
             ページ番号に基づく相互参照の紐づけを新たに登録したりといった
             様々な “副作用” が起こせる，というわけである．
           }%
+
+        \ref-chapter(`graphics`);で説明した
+        「グラフィックスの評価はページ分割時に行なわれる」という話は，
+        実はこの\codem{hook-page-break}と同様である．
+        \codem{inline-graphics}の第4引数など，
+        参照点を受け取ってグラフィックスを返す類いの函数は，
+        \codem{hook-page-break}による “フック函数” と同じタイミングで評価が起動するのである．
       }
     >
     +section{クラスファイルの基礎}<
