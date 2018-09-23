@@ -19,6 +19,7 @@ D[ ] set-text-color
 D[ ] get-text-color
 D[ ] ++
 D[ ] +++
+D[ ] inline-nil
 D[ ] get-natural-metrics
 D[o] read-inline
 D[ ] read-block
@@ -136,10 +137,11 @@ R[o] get-cross-reference
 R[/] probe-cross-reference
 
 == ページ分割 ==
-P[ ] page-break
-P[ ] add-footnote
-P[ ] hook-page-break
-P[ ] get-initial-context
+P[o] page-break
+P[o] add-footnote
+P[o] hook-page-break
+P[o] clear-page
+P[o] get-initial-context
 
 == 基本演算 ==
 -- 整数 --
