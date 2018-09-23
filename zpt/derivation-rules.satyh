@@ -333,7 +333,7 @@ let adj-deriv-t =
     in
     let b = ${\derive?:!{hyp1}
                      {||}
-                     { \adj1{\adj-up{A}}{\adj-down{\adj-up{A}}}{\adj-down{\adj-up{A}}}} }
+                     { \adj1{}{\adj-down{\adj-up{A}}}{\adj-down{\adj-up{A}}}} }
     in
     '<+math (${\derive?:!{${\imp}I}?:!(true)
                       {| \derive?:!{${\adj-down{}}E}?:!(true){| #b | #a |}{ \adj1{}{\adj-down{\adj-up{A}}}{A}  } |}
@@ -341,11 +341,9 @@ let adj-deriv-t =
 >
 
 let adj-deriv-k4 = 
-    let a = ${\derive?:!{${\adj-up{}}E}?:!(true)
-                     {| \derive?:!{hyp2}?:!(true)
-                               {||}
-                               {\adj2{\adj-up{A}}{\adj-up{A}}} |}
-                     {\adj1{\adj-up{A}}{\adj-down{\adj-up{A}}}{A}}}
+    let a = ${\derive?:!{hyp1}
+                     {||}
+                     { \adj1{}{\adj-down{\adj-up{A}}}{\adj-down{\adj-up{A}}}}}
     in
     let b = ${\derive?:!{${\adj-down{}}I}?:!(true)
                      {| \derive?:!{${\adj-up{}}I}?:!(true)
@@ -357,7 +355,7 @@ let adj-deriv-k4 =
                             {\adj-down{\adj-up{\adj-down{\adj-up{A}}}}}  }}
     in
     '<+math (${\derive?:!{${\imp}I}?:!(true)
-                      {| \derive?:!{${\adj-down{}}E}?:!(true){| #b | #a |}{ \adj1{}{\adj-down{\adj-up{A}}}{\adj-down{\adj-up{\adj-down{\adj-up{A}}}}}  } |}
+                      {| \derive?:!{${\adj-down{}}E}?:!(true){| #a | #b |}{ \adj1{}{\adj-down{\adj-up{A}}}{\adj-down{\adj-up{\adj-down{\adj-up{A}}}}}  } |}
                      { \adj1{}{}{\adj-down{\adj-up{A}} \imp \adj-down{\adj-up{\adj-down{\adj-up{A}}}}} }});
 >
 
