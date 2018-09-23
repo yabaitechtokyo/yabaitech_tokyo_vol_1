@@ -1,12 +1,6 @@
 @import: ../main/book-class
 
 let zpt-bibliography = [
-  (`Yatabe17`, WebSite(|
-    author = {| Shunsuke Yatabe |};
-    title  = {証明論的意味論入門};
-    url    = `http://www.academia.edu/31173006/証明論的意味論入門`;
-    year   = 2017;
-  |));
   (`Benton95`, InProceedings(|
     author = {|P. N. Benton|};
     title = {A Mixed Linear and Non-Linear Logic: Proofs, Terms and Models (Extended Abstract)};
@@ -26,41 +20,6 @@ let zpt-bibliography = [
     pages   = (11, 60);
     year    = 1996;
   |));
-  (`Kavvos17`, InProceedings(|
-    author = {| G. A. Kavvos |};
-    title = {Dual-Context Calculi for Modal Logic};
-    booktitle = {2017 32nd Annual ACM/IEEE Symposium on Logic in Computer Science (LICS)};
-    series = None; 
-    volume = None; 
-    number = None; 
-    pages = (1,12);
-    year = 2017;
-  |));
-  (`Kavvos18`, WebSite(|
-    author = {| G. A. Kavvos|};
-    title  = {Dual-Context Calculi for Modal Logic};
-    url    = `https://arxiv.org/abs/1602. 04860`;
-    year   = 2018;
-  |));
-  (`Davies01`, Article(|
-    author  = {| Rowan Davies | Frank Pfenning|};
-    title   = {A Modal analysis of Staged Computation};
-    journal = {Journal of the ACM};
-    volume  = Some 48;
-    number  = Some {3};
-    pages   = (555, 604);
-    year    = 2001;
-  |));
-  (`Clouston18`, InProceedings(|
-    author = {| Ranald Clouston |};
-    title = {Fitch-Style Modal Lambda Calculi};
-    booktitle = {21st International Conference on Foundations of Software Science and Computation Structures (FoSSaCS)};
-    series = None; 
-    volume = None; 
-    number = None; 
-    pages = (258,275);
-    year = 2018;
-    |));
   (`Martini96`, Article(|
     author  = {| Simone Martini | Andrea Masini |};
     title   = {A Computational Interpretation of Modal Proofs};
@@ -79,6 +38,15 @@ let zpt-bibliography = [
     pages = (511,540);
     year = 2001;
   |));
+  (`Davies01`, Article(|
+    author  = {| Rowan Davies | Frank Pfenning|};
+    title   = {A Modal analysis of Staged Computation};
+    journal = {Journal of the ACM};
+    volume  = Some 48;
+    number  = Some {3};
+    pages   = (555, 604);
+    year    = 2001;
+  |));
   (`Reed09`, WebSite(|
     author = {| Json Reed |};
     title  = {A Judgmental Deconstruction of Modal Logic};
@@ -86,9 +54,41 @@ let zpt-bibliography = [
     year   = 2009;
   |));
   (`Pfenning16`, WebSite(|
-    author = {| Frank Pfennin |};
+    author = {| Frank Pfenning |};
     title  = { Lecture Note on Of Cource! };
     url    = `https://www.cs.cmu.edu/~fp/courses/15816-f16/lectures/15-ofcourse.pdf`;
     year   = 2016;
-  |))
+  |));
+  (`Yatabe17`, WebSite(|
+    author = {| Shunsuke Yatabe |};
+    title  = {証明論的意味論入門};
+    url    = `http://www.academia.edu/31173006/証明論的意味論入門`;
+    year   = 2017;
+  |));
+  (`Kavvos17`, InProceedings(|
+    author = {| G. A. Kavvos |};
+    title = {Dual-Context Calculi for Modal Logic};
+    booktitle = {2017 32nd Annual ACM/IEEE Symposium on Logic in Computer Science (LICS)};
+    series = None; 
+    volume = None; 
+    number = None; 
+    pages = (1,12);
+    year = 2017;
+  |));
+  (`Kavvos18`, WebSite(|
+    author = {| G. A. Kavvos|};
+    title  = {Dual-Context Calculi for Modal Logic};
+    url    = `https://arxiv.org/abs/1602. 04860`;
+    year   = 2018;
+  |));
+  (`Clouston18`, InProceedings(|
+    author = {| Ranald Clouston |};
+    title = {Fitch-Style Modal Lambda Calculi};
+    booktitle = {21st International Conference on Foundations of Software Science and Computation Structures (FoSSaCS)};
+    series = None; 
+    volume = None; 
+    number = None; 
+    pages = (258,275);
+    year = 2018;
+    |));
 ]
