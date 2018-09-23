@@ -18,6 +18,7 @@ module ZptMath : sig
   direct \repeat : [int; inline-text] inline-cmd
   direct \fmodal : [math] math-cmd
   direct \dmodal : [math] math-cmd
+  direct \box : [] math-cmd
   direct \todo : [inline-text] inline-cmd
   direct +local-reduction : [math; math] block-cmd
   direct +local-expansion : [math; math] block-cmd
@@ -73,6 +74,7 @@ end = struct
 
   let-math \fmodal p = let box = bin `▲` in ${#box #p}
   let-math \dmodal p = let box = bin `▼` in ${#box #p}
+  let-math \box = let box = bin `□` in ${#box}
 
   let-inline ctx \todo text =
     let ctx-red = ctx |> set-text-color Color.red in

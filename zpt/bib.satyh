@@ -7,15 +7,24 @@ let zpt-bibliography = [
     url    = `http://www.academia.edu/31173006/証明論的意味論入門`;
     year   = 2017;
   |));
-  (`Benton94`, InProceedings(|
+  (`Benton95`, InProceedings(|
     author = {|P. N. Benton|};
-    title = {A Mixed Linear and Non-Linear Logic: Proofs, Terms and Models (Extended Abstract).};
-    booktitle = {CSL};
+    title = {A Mixed Linear and Non-Linear Logic: Proofs, Terms and Models (Extended Abstract)};
+    booktitle = {Computer Science Logic};
     series = None; 
     volume = None; 
     number = None; 
     pages = (121,135);
-    year = 1994;
+    year = 1995;
+  |));
+  (`Martin-Loef96`, Article(|
+    author  = {| Per Martin-Löf |};
+    title   = { On the Meanings of the Logical Constants and the Justifications of the Logical Laws };
+    journal = { Nordic Journal of Philosophical Logic };
+    volume  = Some 1;
+    number  = Some {1};
+    pages   = (11, 60);
+    year    = 1996;
   |));
   (`Kavvos17`, InProceedings(|
     author = {| G. A. Kavvos |};
@@ -30,7 +39,7 @@ let zpt-bibliography = [
   (`Kavvos18`, WebSite(|
     author = {| G. A. Kavvos|};
     title  = {Dual-Context Calculi for Modal Logic};
-    url    = `https://arxiv.org/abs/1602.04860`;
+    url    = `https://arxiv.org/abs/1602. 04860`;
     year   = 2018;
   |));
   (`Davies01`, Article(|
@@ -70,4 +79,16 @@ let zpt-bibliography = [
     pages = (511,540);
     year = 2001;
   |));
+  (`Reed09`, WebSite(|
+    author = {| Json Reed |};
+    title  = {A Judgmental Deconstruction of Modal Logic};
+    url    = `http://www.cs.cmu.edu/~jcreed/papers/jdml.pdf`;
+    year   = 2009;
+  |));
+  (`Pfenning16`, WebSite(|
+    author = {| Frank Pfennin |};
+    title  = { Lecture Note on Of Cource! };
+    url    = `https://www.cs.cmu.edu/~fp/courses/15816-f16/lectures/15-ofcourse.pdf`;
+    year   = 2016;
+  |))
 ]

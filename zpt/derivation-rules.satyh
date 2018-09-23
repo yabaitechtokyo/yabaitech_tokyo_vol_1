@@ -324,6 +324,44 @@ let adj-rules-down-le = '<
              { \adj1{\Theta}{\Gamma}{\adj-down{\alpha}} }});
 >
 
+let adj-deriv-t = 
+    let a = ${\derive?:!{${\adj-up{}}E}?:!(true)
+                     {| \derive?:!{hyp2}?:!(true)
+                               {||}
+                               {\adj2{\adj-up{A}}{\adj-up{A}}} |}
+                     {\adj1{\adj-up{A}}{\adj-down{\adj-up{A}}}{A}}}
+    in
+    let b = ${\derive?:!{hyp1}
+                     {||}
+                     { \adj1{\adj-up{A}}{\adj-down{\adj-up{A}}}{\adj-down{\adj-up{A}}}} }
+    in
+    '<+math (${\derive?:!{${\imp}I}?:!(true)
+                      {| \derive?:!{${\adj-down{}}E}?:!(true){| #b | #a |}{ \adj1{}{\adj-down{\adj-up{A}}}{A}  } |}
+                     { \adj1{}{}{\adj-down{\adj-up{A}} \imp A} }});
+>
+
+let adj-deriv-k4 = 
+    let a = ${\derive?:!{${\adj-up{}}E}?:!(true)
+                     {| \derive?:!{hyp2}?:!(true)
+                               {||}
+                               {\adj2{\adj-up{A}}{\adj-up{A}}} |}
+                     {\adj1{\adj-up{A}}{\adj-down{\adj-up{A}}}{A}}}
+    in
+    let b = ${\derive?:!{${\adj-down{}}I}?:!(true)
+                     {| \derive?:!{${\adj-up{}}I}?:!(true)
+                               {| \derive?:!{${\adj-down{}}I}?:!(true){| \derive?:!{hyp2}?:!(true){||}{\adj2{\adj-up{A}}{\adj-up{A}}} |}
+                                         { \adj1{\adj-up{A}}{\cdot}{\adj-down{\adj-up{A}}}}
+                               |}
+                               { \adj2{\adj-up{A}}{\adj-up{\adj-down{\adj-up{A}}}}} |}
+                     { \adj1{\adj-up{A}}{\adj-down{\adj-up{A}}}
+                            {\adj-down{\adj-up{\adj-down{\adj-up{A}}}}}  }}
+    in
+    '<+math (${\derive?:!{${\imp}I}?:!(true)
+                      {| \derive?:!{${\adj-down{}}E}?:!(true){| #b | #a |}{ \adj1{}{\adj-down{\adj-up{A}}}{\adj-down{\adj-up{\adj-down{\adj-up{A}}}}}  } |}
+                     { \adj1{}{}{\adj-down{\adj-up{A}} \imp \adj-down{\adj-up{\adj-down{\adj-up{A}}}}} }});
+>
+
+
 let ipckm-symbols = '<
     +align [
       ${|| \text !{命題変数} || p, q, \ldots || |};
@@ -403,6 +441,22 @@ let ipckm-rules = '<
            { \ipckm{| \Psi | \Gamma |}{ A } }
   |});
 >
+
+let ik-symbols = '<
+  +align [
+    ${|| \text !{命題変数} || p, q, \ldots || |};
+    ${|| \text !{命題} || A, B || \coloneq p \mid A \imp B \mid \box A |};
+  ];
+>
+
+let ik-axioms = '<
+  +align [
+    ${|\imp_1||| A \imp B \imp A|};
+    ${|\imp_2||| \paren{A \imp B \imp C} \imp \paren{A \imp B} \imp A \imp C|};
+    ${|K||| \box \paren{A \imp B} \imp \box A \imp \box B|};
+  ];
+>
+
 
 let ipc2m-symbols = '<
   +align [
@@ -571,26 +625,26 @@ let ipckm-fmodal-lr = '<
     (${\derive?:!{${\fmodal{}}E}
               {| \derive?:!{${\fmodal{}}I}
                         ?:!(true)
-                       {| \derive-noline{| \mathcal{D} |}{\ipckm{|\Delta|\cdot|}{A}} |}
-                       { \ipckm{|\Delta|}{\fmodal{A}} }
+                       {| \derive-noline{| \mathcal{D} |}{\ipckm{|\Psi|\cdot|}{A}} |}
+                       { \ipckm{|\Psi|}{\fmodal{A}} }
               |}
-             { \ipckm{|\Delta|\Gamma|}{A} }})
+             { \ipckm{|\Psi|\Gamma|}{A} }})
     (${\derive-dot?:!{weak}
-                  {| \derive-noline{| \mathcal{D} |}{\ipckm{|\Delta|\cdot|}{A}}
+                  {| \derive-noline{| \mathcal{D} |}{\ipckm{|\Psi|\cdot|}{A}}
                    |}
-                  {\ipckm{|\Delta|\Gamma|}{A}} });
+                  {\ipckm{|\Psi|\Gamma|}{A}} });
 >
 
 let ipckm-fmodal-le = '<
   +local-expansion
-    (${\derive-noline{| \mathcal{D} |}{\ipckm{|\Delta|}{\fmodal{A}}}})
+    (${\derive-noline{| \mathcal{D} |}{\ipckm{|\Psi|}{\fmodal{A}}}})
     (${\derive?:!{${\fmodal{}}I}
              {| \derive?:!{${\fmodal{}}E}
                        ?:!(true)
                        {| \derive-noline{| \mathcal{D} |}
-                                        {\ipckm{|\Delta|}{\fmodal{A}}} |}
-                       { \ipckm{|\Delta|\cdot|}{A} } |}
-             { \ipckm{|\Delta|}{\fmodal{A}} }});
+                                        {\ipckm{|\Psi|}{\fmodal{A}}} |}
+                       { \ipckm{|\Psi|\cdot|}{A} } |}
+             { \ipckm{|\Psi|}{\fmodal{A}} }});
 >
 
 let ipckm-k-axiom =
