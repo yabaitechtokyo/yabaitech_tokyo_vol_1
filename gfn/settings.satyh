@@ -156,10 +156,11 @@ let-inline ctx \d-codem it =
 
 module BoxGraphics = struct
 
-  let-inline ctx \roman its =
+  let-inline ctx \roman ?:sizeopt its =
+    let size = Option.from 10mm sizeopt in
     let ctx =
       ctx |> Book.set-latin-font Book.font-latin-roman
-          |> set-font-size 10mm
+          |> set-font-size size
     in
     let pads = (0pt, 0pt, 0pt, 0pt) in
     let deco (x, y) w h d =

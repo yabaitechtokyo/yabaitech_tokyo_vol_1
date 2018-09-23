@@ -326,6 +326,76 @@ document (|
       かなりアドホックな面も目立つのだが，
       ひとまず文字をどのように分類して扱っているかについてここで説明する．
     }
+    +section{文字の扱いの基本}<
+      +p{
+        \SATySFi;に限らず，一般に横組みの文字組版（とりわけラテン文字の組版）に於いては
+        文字を排列させる基準として\dfnje{\index(`ベースライン`){ベースライン}}{baseline}
+        という水平線が想定される．
+        “文字に対応する形状” を\dfn{\index(`ジケイ`){字形}}
+        または\dfnje{\index(`グリフ`){グリフ}}{glyph}と呼び，
+        入力されたテキストデータからそれに対応づけられたグリフの列を
+        ベースライン上に一定の規則で排列させていくことを広く組版処理と言う．
+        排列は，ベースライン上に
+        \dfnje{\index(`サンショウテン`){参照点}}{reference point}
+        と呼ばれる点を想定して行なわれる．
+        フォントは（テキストを構成する）各文字に対して，
+        その文字のグリフを参照点を基準にしてどんな輪廓線で描くかの情報と，
+        その文字がどれだけの
+        \dfnje{\index(`ジハバ`){字幅}}{advance width}
+        をもつかなどの情報を関連づけており，
+        基本的には以下の図のように
+        「或る参照点 ${p_n} に基づいて文字 ${c_n} のグリフ ${g_n} を描いたら，
+        ${p_n} から文字 ${c_n} の字幅 ${w_n} だけ版面上で右に\footnote{
+          アラビア文字やヘブライ文字などRTL (right-to-left)な文字体系では
+          「左に」だが，\SATySFi;がRTLの文字体系に未対応なこともあって，
+          ここでは簡単のため考えないことにする．
+        }移動した位置を
+        新たな参照点 ${p_{n + 1}} とし，その参照点から
+        次の文字 ${c_{n + 1}} のグリフ ${g_{n + 1}} を描く」
+        という処理を繰り返すことによりテキストをグリフの列として描画する，
+        というモデルが採られている：
+      }
+      +centered-graphics(15cm)(3.5cm)(fun r -> (
+        let draw-point pt =
+          let path = Gr.circle pt 3pt in
+          [ fill Color.white path;
+            stroke 0.5pt Color.black path; ]
+        in
+        let draw-arrow pt1 pt2 =
+          Gr.arrow 0.5pt Color.black 6pt 5pt 1.5pt pt1 pt2
+        in
+        let x = 7.5cm in
+        let y = 1.5cm in
+        List.concat [
+          [
+            stroke 0.5pt Color.black (Gr.rectangle (0cm, 0cm) (15cm, 3.5cm));
+            r#text-centering (x, y) {\BoxGraphics.roman?:(20mm){|g|l|y|p|h|s|}};
+            stroke 0.5pt Color.black (Gr.line (x -' 3.5cm, y) (x +' 3.5cm, y));
+          ];
+          draw-point (x -' 2.497cm, y);
+          draw-point (x -' 1.557cm, y);
+          draw-point (x -' 1.063cm, y);
+          draw-point (x -' 0.233cm, y);
+          draw-point (x +' 0.74cm, y);
+          draw-point (x +' 1.8cm, y);
+
+          draw-arrow (x -' 3cm, y -' 0.5cm) (x -' 2.6cm, y -' 0.1cm);
+          [ r#text-leftward (x -' 3.1cm, y -' 0.7cm) {g の参照点}; ];
+
+          draw-arrow (x +' 1.2cm, y -' 0.8cm) (x +' 0.9cm, y -' 0.2cm);
+          [ r#text-rightward (x +' 1cm, y -' 1.2cm) {h の参照点}; ];
+
+          [
+            r#text-rightward (x +' 3.6cm, y -' 0.1cm) {ベースライン};
+          ];
+        ]
+      ));
+      +p{
+        ベースラインや参照点は
+        \SATySFi;では文字組版だけでなくグラフィックスの取り扱いに関しても
+        必要となる概念なので日頃よりよく意識されたい．
+      }
+    >
     +section{文字の分類}<
       +p{
         \SATySFi;はUnicodeコードポイントに対して以下の方法でそれぞれ分類する：
