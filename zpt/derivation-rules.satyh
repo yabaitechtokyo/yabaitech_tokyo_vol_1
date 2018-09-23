@@ -1,5 +1,6 @@
 @require: math
 @import: ../main/cs-thesis
+@import: moreproof
 @import: zpt-math
 
 let-math \colon = ${:}
@@ -43,19 +44,19 @@ let ipc-structure =
     {
       \math-list (
       ${
-      | \derive?:!{weak}
-               {| \ipc{\Gamma}{B} |}{ \ipc{\Gamma, A}{B} }
-      | \derive?:!{contr}
-               {| \ipc{\Gamma, A, A}{B} |}{ \ipc{\Gamma, A}{B} }
-      | \derive?:!{exchg}
-               {| \ipc{\Gamma, A, B, \Delta}{C} |}
-               { \ipc{\Gamma, B, A, \Delta}{C} }
+      | \derive-dot?:!{weak}
+                   {| \ipc{\Gamma}{B} |}{ \ipc{\Gamma, A}{B} }
+      | \derive-dot?:!{contr}
+                   {| \ipc{\Gamma, A, A}{B} |}{ \ipc{\Gamma, A}{B} }
+      | \derive-dot?:!{exchg}
+                   {| \ipc{\Gamma, A, B, \Delta}{C} |}
+                   { \ipc{\Gamma, B, A, \Delta}{C} }
       |});
       \math-list (
       ${
-      | \derive?:!{subst}
-               {| \ipc{\Gamma, A}{B} | \ipc{\Gamma}{A} |}
-               {\ipc{\Gamma}{B}}
+      | \derive-dot?:!{subst}
+                   {| \ipc{\Gamma, A}{B} | \ipc{\Gamma}{A} |}
+                   {\ipc{\Gamma}{B}}
       |});
     }
 
@@ -87,29 +88,29 @@ let ipc-imp-lr = '<
   +local-reduction
   (${ \derive?:!{${\imp}E}{
         | \derive?:!{${\imp}I}
-                 {| \derive{| \mathcal{D} |}{ \ipc{\Gamma, A}{B} } |}
+                 {| \derive-noline{| \mathcal{D} |}{ \ipc{\Gamma, A}{B} } |}
                  { \ipc{\Gamma}{A \imp B} }
-        | \derive{| \mathcal{E} |}{ \ipc{\Gamma}{A} }
+        | \derive-noline{| \mathcal{E} |}{ \ipc{\Gamma}{A} }
         |}
         {\ipc{\Gamma}{B}}
   })
-  (${ \derive?:!{subst}
-             {| \derive{| \mathcal{D} |}{ \ipc{\Gamma, A}{B} }
-              | \derive{| \mathcal{E} |}{ \ipc{\Gamma}{A}} |}
-             { \ipc{\Gamma}{B} }});
+  (${ \derive-dot?:!{subst}
+                 {| \derive-noline{| \mathcal{D} |}{ \ipc{\Gamma, A}{B} }
+                  | \derive-noline{| \mathcal{E} |}{ \ipc{\Gamma}{A}} |}
+                 { \ipc{\Gamma}{B} }});
 >
 
 let ipc-imp-le = '<
   +local-expansion
-  (${ \derive{| \mathcal{D} |}{ \ipc{\Gamma}{A \imp B} }})
+  (${ \derive-noline{| \mathcal{D} |}{ \ipc{\Gamma}{A \imp B} }})
   (${ \derive?:!{${\imp}I}{
         | \derive?:!{${\imp}E}
                  ?:!(true)
-                 {| \derive?:!{weak}
-                           {| \derive{| \mathcal{D} |}
-                                     { \ipc{\Gamma}{ A \imp B} }
-                            |}
-                           { \ipc{\Gamma,A}{A \imp B} }
+                 {| \derive-dot?:!{weak}
+                               {| \derive-noline{| \mathcal{D} |}
+                                                { \ipc{\Gamma}{ A \imp B} }
+                                |}
+                               { \ipc{\Gamma,A}{A \imp B} }
                   | \derive?:!{hyp}?:!(true){||}{ \ipc{\Gamma, A}{A} }
                   |}
                  { \ipc{\Gamma, A}{ B} }
@@ -152,11 +153,11 @@ let adj-hyp = '<
 let adj-structure = '<
   +math-list (
     ${
-    | \derive?:!{subst11}
-             {| \adj1{\Theta}{\Gamma, A}{B}
-              | \adj1{\Theta}{\Gamma}{A}
-              |}
-             { \adj1{\Theta}{\Gamma}{B}}
+    | \derive-dot?:!{subst11}
+                 {| \adj1{\Theta}{\Gamma, A}{B}
+                  | \adj1{\Theta}{\Gamma}{A}
+                  |}
+                 { \adj1{\Theta}{\Gamma}{B}}
     % | \derive?:!{weak1}
     %          {| \adj1{\Theta}{\Gamma}{B} |}
     %          {\adj1{\Theta}{\Gamma, A}{B}}
@@ -174,16 +175,16 @@ let adj-structure = '<
 
   +math-list (
     ${
-    | \derive?:!{subst22}
-             {| \adj2{\Theta, \alpha}{\beta}
-              | \adj2{\Theta}{\alpha}
-              |}
-             { \adj2{\Theta}{\beta} }
-    | \derive?:!{subst12}
-             {| \adj1{\Theta, \alpha}{\Gamma}{A}
-              | \adj2{\Theta}{\alpha}
-              |}
-              { \adj1{\Theta}{\Gamma}{A}}
+    | \derive-dot?:!{subst22}
+                 {| \adj2{\Theta, \alpha}{\beta}
+                  | \adj2{\Theta}{\alpha}
+                  |}
+                 { \adj2{\Theta}{\beta} }
+    | \derive-dot?:!{subst12}
+                 {| \adj1{\Theta, \alpha}{\Gamma}{A}
+                  | \adj2{\Theta}{\alpha}
+                  |}
+                 { \adj1{\Theta}{\Gamma}{A}}
     |});
 
   % +math-list (
@@ -245,18 +246,23 @@ let adj-rules-up-lr = '<
     (${ \derive?:!{${\adj-up{}}E}
              {| \derive?:!{${\adj-up{}}I}
                        ?:!(true)
-                       {| \derive{| \mathcal{D} |}{\adj1{\Theta}{\cdot}{A}} |}
+                       {| \derive-noline{| \mathcal{D} |}{\adj1{\Theta}{\cdot}{A}} |}
                        { \adj2{\Theta}{\adj-up{A}} }
               |}
              { \adj1{\Theta}{\Gamma}{A} }})
-    (${ \derive?:!{weak1}{| \derive{| \mathcal{D} |}{\adj1{\Theta}{\cdot}{A}} |}{\adj1{\Theta}{\Gamma}{A}}});
+    (${ \derive-dot?:!{weak1}
+                   {| \derive-noline{| \mathcal{D} |}
+                                    { \adj1{\Theta}{\cdot}{A} }
+                    |}
+                   { \adj1{\Theta}{\Gamma}{A} }
+      });
 >
 
 let adj-rules-up-le = '<
   +local-expansion
-    (${ \derive{|\mathcal{D}|}{\adj2{\Theta}{\adj-up{A}}}})
+    (${ \derive-noline{|\mathcal{D}|}{\adj2{\Theta}{\adj-up{A}}}})
     (${\derive?:!{${\adj-up{}}I}
-             {| \derive{| \mathcal{D} |}
+             {| \derive-noline{| \mathcal{D} |}
                        {\derive?:!{${\adj-up{}}E}
                                ?:!(true)
                                {| \adj2{\Theta}{\adj-up{A}} |}
@@ -282,30 +288,30 @@ let adj-rules-down-lr = '<
   +local-reduction
     (${\derive?:!{${\adj-down{}}E}
              {| \derive?:!{${\adj-down{}}I}
-                       {| \derive{| \mathcal{D} |}
-                                 {\adj2{\Theta}{\alpha}}
+                       {| \derive-noline{| \mathcal{D} |}
+                                        {\adj2{\Theta}{\alpha}}
                        |}
                        { \adj1{\Theta}{\Gamma}{\adj-down{\alpha}} }
-              | \derive{| \mathcal{E} |}
-                       { \adj1{\Theta, \alpha}{\Gamma}{B} }
+              | \derive-noline{| \mathcal{E} |}
+                              { \adj1{\Theta, \alpha}{\Gamma}{B} }
               |}
              { \adj1{\Theta}{\Gamma}{B} }})
-    (${\derive?:!{subst12}
-              {| \derive{| \mathcal{D} |}
-                        {\adj2{\Theta}{\alpha}}
-               | \derive{| \mathcal{E} |}
-                       { \adj1{\Theta, \alpha}{\Gamma}{B} }
-               |}
-              {\adj1{\Theta}{\Gamma}{B}}});
+    (${\derive-dot?:!{subst12}
+                  {| \derive-noline{| \mathcal{D} |}
+                                   {\adj2{\Theta}{\alpha}}
+                   | \derive-noline{| \mathcal{E} |}
+                                   { \adj1{\Theta, \alpha}{\Gamma}{B} }
+                   |}
+                  {\adj1{\Theta}{\Gamma}{B}}});
 >
 
 let adj-rules-down-le = '<
   +local-expansion
-    (${\derive{| \mathcal{D} |}
-              {\adj1{\Theta}{\Gamma}{\adj-down{\alpha}}} })
+    (${\derive-noline{| \mathcal{D} |}
+                     {\adj1{\Theta}{\Gamma}{\adj-down{\alpha}}} })
     (${\derive?:!{${\adj-down{}}E}
-             {| \derive{| \mathcal{D} |}
-                       {\adj1{\Theta}{\Gamma}{\adj-down{\alpha}}}
+             {| \derive-noline{| \mathcal{D} |}
+                              {\adj1{\Theta}{\Gamma}{\adj-down{\alpha}}}
               | \derive?:!{${\adj-down{}}I}
                        ?:!(true)
                        {| \derive?:!{hyp2}
@@ -341,11 +347,11 @@ let ipckm-hyp = '<
 let ipckm-structure1 = '<
         +math-list (
         ${
-        | \derive?:!{subst}
-                 {| \ipckm{| \Psi | \Gamma, A | \Phi |}{B} |
-                  | \ipckm{| \Psi | \Gamma |}{A}
-                  |}
-                 { \ipckm{| \Psi | \Gamma | \Phi |}{B} }
+        | \derive-dot?:!{subst}
+                     {| \ipckm{| \Psi | \Gamma, A | \Phi |}{B} |
+                      | \ipckm{| \Psi | \Gamma |}{A}
+                      |}
+                     { \ipckm{| \Psi | \Gamma | \Phi |}{B} }
         % | \derive?:!{weak}
         %          {| \ipckm{| \Psi | \Gamma | \Phi |}{B} |}
         %          { \ipckm{| \Psi | \Gamma, A | \Phi |}{B} }
@@ -364,12 +370,12 @@ let ipckm-structure1 = '<
 
 let ipckm-structure2 = '<
   +math-list (${
-  | \derive?:!{levelweak}
-           {| \ipckm{| \Psi |}{A} |}
-           { \ipckm{|\cdot| \Psi |}{A} }
-  | \derive?:!{levelcontr}
-           {| \ipckm{|\cdot| \Psi |}{A} |}
-           { \ipckm{| \Psi |}{A} }
+  | \derive-dot?:!{levelweak}
+               {| \ipckm{| \Psi |}{A} |}
+               { \ipckm{|\cdot| \Psi |}{A} }
+  | \derive-dot?:!{levelcontr}
+               {| \ipckm{|\cdot| \Psi |}{A} |}
+               { \ipckm{| \Psi |}{A} }
   |});
 >
 
@@ -428,16 +434,16 @@ let ipc2m-hyp = '<
 let ipc2m-structure = '<
   +math-list (
   ${
-  | \derive?:!{subst1}
-           {| \modald{\Delta}{\Gamma, A}{B}
-            | \modald{\Delta}{\Gamma}{A}
-            |}
-           { \modald{\Delta}{\Gamma}{B}}
-  | \derive?:!{subst2}
-           {| \modald{\Delta, A}{\Gamma}{B}
-            | \modald{\cdot}{\Delta}{A}
-            |}
-           { \modald{\Delta}{\Gamma}{B}}
+  | \derive-dot?:!{subst1}
+               {| \modald{\Delta}{\Gamma, A}{B}
+                | \modald{\Delta}{\Gamma}{A}
+                |}
+               { \modald{\Delta}{\Gamma}{B}}
+  | \derive-dot?:!{subst2}
+               {| \modald{\Delta, A}{\Gamma}{B}
+                | \modald{\cdot}{\Delta}{A}
+                |}
+               { \modald{\Delta}{\Gamma}{B}}
    |});
 >
 
@@ -474,29 +480,30 @@ let ipc2m-dmodal-lr = '<
     (${
       \derive?:!{${\dmodal{}}E}
              {| \derive?:!{${\dmodal{}}I}
-                       {| \derive{| \mathcal{D}|}
-                                 { \ipc2m{\cdot}{\Delta}{A} } |}
+                       {| \derive-noline{| \mathcal{D}|}
+                                        { \ipc2m{\cdot}{\Delta}{A} } |}
                        { \ipc2m{\Delta}{\Gamma}{\dmodal{A}} }
-              | \derive{| \mathcal{E} |}
-                       {\ipc2m{\Delta, A}{\Gamma}{B}}
+              | \derive-noline{| \mathcal{E} |}
+                              {\ipc2m{\Delta, A}{\Gamma}{B}}
               |}
              { \ipc2m{\Delta}{\Gamma}{B} }
       })
-    (${\derive?:!{subst2}
-              {| \derive{| \mathcal{D}|}
-                        { \ipc2m{\cdot}{\Delta}{A} }
-               | \derive{| \mathcal{E} |}
-                        {\ipc2m{\Delta, A}{\Gamma}{B}}
-               |}
-              {\ipc2m{\Delta}{\Gamma}{B}}});
+    (${\derive-dot?:!{subst2}
+                  {| \derive-noline{| \mathcal{D}|}
+                                   { \ipc2m{\cdot}{\Delta}{A} }
+                   | \derive-noline{| \mathcal{E} |}
+                                   {\ipc2m{\Delta, A}{\Gamma}{B}}
+                   |}
+                  {\ipc2m{\Delta}{\Gamma}{B}}});
 >
 
 let ipc2m-dmodal-le = '<
   +local-expansion
-    (${\derive{|\mathcal{D}|}{\ipc2m{\Delta}{\Gamma}{\dmodal{A}}}})
+    (${\derive-noline{|\mathcal{D}|}{\ipc2m{\Delta}{\Gamma}{\dmodal{A}}}})
     (${
       \derive?:!{${\dmodal{}}E}
-             {| \derive{| \mathcal{D} |}{\ipc2m{\Delta}{\Gamma}{\dmodal{A}}}
+             {| \derive-noline{| \mathcal{D} |}
+                              { \ipc2m{\Delta}{\Gamma}{\dmodal{A}} }
               | \derive?:!{${\dmodal{}}I}
                        ?:!(true)
                        {| \derive?:!{hyp}
@@ -564,24 +571,24 @@ let ipckm-fmodal-lr = '<
     (${\derive?:!{${\fmodal{}}E}
               {| \derive?:!{${\fmodal{}}I}
                         ?:!(true)
-                       {| \derive{| \mathcal{D} |}{\ipckm{|\Delta|\cdot|}{A}} |}
+                       {| \derive-noline{| \mathcal{D} |}{\ipckm{|\Delta|\cdot|}{A}} |}
                        { \ipckm{|\Delta|}{\fmodal{A}} }
               |}
              { \ipckm{|\Delta|\Gamma|}{A} }})
-    (${\derive?:!{weak}
-              {| \derive{| \mathcal{D} |}{\ipckm{|\Delta|\cdot|}{A}}
-               |}
-              {\ipckm{|\Delta|\Gamma|}{A}} });
+    (${\derive-dot?:!{weak}
+                  {| \derive-noline{| \mathcal{D} |}{\ipckm{|\Delta|\cdot|}{A}}
+                   |}
+                  {\ipckm{|\Delta|\Gamma|}{A}} });
 >
 
 let ipckm-fmodal-le = '<
   +local-expansion
-    (${\derive{| \mathcal{D} |}{\ipckm{|\Delta|}{\fmodal{A}}}})
+    (${\derive-noline{| \mathcal{D} |}{\ipckm{|\Delta|}{\fmodal{A}}}})
     (${\derive?:!{${\fmodal{}}I}
              {| \derive?:!{${\fmodal{}}E}
                        ?:!(true)
-                       {| \derive{| \mathcal{D} |}
-                                 {\ipckm{|\Delta|}{\fmodal{A}}} |}
+                       {| \derive-noline{| \mathcal{D} |}
+                                        {\ipckm{|\Delta|}{\fmodal{A}}} |}
                        { \ipckm{|\Delta|\cdot|}{A} } |}
              { \ipckm{|\Delta|}{\fmodal{A}} }});
 >

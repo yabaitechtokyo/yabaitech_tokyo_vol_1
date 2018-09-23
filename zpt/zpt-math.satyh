@@ -1,5 +1,5 @@
 @require: math
-@require: proof
+@import: ./moreproof
 
 module ZptMath : sig
   direct \cdot : [] math-cmd
@@ -19,7 +19,6 @@ module ZptMath : sig
   direct \fmodal : [math] math-cmd
   direct \dmodal : [math] math-cmd
   direct \todo : [inline-text] inline-cmd
-  direct \derive : [inline-text?; bool?; math list; math] math-cmd
   direct +local-reduction : [math; math] block-cmd
   direct +local-expansion : [math; math] block-cmd
   direct +with-font-size : [length; block-text] block-cmd
@@ -78,18 +77,6 @@ end = struct
   let-inline ctx \todo text =
     let ctx-red = ctx |> set-text-color Color.red in
       read-inline ctx-red {TODO: #text;}
-
-  let myderive nameopt bopt mlst m=
-    match nameopt with
-    | None -> (match bopt with
-               | None -> ${\derive !(mlst) !(m)}
-               | Some(b) -> ${\derive ?:{} ?:!(b) !(mlst) !(m)})
-    | Some(name) -> (match bopt with
-                     | None -> ${\derive ?:{\text!{\ (#name;)}} !(mlst) !(m)}
-                     | Some(b) -> ${\derive ?:{\text!{\ (#name;)}} ?:!(b) !(mlst) !(m)})
-
-  let-math \derive ?:nameopt ?:bopt mlst m =
-    myderive nameopt bopt mlst m
 
   let-block ctx +local-reduction l r = read-block ctx '<
     +align [
