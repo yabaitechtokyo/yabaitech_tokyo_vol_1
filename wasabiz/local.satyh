@@ -38,3 +38,16 @@ let-inline ctx \codem it =
   let pads = (2pt, 2pt, 2pt, 2pt) in
   let decoset = HDecoSet.rectangle-round-fill 4pt 2pt (Color.gray 0.9) in
     script-guard Latin (inline-frame-breakable pads decoset ib)
+
+let-block ctx +centering it =
+  line-break true true ctx (inline-fil ++ read-inline ctx it ++ inline-fil)
+
+let-block ctx +image-frame content =
+  let pads = (10pt, 10pt, 10pt, 10pt) in
+    block-frame-breakable ctx pads VDecoSet.empty (fun ctx -> read-block ctx '<+centering{#content;}>)
+
+let-inline ctx \insert-image w path =
+  let img = load-image path in
+    use-image-by-width img w
+
+let-block ctx +clear-page = clear-page
