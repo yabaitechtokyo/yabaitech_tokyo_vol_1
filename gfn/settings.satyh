@@ -138,7 +138,7 @@ let-inline ctx \d-code-and-block s bt =
   let pads = (5pt, 5pt, 5pt, 5pt) in
   let wid = get-text-width ctx in
   let bb =
-    display-code-scheme ctx s +++
+    display-code-scheme ctx s +++ block-skip -26pt +++
       block-frame-breakable ctx pads VDecoSet.paper (fun ctx ->
         read-block ctx bt
       )
