@@ -20,7 +20,7 @@ let zpt-article = '<
       +p {構成は以下のようになっています。\ref-section(`ipc-jr`);ではJudgmental Reconstructionの概念を説明しながら例として直観主義論理の体系IPCを構築します。\ref-section(`adj`);ではIPCを拡張して二つの階層を持つ論理IPC2を構築します。その後\ref-section(`modality`);でIPC2を更に拡張してK様相論理の体系のIPC2MとIPCkMをそれぞれ構築します。最後に\ref-section(`conclusion`);でまとめておしまいです。}
     >
     +section ?:(`ipc-jr`) {直観主義論理をつくる} <
-      +p {Martin-Löfは彼の著作において\cite([`Martin-Loef96`]);論理体系における判断(Judgment)を「知の対象(the object of knowledge)」と定義しています\footnote{このアイデアは実際にJudgmental Reconstructionのベースになっていて、Pfenningの論文\cite[`Pfenning01`];でも言及されています。}。例えばこの後に紹介するIPCという論理体系では${\ipc{A_1, \ldots, A_n}{B}}という判断は「${A_1, \ldots, A_n}の命題を全て仮定した時に${B}という命題を結論できる」という知識を表します。Judgmental Reconstructionとは判断の性質を土台として自然演繹の論理体系(とそれに対応する型付き${\lambda}計算の体系)を構築する方法論を指します。これがどのようなものかを理解してもらうために、${\imp}のみを論理結合子として含むような直観主義論理の体系IPC(Intuitionistic Propositional Calculus)をつくってみることにします。この流れは基本的に元の論文\cite[`Pfenning01`];のそれと同じですが、一部手を加えていることにご留意ください。}
+      +p {Martin-Löfは彼の著作において\cite([`Martin-Loef96`]);論理体系における判断(Judgment)を「知の対象(the object of knowledge)」だと説明しています\footnote{このアイデアは実際にJudgmental Reconstructionのベースになっていて、Pfenningの論文\cite[`Pfenning01`];でも言及されています。}。例えばこの後に紹介するIPCという論理体系では${\ipc{A_1, \ldots, A_n}{B}}という判断は「${A_1, \ldots, A_n}の命題を全て仮定した時に${B}という命題を結論できる」という知識を表します。Judgmental Reconstructionとは判断の性質を土台として自然演繹の論理体系(とそれに対応する型付き${\lambda}計算の体系)を構築する方法論を指します。これがどのようなものかを理解してもらうために、${\imp}のみを論理結合子として含むような直観主義論理の体系IPC(Intuitionistic Propositional Calculus)をつくってみることにします。この流れは基本的に元の論文\cite[`Pfenning01`];のそれと同じですが、一部手を加えていることにご留意ください。}
 
       +subsection {判断の構造を決める} <
         +p{最初に全体の定義を\ref-figure(`figdefipc`);に示しておきます。#ipc-def;記号の定義をした後に最初にすることは「判断の構造を決める」ことです。}
