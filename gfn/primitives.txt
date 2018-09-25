@@ -163,8 +163,8 @@ A[ ] ||
 A[ ] not
 
 -- 浮動小数点数 --
-A[ ] float
-A[ ] round
+A[o] float
+A[o] round
 A[ ] +.
 A[ ] -.
 A[ ] *.
@@ -186,8 +186,8 @@ A[ ] <'
 A[ ] >'
 
 -- 文字列 --
-A[ ] ^
-A[ ] arabic
+A[o] ^
+A[o] arabic
 A[ ] string-same
 A[ ] string-sub
 A[ ] string-length

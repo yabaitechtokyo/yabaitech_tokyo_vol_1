@@ -309,12 +309,14 @@ module Sample = struct
       )
 
 
-  let-inline \show-int n =
-    embed-string (arabic n)
+  let-inline \show-int n = embed-string (arabic n)
+  let-inline \show-float x = embed-string (show-float x)
+  let-inline \show-string s = embed-string s
 
 
-  let-inline \show-string s =
-    embed-string s
+  let to-dollar m-yen =
+    let rate = 112.73 in
+      (float (m-yen)) /. rate
 
 
   let-inline ctx \simple-frame it =

@@ -79,7 +79,10 @@ document (|
           \d-code(```
             @require: stdjareport
 
-            let-inline \show-int n = embed-string (arabic n) in
+            let-inline \show-int n = embed-string (arabic n)
+            let-inline \show-float x = embed-string (show-float x)
+            let-inline \show-string s = embed-string s
+            in
 
             document (|
               title = {Programming in \SATySFi;};
@@ -90,8 +93,10 @@ document (|
           ```);%
 
           \codem{let-inline}から始まる，
-          未知でありながら前節で見たインラインコマンドを定義する方法によく似た構文があるが，
-          実際これは\codem{\\show-int}というインラインコマンドの定義である．
+          未知でありながら前節で見たインラインコマンドを定義する方法によく似た構文が3つ連なっているが，
+          実際これはそれぞれ
+          \codem{\\show-int}，\codem{\\show-float}，\codem{\\show-string}
+          というインラインコマンドの定義である．
           この定義をどう読むのかは後々わかることになるので，
           今の段階では
           「与えられた整数を版面に文字として10進法で出力するコマンド\codem{\\show-int}」
@@ -207,6 +212,23 @@ document (|
             |when|while|with
             |}
 
+          変数名に関して少しだけ注意を喚起しておくと，
+          “整数を格納した変数\codem{x}から1引く式” を意図して
+          \codem{x-1}と書くと，意図とは異なる結果になる．
+          というのも，これは\codem{x-1}全体でひとつの変数名とみなされてしまうためだ\footnote{
+            このような記述をすると，多くの場合は型検査器が
+            「\codem{x-1}という未定義の変数が使われている」
+            というエラーを出すが，
+            \codem{x-1}という名前の変数が整数を格納する変数として
+            本当に使われている場合はとても厄介で，発見困難なバグの原因になるだろう．
+          }．回避策として，
+          2項演算子を使うときには\codem{x - 1}のように
+          必ず前後に空白文字をひとつずつ入れることを習慣づけるとよいだろう．
+          前後に空白文字を入れていないことによりトークンの切り分け方が意図とは異なる結果になることは
+          \codem{-}以外にも多くのパターンがあるので，
+          2項演算子を式と式の間に中置して使うときには前後に空白文字を入れることを強く推奨する．
+        }
+        +p{
           さて，肝腎の変数への値の束縛は
 
           \d-codem{
@@ -270,33 +292,79 @@ document (|
         +p{
           まずは小数などの値を扱うためのデータ，
           \dfnje{浮動小数点数}{floating-point number}である．
-          浮動小数点数のリテラルは単に\codem{3.14}などと書く．
-          現在のところ指数表記は用意していない．
+          浮動小数点数の値をPDFに出力して確認するために，
+          最初に掲げたテンプレートの段落の部分を
+          以下のように\codem{\\show-float}に変更しよう：
+
+          \d-code(```
+              +p{ Answer: \show-float(42.195); }
+          ```);%
+
+          整数の\codem{\\show-int}のときと同様に，
+          上の\codem{42.195}と書いてあるところを変えて遊んでみる．
+          浮動小数点数のリテラルは単純に\codem{42.195}とか\codem{3.14}などと書く．
+          現在のところ「\code(`1e-5`);」のような指数表記は用意していない．
           小数部分が\codem{.0}の場合は\codem{5.0}を省略して\codem{5.}といった具合に書けるが，
           整数部分が\codem{0.}の場合は\codem{.5}といった具合には省略できない．
-        }
-        +p{
-          \REMAINS{浮動小数点数の演算}
+          浮動小数点数も整数と同様に加減乗除などの計算ができるが，
+          演算子は\codem{+}や\codem{\*}ではなく，
+          かわりに\codem{+.}や\codem{\*.}を使う：
+
+          \d-code-and-block(```
+            +p{ Answer: \show-float((1.1 +. 0.7) *. 2.4); }
+          ```)(open Sample in '<
+            +p{ Answer: \show-float((1.1 +. 0.7) *. 2.4); }
+          >);%
+
+          整数値と浮動小数点数との演算は，直接はできない．
+          型については後述するが，\codem{1 +. 2.0}のような記述は型エラーとなる．
+          評価されて整数値になる式\codem{\meta{expr}}
+          を浮動小数点数に関する計算に用いたい場合は
+          \codem{float \meta{expr}}で浮動小数点数に変換する：
+
+          \d-code-and-block(```
+            +p{ Answer: \show-float((float (1 + 2 * 3 - 4)) *. 2.4); }
+          ```)(open Sample in '<
+            +p{ Answer: \show-float((float (1 + 2 * 3 - 4)) *. 2.4); }
+          >);%
+
+          \codem{float}とそれに伴う式との結合は2項演算子より強いので，
+          \codem{float 1 + 2 \* 3 - 4}と書くと
+          \codem{(float 1) + 2 \* 3 - 4}と等価な式として解釈されてしまうことに注意．
+          反対に，浮動小数点数へと評価される式\codem{\meta{expr}}を
+          小数部分を切り捨てて整数値として使いたい場合は
+          \codem{(round \meta{expr})}という形で書く：
+
+          \d-code-and-block(```
+            +p{ Answer: \show-int((round ((1.1 +. 0.7) *. 2.4)) * 2); }
+          ```)(open Sample in '<
+            +p{ Answer: \show-int((round ((1.1 +. 0.7) *. 2.4)) * 2); }
+          >);%
+
+          なお，ここで用いた\codem{float}および\codem{round}は
+          実は\dfnje{函数}{function}と呼ばれるものであり，
+          後の\ref-subsection(`functions-and-conditionals`);で
+          これらについてより一般性の高い説明を与える．
         }
         +p{
           続いては文字列である．文字列の “計算結果” を実際にPDFに出力するため，
-          やはり以下のようなオマジナイのテンプレートを用意しよう：
+          やはり最初に掲げたテンプレートの段落の部分を\codem{\\show-string}に変えて使おう：
 
           \d-code(```
-            @require: stdjareport
-
-            let-inline \show-string s = embed-string s in
-
-            document (|
-              title = {Programming in \SATySFi;};
-              author = {計 算太郎};
-            |) '<
               +p{ Answer: [\show-string(`this is a string`);] }
-            >
           ```);%
 
           この\codem{\`this is a string\`}の部分を色々変えて遊ぶのである．
-          先走って登場してしまったが，\SATySFi;での文字列リテラルは
+          \codem{\\show-string( ${\cdots} )\;}のさらに外側が
+          \codem{\[}と\codem{\]}で囲まれているが，
+          これは単にインラインテキストの一部として書かれた四角括弧の文字で，
+          \codem{\\show-string}によって表示される文字列の
+          端がどこなのかを見やすくするためにつけているだけである．
+          要するに表示させたい文字列値のいずれか一方の端が空白文字であるとき，
+          本当にその端に空白文字が入っているかを確認する目的でつけている．
+        }
+        +p{
+          さて，先走って登場してしまったが，\SATySFi;での文字列リテラルは
           両端をバッククォート（\codem{\`}）で囲って記述する．
           多くのプログラミング言語では文字列内容を二重引用符で囲い，
           キャリッジリターンや二重引用符などいくつかの特殊文字は
@@ -311,7 +379,7 @@ document (|
           バッククォートが内容に現れる場合は
           両端のバッククォートを2個ずつにするのである．
           これにより文字列内容の終端がどこであるかがわかる．
-          試しに上のコードの\codem{\\show-string}の適用の部分を
+          試しにテンプレートの段落部分を
 
           \d-code(```
             +p{ Answer: [\show-string(``foo`bar``);] }
@@ -365,24 +433,33 @@ document (|
           たしかに空白文字が残っている．これでようやく安心して文字列リテラルが使える．
         }
         +p{
-          文字列リテラルが書けるようになったところで，文字列を操作する方法を伝授しよう．
+          文字列リテラルが書けるようになったところで，文字列を構築する方法を伝授しよう．
           文字列の結合は2項演算子\codem{^}でできるほか，
           整数値に評価される式\codem{\meta{expr}}に対し，
-          \codem{(arabic (\meta{expr}))}で整数値を十進法文字列にすることができる：
+          \codem{(arabic \meta{expr})}で整数値を十進法文字列にすることができる：
 
           \d-code-and-block(```
             +p{ Answer: [\show-string(
-              `The result is `# ^ (arabic ((1 + 2) * 3 - 4)) ^ `.`
+              `The result is `# ^ (arabic ((1 + 2) * 3 - 4)) ^ `!`
             );] }
           ```)(open Sample in '<
             +p{ Answer: [\show-string(
-              `The result is `# ^ (arabic ((1 + 2) * 3 - 4)) ^ `.`
+              `The result is `# ^ (arabic ((1 + 2) * 3 - 4)) ^ `!`
             );] }
           >);%
 
-          ここで使った\codem{(arabic (\meta{expr}))}という式は
-          函数\codem{arabic}の\dfnje{適用}{application}であり，
+          ここで使った\codem{arabic}はやはり函数であり，これに関しては
           \ref-subsection(`functions-and-conditionals`);でしっかりと扱う．
+        }
+        +p{
+          なお，インラインテキスト\codem{\{ ${\cdots} \}}と
+          文字列は異なる概念であることに注意されたい．
+          前者はコマンドなどを内容に含んでいるが，
+          後者は純粋にUnicodeコードポイント列である．
+          ただし，文字列を
+          （等価なテキストで構成された，コマンドを含まない）インラインテキストへと変換することは
+          \codem{embed-string}という函数で行える．
+          これについても\ref-subsection(`functions-and-conditionals`);で扱う．
         }
       >
       +subsection{型システムの基礎}<
@@ -472,6 +549,99 @@ document (|
             函数のほかには，\dfn{Fortran90}などの言語に見られるように
             \dfnje{サブルーティン}{subroutine}と呼ばれる機構がこの役割を担っている言語もある．
           }．
+          函数は，何らかの値を受け取り，それを加工して新たな値をつくる処理である．
+          例として，円単位の金額を整数で受け取り，
+          それをドル単位に換算する函数\codem{to-dollar}を定義してみよう．
+          レートはひとまず9月24日19時23分(UTC)に基づいて1ドルを112.73円とする．
+          これは以下のようにして定義できる：
+
+          \d-code(```
+            let to-dollar m-yen =
+              let rate = 112.73 in
+                (float m-yen) /. rate
+            in
+            （続きの式）
+          ```);%
+
+          函数の定義もlet式を用いて行なうのである．
+          ここで登場する\codem{m-yen}は\dfn{仮引数}
+          または単に\dfn{引数}と呼ばれるもので，
+          函数\codem{to-dollar}の受け取る値が格納される変数である．
+          ここで例示した\codem{to-dollar}はひとつだけ引数をとる函数だが，
+          一般には任意に正整数個とれる．
+          函数定義は，次のような構文によって為される：
+
+          \d-codem{
+            let \meta{f} \metasub(${1}){x} ${\cdots} \metasub(${n}){x} =
+              \metasub(${1}){expr}
+            in
+              \metasub(${2}){expr}
+          }%
+
+          \codem{\meta{f}}が定義したい函数に与える名前であり，
+          各\codem{\metasub(${i}){x}}は第 ${i} 引数である．
+        }
+        +p{
+          さて，上で定義した函数\codem{to-dollar}を実際に使ってみよう．
+          函数の定義は，パッケージの読み込みの記述から\codem{document}までの間の部分で行なえる．
+          すなわち，以下のようになる：
+
+          \d-code(```
+            @require: stdjareport
+
+            let-inline \show-int n = embed-string (arabic n)
+            let-inline \show-float x = embed-string (show-float x)
+            let-inline \show-string s = embed-string s
+            in
+
+            let to-dollar m-yen =
+              let rate = 112.73 in
+                (float m-yen) /. rate
+            in
+
+            document (|
+              （以降略）
+          ```);%
+
+          それでは実際に\codem{to-dollar}を使って円単位の金額をドル単位に換算してみよう．
+          函数\codem{\meta{f}}に式\codem{\meta{expr}}の計算結果を渡したいときは
+          \codem{\meta{f} \meta{expr}}と書く．
+          これを函数\codem{\meta{f}}の式\codem{\meta{expr}}への\dfnje{適用}{application}
+          とか式\codem{\meta{expr}}による函数\codem{\meta{f}}の\dfnje{呼び出し}{call}
+          と呼ぶ．また，ここで評価結果が\codem{\meta{f}}に渡される式\codem{\meta{expr}}のことを
+          \codem{\meta{f}}の\dfn{実引数}と呼ぶ．
+          やや厄介なことに，仮引数だけでなくこの実引数も単に\dfn{引数}と呼ばれることが多い．
+          しかし「引数」が仮引数の意であるか実引数の意であるかは
+          ほとんどの場合使用されている文脈から判断できるので，
+          特に違いを強調する必要のない場合は両者ともに引数と書くことにする．
+        }
+        +p{
+          函数\codem{\meta{f}}の式\codem{\meta{expr}}への適用は，次のような流れで評価される：
+
+          \listing{
+            * 実引数\codem{\meta{expr}}が評価されて値\codem{\meta{value}}になる．
+
+            * 函数\codem{\meta{f}}の定義
+              \codem{let \meta{f} \meta{x} = \meta{e} in ${\cdots}}
+              が “思い返される”．
+
+            * 仮引数\codem{\meta{x}}が\codem{\meta{value}}に束縛された下で
+              “定義の本体” である式\meta{e}が評価され，その結果が適用の式全体の評価結果となる．
+          }%
+
+          不正確ながら大雑把に言ってしまえば，
+          函数定義中の仮引数が実引数で置き換えられたものの計算するのが函数適用である．
+          さて，実際に\codem{to-dollar}を適用したのが以下だ：
+
+          \d-code-and-block(```
+            +p{ Answer: \show-float(to-dollar 10000); }
+          ```)(open Sample in '<
+            +p{ Answer: \show-float(to-dollar 10000); }
+          >);%
+
+          やはり大雑把に言えば，\codem{to-dollar}の “定義本体” の中の\codem{m-yen}がすべて
+          \codem{10000}に置き換わったものの計算結果が出ているわけである．
+          というわけで10000円は大体88.7ドルくらいであることが計算できた．
         }
         +p{
           \REMAINS{函数定義と条件分岐}
