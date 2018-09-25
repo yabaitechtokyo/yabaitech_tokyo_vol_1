@@ -1,6 +1,12 @@
 @import: settings
 
 let bibliography = [
+  (`Asai-OCaml`, Book(|
+    author = {| 浅井 健一 |};
+    title = {プログラミングの基礎};
+    publisher = {サイエンス社};
+    year = 2007;
+  |));
   (`otfm`, WebSite(|
     author = {| Daniel Bünzli | Takashi Suwa |};
     title = {An extended version of Otfm};
@@ -12,6 +18,14 @@ let bibliography = [
     title = {LyX – The Document Processor};
     url = `https://www.lyx.org`;
     year = 1995;
+  |));
+  (`FreemanPfenning1991PLDI`, InProceedings(|
+    author = {| Tim Freeman | Frank Pfenning |};
+    title = {Refinement types for ML};
+    booktitle = {Proceedings of the ACM SIGPLAN Conference on Programming Language Design and Implementation};
+    series = None; volume = None; number = None;
+    pages = (268, 277);
+    year = 1991;
   |));
   (`satysfi-cross-windows`, WebSite(|
     author = {| Masaki Hara |};
@@ -25,11 +39,43 @@ let bibliography = [
     url = `https://gist.github.com/qnighy/951d1ee5a7ee7c8f95bb323e881eaf8a`;
     year = 2018;
   |));
+  (`Hindley1969`, Article(|
+    author = {| R. Hindley |};
+    title = {The principal type-scheme of an object in combinatory logic};
+    journal = {Transactions of the American Mathematical Society};
+    volume = Some(146);
+    number = None;
+    pages = (29, 60);
+    year = 1969;
+  |));
+  (`Igarashi-OCaml`, Book(|
+    author = {| 五十嵐 淳 |};
+    title = {プログラミング in OCaml};
+    publisher = {技術評論社};
+    year = 2007;
+  |));
+  (`Igarashi-Program`, Book(|
+    author = {| 五十嵐 淳 |};
+    title = {プログラミング言語の基礎概念};
+    publisher = {サイエンス社};
+    year = 2011;
+  |));
   (`satysfi-steamer`, WebSite(|
     author = {| Hiromi Ishii |};
     title = {Steamer: presentation in \SATySFi;};
     url = `https://github.com/konn/satysfi-steamer`;
     year = 2018;
+  |));
+  (`KnowlesFlanagan2007ESOP`, InProceedings(|
+    author = {| Kenneth Knowles | Cormac Flanagan |};
+    title = {Type reconstruction for general refinement types};
+    booktitle = {Proceedings of the 16th European Symposium on Programming (ESOP’07)};
+    series = None; volume = None; number = None;
+    pages=(505, 519);
+%editor="De Nicola, Rocco",
+%publisher="Springer Berlin Heidelberg",
+%address="Berlin, Heidelberg",
+    year = 2007;
   |));
   (`TeXbook`, Book(|
     author = {| Donald E. Knuth |};
@@ -57,6 +103,15 @@ let bibliography = [
     title = {\SATySFi;がWebで動くやつを作った — 暇な女子高専生のブログ};
     url = `http://miettal.hatenablog.com/entry/2018/02/15/133623`;
     year = 2018;
+  |));
+  (`Milner1978`, Article(|
+    author = {| Robin Milner |};
+    title = {A Theory of Type Polymorphism in Programming};
+    journal = {Journal of Computer and System Science (JCSS)};
+    volume = Some(17);
+    number = None;
+    pages = (348, 374);
+    year = 1978;
   |));
   (`yojson`, WebSite(|
     author = {| \github{mjambon} |};
@@ -90,6 +145,20 @@ let bibliography = [
     url = `http://satysfi-playground.tech/`;
     year = 2018;
   |));
+  (`TaPL`, Book(|
+    author = {| Benjamin C. Pierce |};
+    title = {Types and Programming Languages};
+    publisher = {The MIT Press};
+    year = 2002;
+  |));
+  (`TaPL-ja`, Book(|
+    author = {| Benjamin C. Pierce
+      （住井 英二郎 監訳，遠藤 侑介 訳，酒井 政裕 訳，今井 敬吾 訳，黒木 裕介 訳，今井 宜洋 訳，才川 隆文 訳，今井 健男 訳）
+    |};
+    title = {型システム入門};
+    publisher = {オーム社};
+    year = 2013;
+  |));
   (`omega`, WebSite(|
     author = {| John Plaice | Yannis Haralanbous |};
     title = {Draft documentation for the ${\Omega} system};
@@ -111,6 +180,22 @@ let bibliography = [
 %    publisher = {MIT Press},
 %    address = {Cambridge, MA, USA},
     year = 1993;
+  |));
+  (`RondonKawaguchiJhala2008PLDI`, InProceedings(|
+    author = {| Patrick M. Rondon | Ming Kawaguchi | Ranjit Jhala |};
+    title = {Liquid types};
+    booktitle = {Proceedings of the 29th ACM SIGPLAN Conference on Programming Language Design and Implementation};
+    series = None; volume = None; number = None;
+    pages = (159, 169);
+%    isbn = {978-1-59593-860-2},
+%    location = {Tucson, AZ, USA},
+%    url = {http://doi.acm.org/10.1145/1375581.1375602},
+%    doi = {10.1145/1375581.1375602},
+%    acmid = {1375602},
+%    publisher = {ACM},
+%    address = {New York, NY, USA},
+%    keywords = {dependent types, hindley-milner, predicate abstraction, type inference},
+    year = 2008;
   |));
   (`unicode-eaw`, WebSite(|
    author = {| Unicode Consortium |};

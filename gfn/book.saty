@@ -7,8 +7,10 @@
 @import: overall
 @import: line-breaking
 @import: system-and-config
+@import: typography
 @import: graphics
 @import: cross-reference
+@import: page-breaking
 @import: future-work
 @import: specification
 @import: bib
@@ -54,13 +56,19 @@ document (|
         DSL（domain-specific language, 領域特化言語）だ．
         プログラミング言語としての\SATySFi;の基礎的部分には
         OCamlに大変よく似た体系が採用されており，
-        基礎的部分の理解を得るのにOCamlに関する参考書で代用することも十分可能なほどである．
+        基礎的部分の理解を得るのに
+        \cite[`Igarashi-OCaml`];や\cite[`Asai-OCaml`];
+        といったOCamlに関する参考書，
+        或いは
+        \cite[`Igarashi-Program`];や\cite[`TaPL`];（およびその和訳 \cite[`TaPL-ja`];）
+        といった計算機言語や型システムに関する基礎理論を扱った理工書で代用することも十分可能なほどである．
         とはいえ，OCamlなどの他言語から回り道せずとも\SATySFi;での最低限の直観を身につければ
         十分\SATySFi;でのプログラミングが可能であり，
         熱心に函数型プログラミングの基礎を習得したい読者ばかりではないであろうから，
         ここでも簡単にプログラミング言語としての\SATySFi;について解説する．
         また，OCamlと\SATySFi;との間には目的意識や美意識の違いに起因した多少の差異があるので，
-        これについて（既にOCamlで流暢にプログラミングできる読者に対しても）簡単に補足する．
+        これについて（既にOCamlで流暢にプログラミングできる読者に対しても）
+        \ref-subsection(`diff-from-ocaml`);で簡単に補足する．
       }
       +subsection{式と値}<
         +p{
@@ -71,8 +79,9 @@ document (|
           \d-code(```
             @require: stdjareport
 
-            let-inline \show-int n =
-              embed-string (arabic n)
+            let-inline \show-int n = embed-string (arabic n)
+            let-inline \show-float x = embed-string (show-float x)
+            let-inline \show-string s = embed-string s
             in
 
             document (|
@@ -84,8 +93,10 @@ document (|
           ```);%
 
           \codem{let-inline}から始まる，
-          未知でありながら前節で見たインラインコマンドを定義する方法によく似た構文があるが，
-          実際これは\codem{\\show-int}というインラインコマンドの定義である．
+          未知でありながら前節で見たインラインコマンドを定義する方法によく似た構文が3つ連なっているが，
+          実際これはそれぞれ
+          \codem{\\show-int}，\codem{\\show-float}，\codem{\\show-string}
+          というインラインコマンドの定義である．
           この定義をどう読むのかは後々わかることになるので，
           今の段階では
           「与えられた整数を版面に文字として10進法で出力するコマンド\codem{\\show-int}」
@@ -136,35 +147,750 @@ document (|
           プログラムの動作とは，式を評価して値を求めることなのである．
         }
         +p{
-          \REMAINS{2項演算子の結合優先度}
+          もう少し複雑な計算をしてみよう．
+
+          \d-code-and-block(```
+            +p{ Answer: \show-int(1 + 2 * 3 - 4); }
+          ```)(open Sample in '<
+            +p{ Answer: \show-int(1 + 2 * 3 - 4); }
+          >);%
+
+          \codem{\*}は乗算のための2項演算子である．
+          通常我々が「${1 + 2 \times 3 - 4}」と書いた時には
+          ${\paren{1 + \paren{2 \times 3}} - 4} と扱われるのと同様に，
+          \SATySFi;言語でも2項演算子の結合には優先順位がある．
+          やはり日常的な数式と同様に，括弧で囲うと優先順位を指示できる：
+
+          \d-code-and-block(```
+            +p{ Answer: \show-int((1 + 2) * 3 - 4); }
+          ```)(open Sample in '<
+            +p{ Answer: \show-int((1 + 2) * 3 - 4); }
+          >);%
         }
       >
       +subsection{変数とその束縛}<
         +p{
-          \REMAINS{変数の概念とlet式}
+          ただ単に整数の計算をするだけでは電卓を叩いているのと大して違いはないから，
+          もう少し “プログラミングらしいこと” に踏み込もう．
+          すなわち，\dfnje{変数}{variable}の使用である．
+          変数は，\dfnje{変数名}{variable name}によって識別され，
+          何らかの値を\dfnje{束縛する}{bind}ことのできる機構だ．
+          変数名として使えるのは，
+
+          \listing{
+            * 1文字目はラテン小文字（\codem{a}–\codem{z}）
+
+            * 2文字目以降は大小ラテン文字（\codem{a}–\codem{z}，\codem{A}–\codem{Z}），
+              数字（\codem{0}–\codem{9}），
+              またはハイフン（\codem{-}）
+          }%
+
+          を満たす，長さが1文字以上のコード中の文字列である．
+          ただし，これに該当する文字列のうち
+          以下に列挙した39種類は\dfnje{予約語}{reserved word}と呼ばれ，
+          構文を示すなどの特別な用途で用いられることが定められたトークンなので，
+          変数名には使えない\footnote{
+            \codem{controls}と\codem{cycle}は今では特に使われないのだが，
+            かつてグラフィックスに用いられていたTikZ風の構文の名残として予約語のままになっている．
+          }：
+
+          \tokens{
+            |and|as
+            |before|block-cmd
+            |command|constraint|controls|cycle
+            |do|direct
+            |else|end
+            |false|fun
+            |if|in|inline-cmd
+            |let|let-block|let-inline|let-math|let-mutable|let-rec
+            |match|math-cmd|mod|module
+            |not
+            |of|open
+            |sig|struct
+            |then|true|type
+            |val
+            |when|while|with
+            |}
+
+          変数名に関して少しだけ注意を喚起しておくと，
+          “整数を格納した変数\codem{x}から1引く式” を意図して
+          \codem{x-1}と書くと，意図とは異なる結果になる．
+          というのも，これは\codem{x-1}全体でひとつの変数名とみなされてしまうためだ\footnote{
+            このような記述をすると，多くの場合は型検査器が
+            「\codem{x-1}という未定義の変数が使われている」
+            というエラーを出すが，
+            \codem{x-1}という名前の変数が整数を格納する変数として
+            本当に使われている場合はとても厄介で，発見困難なバグの原因になるだろう．
+          }．回避策として，
+          2項演算子を使うときには\codem{x - 1}のように
+          必ず前後に空白文字をひとつずつ入れることを習慣づけるとよいだろう．
+          前後に空白文字を入れていないことによりトークンの切り分け方が意図とは異なる結果になることは
+          \codem{-}以外にも多くのパターンがあるので，
+          2項演算子を式と式の間に中置して使うときには前後に空白文字を入れることを強く推奨する．
         }
         +p{
-          \REMAINS{変数名}
+          さて，肝腎の変数への値の束縛は
+
+          \d-codem{
+            let \meta{x} = \metasub(${1}){expr} in \metasub(${2}){expr}
+          }%
+
+          という形をもつ\dfnje{let式}{let-expression}で行なう\footnote{
+            ここにイタリック体で
+            \codem{\meta{x}}とか\codem{\metasub(${1}){expr}}などと書いたのは
+            “メタ文字” であり，
+            実際にコード中に\codem{x}とか\codem{expr1}といった文字列を書いているわけではなく，
+            適宜あてはめるべきものに読み替えよ，ということを指す記述である．
+            以降もこの “メタ文字” は頻繁に登場するので是非慣れて頂きたい．
+          }．
+          \codem{\meta{x}}が束縛される変数名であり，
+          \codem{\metasub(${1}){expr}}および
+          \codem{\metasub(${2}){expr}}は式である．
+          このlet式は，\codem{\metasub(${1}){expr}}を評価した結果の値を
+          変数\codem{\meta{x}}に束縛し，
+          そして\codem{\metasub(${2}){expr}}を評価するのに使う．
+          要するに，\codem{\metasub(${2}){expr}}中では
+          変数\codem{\meta{x}}が
+          \codem{\metasub(${1}){expr}}を評価した結果の値として使えるのである．
+          実際に使ってみよう：
+
+          \d-code-and-block(```
+            +p{ Answer:
+              \show-int(
+                let n = (1 + 2) * 3 - 4 in
+                  n * n * n
+              );
+            }
+          ```)(open Sample in '<
+            +p{
+              Answer:
+              \show-int(
+                let n = (1 + 2) * 3 - 4 in
+                  n * n * n
+              );
+            }
+          >);%
+
+          あまりにも大したことのない例だが，期待どおり計算できていることがわかる．
+        }
+        +p{
+          ここですでにC言語やPythonなどの “手続き的な” 言語に慣れ親しんでいる人は
+          特によく注意されたいのだが，束縛は「代入」とは似て非なる概念である．
+          \SATySFi;に於ける変数は
+          （OCamlなどその他のいわゆる函数型言語の変数にも共通するのだが）
+          “値を入れておき，適宜変更できる箱” ではない．
+          むしろ，“値に別名をつけたもの” という直観の方が正確である．
         }
       >
       +subsection{基本的なデータと型}<
         +p{
-          \REMAINS{整数，文字列，浮動小数点数，長さ，真偽値}
+          \SATySFi;で扱えるデータは勿論整数だけではない．
+          浮動小数点数，文字列，真偽値，さらには組版指定のための長さの値などが扱える．
+          真偽値は\ref-subsection(`functions-and-conditionals`);で
+          条件分岐とともに解説するので，それ以外について各々ここで説明する．
+        }
+        +p{
+          まずは小数などの値を扱うためのデータ，
+          \dfnje{浮動小数点数}{floating-point number}である．
+          浮動小数点数の値をPDFに出力して確認するために，
+          最初に掲げたテンプレートの段落の部分を
+          以下のように\codem{\\show-float}に変更しよう：
+
+          \d-code(```
+              +p{ Answer: \show-float(42.195); }
+          ```);%
+
+          整数の\codem{\\show-int}のときと同様に，
+          上の\codem{42.195}と書いてあるところを変えて遊んでみる．
+          浮動小数点数のリテラルは単純に\codem{42.195}とか\codem{3.14}などと書く．
+          現在のところ「\code(`1e-5`);」のような指数表記は用意していない．
+          小数部分が\codem{.0}の場合は\codem{5.0}を省略して\codem{5.}といった具合に書けるが，
+          整数部分が\codem{0.}の場合は\codem{.5}といった具合には省略できない．
+          浮動小数点数も整数と同様に加減乗除などの計算ができるが，
+          演算子は\codem{+}や\codem{\*}ではなく，
+          かわりに\codem{+.}や\codem{\*.}を使う：
+
+          \d-code-and-block(```
+            +p{ Answer: \show-float((1.1 +. 0.7) *. 2.4); }
+          ```)(open Sample in '<
+            +p{ Answer: \show-float((1.1 +. 0.7) *. 2.4); }
+          >);%
+
+          整数値と浮動小数点数との演算は，直接はできない．
+          型については後述するが，\codem{1 +. 2.0}のような記述は型エラーとなる．
+          評価されて整数値になる式\codem{\meta{expr}}
+          を浮動小数点数に関する計算に用いたい場合は
+          \codem{float \meta{expr}}で浮動小数点数に変換する：
+
+          \d-code-and-block(```
+            +p{ Answer: \show-float((float (1 + 2 * 3 - 4)) *. 2.4); }
+          ```)(open Sample in '<
+            +p{ Answer: \show-float((float (1 + 2 * 3 - 4)) *. 2.4); }
+          >);%
+
+          \codem{float}とそれに伴う式との結合は2項演算子より強いので，
+          \codem{float 1 + 2 \* 3 - 4}と書くと
+          \codem{(float 1) + 2 \* 3 - 4}と等価な式として解釈されてしまうことに注意．
+          反対に，浮動小数点数へと評価される式\codem{\meta{expr}}を
+          小数部分を切り捨てて整数値として使いたい場合は
+          \codem{(round \meta{expr})}という形で書く：
+
+          \d-code-and-block(```
+            +p{ Answer: \show-int((round ((1.1 +. 0.7) *. 2.4)) * 2); }
+          ```)(open Sample in '<
+            +p{ Answer: \show-int((round ((1.1 +. 0.7) *. 2.4)) * 2); }
+          >);%
+
+          なお，ここで用いた\codem{float}および\codem{round}は
+          実は\dfnje{函数}{function}と呼ばれるものであり，
+          後の\ref-subsection(`functions-and-conditionals`);で
+          これらについてより一般性の高い説明を与える．
+        }
+        +p{
+          続いては文字列である．文字列の “計算結果” を実際にPDFに出力するため，
+          やはり最初に掲げたテンプレートの段落の部分を\codem{\\show-string}に変えて使おう：
+
+          \d-code(```
+              +p{ Answer: [\show-string(`this is a string`);] }
+          ```);%
+
+          この\codem{\`this is a string\`}の部分を色々変えて遊ぶのである．
+          \codem{\\show-string( ${\cdots} )\;}のさらに外側が
+          \codem{\[}と\codem{\]}で囲まれているが，
+          これは単にインラインテキストの一部として書かれた四角括弧の文字で，
+          \codem{\\show-string}によって表示される文字列の
+          端がどこなのかを見やすくするためにつけているだけである．
+          要するに表示させたい文字列値のいずれか一方の端が空白文字であるとき，
+          本当にその端に空白文字が入っているかを確認する目的でつけている．
+        }
+        +p{
+          さて，先走って登場してしまったが，\SATySFi;での文字列リテラルは
+          両端をバッククォート（\codem{\`}）で囲って記述する．
+          多くのプログラミング言語では文字列内容を二重引用符で囲い，
+          キャリッジリターンや二重引用符などいくつかの特殊文字は
+          バックスラッシュでエスケープして書くような方式が採られるが，
+          \SATySFi;にはそのような文字列リテラルの記法はなく，
+          代わりに一切エスケープの要らない
+          バッククォートによるリテラルだけが備わっている．
+          一切エスケープが要らないといっても，
+          「\code(``foo`bar``);」のように
+          バッククォートを文字列内容に含めたい場合はどうすればよいのだろう？\quad;
+          これはMarkdownを書いた経験があれば想像しやすいが，
+          バッククォートが内容に現れる場合は
+          両端のバッククォートを2個ずつにするのである．
+          これにより文字列内容の終端がどこであるかがわかる．
+          試しにテンプレートの段落部分を
+
+          \d-code(```
+            +p{ Answer: [\show-string(``foo`bar``);] }
+          ```);%
+
+          にしてみると，結果は以下のようになる：
+
+          \d-block(open Sample in '<
+            +p{ Answer: [\show-string(``foo`bar``);] }
+          >);%
+
+          一般化して言うと，
+          文字列内容として ${n} 個隣接したバッククォートを含めたいとき，
+          左右で同数の ${\paren{n + 1}} 個以上の
+          連続したバッククォートで両端を囲めばよい．
+        }
+        +p{
+          ここで，良い意味で性格の悪い読者は
+          コーナーケースに気づいたかもしれない：\quad;
+          文字列内容の（少なくとも一方の）
+          端にバッククォートがくる場合はどうすればよいのだろう？\quad;
+          これは簡単で，文字列内容の端がバッククォートの場合は，
+          文字列を括るためのバッククォートの連続と文字列内容の端のバッククォートとの間に
+          空白文字を挿入するとよい．
+          バッククォートで括られた内容は，
+          両末端の空白文字の ${0} 個以上を除去して文字列内容にするのである：
+
+          \d-code-and-block(```
+            +p{ Answer: [\show-string(`` `bar``);] }
+          ```)(open Sample in '<
+            +p{ Answer: [\show-string(`` `bar``);] }
+          >);%
+
+          たしかに空白文字が除去され，左端がバッククォートになっていることがわかる．
+          さて，読者が次に思うことはもう私にはよくわかっている：\quad;
+          文字列内容の（いずれかの）末端を本当に空白文字にしたい場合はどうすればいいのだろう？\quad;
+          この疑問にもしっかり答えられるので安心してほしい．
+          もし左端の空白文字の ${0} 個以上の連続を無視させたくないのであれば，
+          文字列の括る左側のバッククォートを\codem{\`}ではなく\codem{\#\`}にするのである．
+          バッククォートが2個以上の場合も同様に\codem{\#\`\`}の要領で\codem{\#}を左につける．
+          右端の空白文字の ${0} 個以上の連続を無視させたくない場合も同様に
+          文字列を括る右側を\codem{\`}ではなく\codem{\`\#}とする．
+          バッククォートが2個以上の場合も同様である：
+
+          \d-code-and-block(```
+            +p{ Answer: [\show-string(#`` `bar``);] }
+          ```)(open Sample in '<
+            +p{ Answer: [\show-string(#`` `bar``);] }
+          >);%
+
+          たしかに空白文字が残っている．これでようやく安心して文字列リテラルが使える．
+        }
+        +p{
+          文字列リテラルが書けるようになったところで，文字列を構築する方法を伝授しよう．
+          文字列の結合は2項演算子\codem{^}でできるほか，
+          整数値に評価される式\codem{\meta{expr}}に対し，
+          \codem{(arabic \meta{expr})}で整数値を十進法文字列にすることができる：
+
+          \d-code-and-block(```
+            +p{ Answer: [\show-string(
+              `The result is `# ^ (arabic ((1 + 2) * 3 - 4)) ^ `!`
+            );] }
+          ```)(open Sample in '<
+            +p{ Answer: [\show-string(
+              `The result is `# ^ (arabic ((1 + 2) * 3 - 4)) ^ `!`
+            );] }
+          >);%
+
+          ここで使った\codem{arabic}はやはり函数であり，これに関しては
+          \ref-subsection(`functions-and-conditionals`);でしっかりと扱う．
+        }
+        +p{
+          なお，インラインテキスト\codem{\{ ${\cdots} \}}と
+          文字列は異なる概念であることに注意されたい．
+          前者はコマンドなどを内容に含んでいるが，
+          後者は純粋にUnicodeコードポイント列である．
+          ただし，文字列を
+          （等価なテキストで構成された，コマンドを含まない）インラインテキストへと変換することは
+          \codem{embed-string}という函数で行える．
+          これについても\ref-subsection(`functions-and-conditionals`);で扱う．
         }
       >
-      +subsection{函数と条件分岐}<
+      +subsection{型システムの基礎}<
+        +p{
+          ところで，“文字列を整数値に足そうとする” とどうなるだろうか？\quad;
+          結論から言うと，そのような計算は意味をなさず，
+          しかも型検査器に弾かれて “計算を試みることさえさせてもらえない”．
+          整数の計算に使った\codem{\\show-int}を含む最初のテンプレートで，
+          試しに以下のように記述して処理してみよう：
+
+          \d-code(```
+            +p{ Answer: [\show-int(
+              42 + `added string`
+            );] }
+          ```);%
+
+          次のようなエラーが出るはずである：
+
+          \console(```
+            ! [Type Error] at "test.saty", line 12, characters 9-23:
+                this expression has type
+                  string,
+                but is expected of type
+                  int.
+          ```);%
+
+          ファイル名\code(`test.saty`);や行数などは実際にどう記述したかで変わるのだが，
+          どうであれ実際に\codem{\`added string\`}が書かれている位置を指しているはずだ．
+          上記のエラーは\SATySFi;の型検査器が出した\dfnje{型エラー}{type error}であり，
+          その意味するところは（ほぼ直訳だが）
+          「\codem{\`added string\`}という式は\type(Type.string);型の式だが，
+          ここには\type(Type.int);型の式が書かれることが期待されている」だ．
+          ここでようやく\SATySFi;の特徴たる\dfnje{型}{type}の登場となる\footnote{
+            といっても，プログラミング言語のもつ特徴としては型はごく一般的な概念である．
+            型システムを有していることではなく，
+            型システムを組版処理を行なう処理系に持ち込んだことが
+            \SATySFi;の顕著な特徴なのである．
+          }．
+          一旦上のような具体的な型エラーを離れ，型についての一般論の時間にしよう．
+          型とは，非常に大雑把に言えば “値の種類による分類”，さらには
+          “評価した結果どんな種類の値になることが事前にわかっているかに基づく式の分類”
+          である．ここで “事前に” と言っているところが非常に重要だ．
+          要するに，“計算を実際に行なわなくともどんな種類の値が結果として出てくるのかが
+          式の字面\footnote{より正確には抽象構文木である．}だけからわかる”
+          ような仕組みが型によって確立されているということであり，
+          この仕組みが\dfnje{型システム}{type system}と呼ばれるものだ．
+          型システムを反映して与えられたプログラムが整合しているかどうかを判定する機構が
+          型検査器であり，この “整合しているかの検査” は
+          プログラムをなす各部分の式に型がつくかどうかを判定することで行なわれる．
+        }
+        +p{
+          式に型をつけることの直観は単純である．
+          まず，整数値の型として（上の型エラーにも出てきたように）
+          \type(Type.int);型が用意されている．
+          最初から値であるような\codem{1}とか\codem{2}とか\codem{500000000}といった
+          整数リテラルの式は単純にそのまま\type(Type.int);型がつけられる．
+          重要なのは，まだ値でない，評価すると “何かしら計算が進む” 式の型つけだ．
+          例えば，加算の式\codem{\metasub(${1}){expr} + \metasub(${2}){expr}}は
+          どのように型で扱うかというと，
+          「\codem{\metasub(${1}){expr} + \metasub(${2}){expr}}に何らかの型がつくなら
+          それは\type(Type.int);型であり，そのためには
+          \codem{\metasub(${1}){expr}}と
+          \codem{\metasub(${2}){expr}}にそれぞれ\type(Type.int);型がつかねばならない」
+          という規則が設けられているのである．
+          これが型システムという仕組みの大枠だ．
+          本当はもう少し一般性の高い仕組みなのだが，それは次節での函数の型つけの説明に譲る．
+        }
+        +p{
+          さて，上で出た型エラーの話に戻る．
+          このエラーの要因は，要するに
+          \codem{\metasub(${1}){expr} + \metasub(${2}){expr}}という形の式に型をつけるには
+          上記の説明どおり\codem{\metasub(${1}){expr}}と
+          \codem{\metasub(${2}){expr}}のそれぞれに
+          \type(Type.int);型がつくことが要請されるのだが，
+          ここでは\codem{\metasub(${2}){expr}}が\codem{\`added string\`}という
+          文字列リテラルであり，
+          これは（\type(Type.string);型はつくが）
+          \type(Type.int);型がつかないと定められている．
+          したがって元の加算の式全体には型がつかないことになり，型検査で弾かれるのである．
+        }
+      >
+      +subsection?:(`functions-and-conditionals`){函数定義と条件分岐}<
+        +p{
+          大抵のプログラミング言語には，頻出する計算手順に名前をつけ，
+          その計算手順を1箇所にまとめて記述する方法が備わっている．
+          多くの言語と同様に，\SATySFi;では\dfnje{函数}{function}がその役割を担う\footnote{
+            函数のほかには，\dfn{Fortran90}などの言語に見られるように
+            \dfnje{サブルーティン}{subroutine}と呼ばれる機構がこの役割を担っている言語もある．
+          }．
+          函数は，何らかの値を受け取り，それを加工して新たな値をつくる処理である．
+          例として，円単位の金額を整数で受け取り，
+          それをドル単位に換算する函数\codem{to-dollar}を定義してみよう．
+          レートはひとまず9月24日19時23分(UTC)に基づいて1ドルを112.73円とする．
+          これは以下のようにして定義できる：
+
+          \d-code(```
+            let to-dollar m-yen =
+              let rate = 112.73 in
+                (float m-yen) /. rate
+            in
+            （続きの式）
+          ```);%
+
+          函数の定義もlet式を用いて行なうのである．
+          ここで登場する\codem{m-yen}は\dfn{仮引数}
+          または単に\dfn{引数}と呼ばれるもので，
+          函数\codem{to-dollar}の受け取る値が格納される変数である．
+          ここで例示した\codem{to-dollar}はひとつだけ引数をとる函数だが，
+          一般には任意に正整数個とれる．
+          函数定義は，次のような構文によって為される：
+
+          \d-codem{
+            let \meta{f} \metasub(${1}){x} ${\cdots} \metasub(${n}){x} =
+              \metasub(${1}){expr}
+            in
+              \metasub(${2}){expr}
+          }%
+
+          \codem{\meta{f}}が定義したい函数に与える名前であり，
+          各\codem{\metasub(${i}){x}}は第 ${i} 引数である．
+        }
+        +p{
+          さて，上で定義した函数\codem{to-dollar}を実際に使ってみよう．
+          函数の定義は，パッケージの読み込みの記述から\codem{document}までの間の部分で行なえる．
+          すなわち，以下のようになる：
+
+          \d-code(```
+            @require: stdjareport
+
+            let-inline \show-int n = embed-string (arabic n)
+            let-inline \show-float x = embed-string (show-float x)
+            let-inline \show-string s = embed-string s
+            in
+
+            let to-dollar m-yen =
+              let rate = 112.73 in
+                (float m-yen) /. rate
+            in
+
+            document (|
+              （以降略）
+          ```);%
+
+          それでは実際に\codem{to-dollar}を使って円単位の金額をドル単位に換算してみよう．
+          函数\codem{\meta{f}}に式\codem{\meta{expr}}の計算結果を渡したいときは
+          \codem{\meta{f} \meta{expr}}と書く．
+          これを函数\codem{\meta{f}}の式\codem{\meta{expr}}への\dfnje{適用}{application}
+          とか式\codem{\meta{expr}}による函数\codem{\meta{f}}の\dfnje{呼び出し}{call}
+          と呼ぶ．また，ここで評価結果が\codem{\meta{f}}に渡される式\codem{\meta{expr}}のことを
+          \codem{\meta{f}}の\dfn{実引数}と呼ぶ．
+          やや厄介なことに，仮引数だけでなくこの実引数も単に\dfn{引数}と呼ばれることが多い．
+          しかし「引数」が仮引数の意であるか実引数の意であるかは
+          ほとんどの場合使用されている文脈から判断できるので，
+          特に違いを強調する必要のない場合は両者ともに引数と書くことにする．
+        }
+        +p{
+          函数\codem{\meta{f}}の式\codem{\meta{expr}}への適用は，次のような流れで評価される：
+
+          \listing{
+            * 実引数\codem{\meta{expr}}が評価されて値\codem{\meta{value}}になる．
+
+            * 函数\codem{\meta{f}}の定義
+              \codem{let \meta{f} \meta{x} = \meta{e} in ${\cdots}}
+              が “思い返される”．
+
+            * 仮引数\codem{\meta{x}}が\codem{\meta{value}}に束縛された下で
+              “定義の本体” である式\meta{e}が評価され，その結果が適用の式全体の評価結果となる．
+          }%
+
+          不正確ながら大雑把に言ってしまえば，
+          函数定義中の仮引数が実引数で置き換えられたものの計算するのが函数適用である．
+          さて，実際に\codem{to-dollar}を適用したのが以下だ：
+
+          \d-code-and-block(```
+            +p{ Answer: \show-float(to-dollar 10000); }
+          ```)(open Sample in '<
+            +p{ Answer: \show-float(to-dollar 10000); }
+          >);%
+
+          やはり大雑把に言えば，\codem{to-dollar}の “定義本体” の中の\codem{m-yen}がすべて
+          \codem{10000}に置き換わったものの計算結果が出ているわけである．
+          というわけで10000円は大体88.7ドルくらいであることが計算できた．
+        }
         +p{
           \REMAINS{函数定義と条件分岐}
+        }
+      >
+      +subsection{型システムと型推論の恩恵}<
+        +p{
+          式に型がつくことで，その式を評価しても
+          “値の種類に由来するエラー” は起きないということが保証される．
+          というか，型システムはこういったエラーを
+          プログラムを評価せず事前に検出して弾くためにあるわけである．
+          型なしの言語（いわゆる動的型つき言語\footnote{
+            「動的型」と言ったときの「型」は，
+            ここで説明した型の概念とは似て非なるもので，
+            “実行時にデータの種類を示すものとして値についているタグ”
+            であることに注意されたい．
+            繰り返しになるが，この本で使用しているのと同様の意で
+            「型」と言った時は “式に対して事前にわかる分類”
+            である．動的型との混同を避けて
+            俗に静的型と呼ばれることもある．
+            歴史的には動的型を指して「型」という語を使う方が
+            ずっと後発の用法である．
+          }）に馴染みの深い読者なら，もしかすると
+          「静的型を入れず，
+          整数値に文字列を足す処理が書かれたら前者を十進文字列にして
+          文字列結合にするように\codem{+}を定義すればよいのでは？\quad;
+          逐一\codem{arabic}で整数値を文字列値へ変換する処理を
+          明示的に書く必要もないし楽になるだろう」
+          などと考えるかもしれない．
+          だが，
+          \codem{\metasub(${1}){expr} + \metasub(${2}){expr}}
+          の形の式の計算結果が整数値にも文字列値にもなりうるというのは
+          そんなに “うれしいこと” ではない．次のような函数を考えよう：
+
+          \d-code(```
+            let f x =
+              let y = 42 + x in
+                y / 2
+          ```);%
+
+          型なしの言語だったりして，
+          整数値と文字列値の加算が許容されるとしよう．
+          このとき，上記の\codem{f}に渡される\codem{x}の “値の種類” によっては，
+          除算\codem{y / 2}に於いて
+          \codem{y}が文字列値など整数値でない場合も扱わねばならないことになる．
+          除算の定義をどうするか，ここで2通りの選択肢がある：
+
+          \listing{
+            * 整数値以外が左側にきた場合は実行時エラーとする．
+
+            * 整数値以外が左側にきた場合，結果を必ず\codem{0}にしたり，
+              何も処理せずその値を返したりと，
+              とにかく何かしらそれらしい値を返して実行時エラーにはしない．
+          }%
+
+          前者を採用した場合，
+          これはまさに型システムを入れることで除外したかった
+          “値の種類による実行時の破綻” だ．
+          「この実行時エラーを許容してもよいから静的に型をつけたくない」
+          という主義の人もいるかもしれないが，
+          ほとんどの場合その決断は割りに合わないと言ってよい．
+          型なしの言語で数千行規模のプログラムを書くと
+          （静的型つきの言語で書いた場合に比べて）
+          急速に保守が困難になることは想像に難くないし，
+          経験的にもそうであることが多いはずだ．
+          もし貴方が数千行規模のプログラムを型なしの言語で書いて保守しており，
+          かつ特に苦労していると思っていないなら，
+          それは単に型なし言語のデバッグの労苦に飼い慣らされていて，
+          静的型つきの言語の世界観から見れば大部分は要らぬ苦労をしているだけ，
+          という可能性は非常に高い．
+
+          一方で後者を採用した場合，
+          計算が失敗することはないが，
+          些細な間違いに対してもデバッグが非常に困難になる．
+          どこで意図しない計算が生じているか
+          事細かに追わないとわからないからだ．
+          特に組版処理のように “扱う値の種類” が多い場合，
+          “種類の違い” による意図しない計算は生じるリスクが大きく，
+          致命的に修正困難な状況に陥りやすいだろう．
+          要するに，“値の種類によらず計算に失敗しないようにする” ことも
+          “そんなに嬉しくない” のである．
+        }
+        +p{
+          とにかく，人間はプログラムを書く際にはひたすら間違い続ける．
+          しかもその間違いは，かなりしょうもないものであることが経験的に多そうだ．
+          型検査器は人間の犯すミスのうち或る種の不整合を丁寧にも事細かに指摘してくれる．
+          決してお節介なお婆さんではない．
+          「“式の種類” に関して不整合のあるプログラムを書いたときに
+          型検査器がその不整合を教えてくれ，
+          それに基づいて該当箇所をスムーズに修正できる」という利点は，
+          「“異なる種類” への値の変換を\codem{arabic}のような形で明示的に書かなければならない」
+          という多少の厄介さを補ってあまりがありすぎるほどの恩恵である．
+          また，これは非常に誤解が多いのだが，
+          プログラムに静的に型をつけるのに
+          \dfnje{型註釈}{type annotation}，
+          つまり各変数にどのような型をつけるかを明示した註釈が必要なわけでは
+          必ずしもない\footnote{
+            「静的型つきの言語は逐一変数につく型を書かないといけないから面倒」
+            という誤解は，おそらくC言語のような型註釈が省略できない
+            （或る意味特殊な）静的型つき言語の存在によるところが大きそうだ．
+            一般に静的型つき言語で変数の型註釈が省略できないわけでは決してない．
+          }．
+          適切に型システムを設計すれば，与えられたプログラムが “整合している” 限り，
+          全部または一部の変数にどのような型がつくか，型推論で求められるのである．
+          特に\SATySFi;を含めOCaml，F\#，Standard ML，Haskellなど多くの言語の型システムが
+          その理論的基盤としている
+          \dfn{Damas–Hindley–Milner多相}\footnote{
+            \dfn{Hindley–Milner多相}，\dfn{Damas–Milner多相}，
+            \dfn{let多相}，\dfn{冠頭多相}などとも呼ばれる．
+          } \cite[`Hindley1969`; `Milner1978`];は，
+          型推論が\dfnje{完全性}{completeness}をもつ，
+          すなわち変数に一切型註釈のない式に対しても
+          必ずその式につく “最も一般的な型” である\dfnje{主要型}{principal type}，
+          を求めるアルゴリズムが知られているという性質があり，
+          それゆえに特に\SATySFi;やOCamlでは
+          よほど複雑な機能を使わない限り基本的に型註釈を書かなくてよいという状況が達成されている．
+          つまり型註釈が現実的にプログラマの手を煩わせることはほとんどない．
+          むしろ型註釈が省略できすぎるので，
+          （2週間後の自分が見てプログラムを読めなくなることのないように）
+          型検査器からすればなくてもよい型註釈を可読性のために入れるくらいである\footnote{
+            Haskellはlet多相を基盤としていながらも
+            \dfnje{型クラス}{typeclass}がある影響で
+            型註釈が省略できない場合が顕著にみられ，
+            それゆえかトップレヴェルで定義する函数には必ず型註釈を入れる慣習がある．
+            たまに「型が函数定義の本体であって，実装はオマケにすぎない」
+            という主張をする人がいるが，これは
+            （\dfnje{篩型}{refinement type} \cite[
+              `FreemanPfenning1991PLDI`; `KnowlesFlanagan2007ESOP`;
+              `RondonKawaguchiJhala2008PLDI`;
+            ];のような，
+            通常の型よりもずっと強力な型を扱う型システムでもない限り）
+            過言気味だ．
+            型から実装が決まるわけでは決してないためだ．
+            例えば返り値の型が\type(Type.bool);の函数なら，
+            “最後に\codem{not}をかませるような実装に変更する” だけで
+            元と同一の型がつくが振舞いの全く異なる函数の実装ができてしまう．
+          }．
+          こうした考察から多くの言語には型システムによる静的な検査が搭載されており，
+          我々のコーディングを型検査器が支えてくれるようになっている．
+          \SATySFi;も，そんな言語のひとつである．
         }
       >
       +subsection{代数的データ型}<
         +p{
           \REMAINS{代数的データ型}
         }
+        +p{
+          \REMAINS{itemize}
+        }
       >
       +subsection{再帰函数}<
         +p{
           \REMAINS{再帰函数}
+        }
+      >
+      +subsection{レコード}<
+        +p{
+          \REMAINS{レコード}
+        }
+      >
+      +subsection{算術に関するプリミティヴ}<
+        +p{
+          \REMAINS{プリミティヴ}
+        }
+      >
+      +subsection?:(`diff-from-ocaml`){OCamlとの顕著な差異}<
+        +p{
+          すでに述べたように
+          プログラミング言語としての\SATySFi;は
+          OCamlにかなり近いものとなっているが，
+          非互換な違いがいくつか顕著にある．
+        }
+        +desc{変数名}{
+          おそらくコードの見た目上これが最も目につく違いである．
+          変数名はラテン小文字から始まり，
+          2文字目以降は大小ラテン文字，数字，ハイフンのいずれかでなければならない．
+          アンダースコア（\codem{_}）や
+          引用符（\codem{'}）は使えないことに注意．
+        }
+        +desc{再帰函数の定義}{
+          再帰函数の定義には，OCamlの\code(`let rec`);の代わりに
+          \codem{let-rec}を用いる．これで1トークンである．
+        }
+        +desc{型コンストラクタの構文}{
+          \SATySFi;では，型コンストラクタ\codem{\meta{tyconstr}}の “適用” は
+          \codem{\metasub(${1}){ty} ${\cdots} \metasub(${n}){ty} \meta{tyconstr}}
+          という形で書く．これはOCamlの
+          \codem{(\metasub(${1}){ty}, ${\ldots}, \metasub(${n}){ty}) \meta{tyconstr}}
+          および ${n = 1}の場合の
+          \codem{\metasub(${1}){ty} \meta{tyconstr}}
+          という形の構文とは明確に異なる．そのかわり，
+          OCamlでの\code(`int list list`);のような括弧を省いた “適用” を書くことはできず，
+          必ず\codem{(int list) list}と括弧をつけることになる．
+        }
+        +desc{コンストラクタ}{
+          \SATySFi;では，ヴァリアント型のコンストラクタはすべて1引数である．
+          \codem{None}のように引数のないコンストラクタの使用は
+          \codem{None()}のようにユニット値が省略されているものとして扱われているほか，
+          OCamlでは
+
+          \d-code(```
+            type foo = Foo of int * int
+          ```);%
+
+          と
+
+          \d-code(```
+            type foo = Foo of (int * int)
+          ```);%
+
+          とで定義される型が異なるが，\SATySFi;では完全に一致する．
+        }
+        +desc{レコード}{
+          まずレコード式を囲む括弧が
+          \code(`{`); ${\cdots} \code(`}`);
+          の代わりに
+          \codem{(\| ${\cdots} \|)}である\footnote{
+            これは\codem{\{ ${\cdots} \}}の記法を
+            インラインテキストのために明け渡したからである．
+          }．
+          また，レコード型はnominalではなくstructuralであり，
+          したがってレコード式\codem{(\| ${\cdots} \|)}は
+          それにつく型を\codem{type ${\cdots}}で宣言せずとも
+          書くことができる．
+          これは\SATySFi;の型システムがレコードに関して
+          \dfn{SML\#}と同様のもの \cite[`Ohori1995`];
+          を採用しているからである（詳細は元論文を参照せよ）．
+          これに加え，
+          OCamlに備わっているような，
+          特定のフィールドをmutableにするような機能はなく，
+          必ず全てのフィールドがimmutableである．
+        }
+        +desc{可変参照}{
+          可変参照はOCamlのように多相函数\code(`ref`);で作るのではなく，
+
+          \d-codem{
+            let-mutable \meta{x} \<- \metasub(${1}){expr} in \metasub(${2}){expr}
+          }%
+
+          という構文で作るように限定されている．これはOCamlの
+
+          \d-codem{
+            let \meta{x} = ref \metasub(${1}){expr} in \metasub(${2}){expr}
+          }%
+
+          と同等である．破壊的代入も，OCamlのように\code(`:=`);ではなく，
+          \codem{\meta{x} \<- \meta{expr}}と書く．
+          \codem{\<-}が多相な2項演算子なのではなく，
+          \codem{\meta{x} \<- \meta{expr}}全体が式をなすひとつの構文である．
         }
       >
     >
@@ -319,312 +1045,7 @@ document (|
   >
   +chapter?:(`line-breaking`){行分割処理}< #line-breaking; >
   +chapter?:(`system-and-config`){システムと設定ファイル}< #system-and-config; >
-  +chapter?:(`typography`){文字組版}<
-    +p{
-      文字は組版処理の主役であり，そして最も人間くささゆえの複雑性を備えた組版処理対象だ．
-      現在の\SATySFi;はひとまず和欧混植がそれらしくできることを志向して開発したため
-      かなりアドホックな面も目立つのだが，
-      ひとまず文字をどのように分類して扱っているかについてここで説明する．
-    }
-    +section{文字の分類}<
-      +p{
-        \SATySFi;はUnicodeコードポイントに対して以下の方法でそれぞれ分類する：
-
-        \listing{
-          * どの\dfnje{文字体系}{script}に属するか
-          * “東アジア的観点から” \dfnje{広い}{wide}文字か\dfnje{狭い}{narrow}文字か
-          * どの\dfnje{行分割クラス}{line breaking class}に属するか
-        }%
-
-        文字体系は\dfn{Unicode Script Property} \cite[`unicode-script`];により規定されているが，
-        現在の\SATySFi;は\code(`Hani`);，\code(`Kana`);，\code(`Latn`);と「それ以外」の4種類を
-
-        \d-code(```
-          type script =
-            | HanIdeographic
-            | Kana
-            | Latin
-            | OtherScript
-        ```);%
-
-        で定義されるような\type(Type.script);型で扱う．
-        勿論扱える文字体系は今後増やしていく想定であり，
-        或いは\type(Type.script);型のように文字体系があらかじめ言語にハードコードされた方法ではない，
-        より一般的な方法で文字体系を区別する方法に変更するかもしれない．
-      }
-      +p{
-        文字が “東アジア的観点から” 広いか狭いかは
-        \dfn{East Asian Width} \cite[`unicode-eaw`];に基づいて判断される．
-        East Asian Widthは東アジアのレガシーな文字表示に於いて
-        各文字が “いわゆる「全角」で表示されるものであるか，
-        いわゆる「半角」で表示されるものであるか” といったことを
-        規定しているプロパティなのだが，
-        \SATySFi;ではこのプロパティを
-        主に属する文字体系のないUnicodeコードポイントを扱うのに
-        有用な情報として転用している．
-        East Asian Widthは各Unicodeコードポイントを
-        Fullwidth (F)，Wide (W)，Ambiguous (A)，
-        Halfwidth (H)，Narrow (Na)，Neutral (N)
-        の6種類のいずれかに分類しており，\SATySFi;は
-        このうちの前2分類に該当するUnicodeコードポイントを\dfnje{広い}{wide}文字，
-        後ろ4分類に該当するものを\dfnje{狭い}{narrow}文字として扱う．
-      }
-      +p{
-        残る分類方法は行分割クラスである．これは
-        \dfn{Unicode Line Breaking Algorithm} \cite[`unicode-lb`];
-        で定義されたline breaking classとおおよそ一致する分類方法だが，
-        『日本語組版の要件』\cite[`jlreq`];，通称JLreqで定義されている
-        \dfn{文字クラス}の要素を取り込んで独自に少し上書きしたものだ．
-        すべて掲載すると長いので，
-        Unicode Line Breaking Algorithmが定義する
-        line breaking classとの差分を以下に述べる：
-      }
-      +listing{
-        * BK (Mandatory Break)，CR (Carriage Return)，LF (Line Feed)，NL (Next Line)を廃止し，
-          代わりにいずれもINBR (Input Break)という新しい分類に統一する．
-
-%        * \ucp(`2018`)(`LEFT SINGLE QUOTATION MARK`);
-
-        * JLreqが定義する文字クラス
-          cl-01（始め括弧類），
-          cl-02（終わり括弧類），
-%          cl-03（ハイフン類），
-%          cl-04（区切り約物），
-%          cl-05（中点類），
-          cl-06（句点類），
-          cl-07（読点類），
-          cl-10（長音記号）
-%          cl-11（小書きの仮名）
-          に相当する
-          JLOP (JL Open Punctuation)，
-          JLCP (JL Close Punctuation)，
-%          JLHY (JL Hyphens)，
-%          JLNS (JL Nonstarter)，
-%          JLMD (JL Middle Dot)，
-          JLFS (JL Full Stops)，
-          JLCM (JL Commas)，
-          JLPL (JL Prolonged Sound Mark)
-%          JLSM (JL Small Kanas)
-          という分類をそれぞれ新たに用意する．
-
-        * \ref-table(`lb`);のとおりに上書きする．
-          \table?:(`lb`){行分割クラスの上書き定義}<
-            +centering{\size(8.5pt){
-              \tabular(fun t -> (
-                let l = t#l in
-                let ucp snum sname itch itlbc =
-                  [ l {\code(`U+` ^ snum);}; l (embed-string sname);
-                      l {\fbox{#itch;}}; l itlbc ]
-                in
-                [
-                  ucp `2018` `LEFT SINGLE QUOTATION MARK             ` {‘} {OP};
-                  ucp `2019` `RIGHT SINGLE QUOTATION MARK            ` {’} {CP};
-                  ucp `201B` `SINGLE HIGH-REVERSED-9 QUOTATION MARK  ` {‛} {OP  };
-                  ucp `201C` `LEFT DOUBLE QUOTATION MARK             ` {“} {OP  };
-                  ucp `201D` `RIGHT DOUBLE QUOTATION MARK            ` {”} {CP  };
-                  ucp `201F` `DOUBLE HIGH-REVERSED-9 QUOTATION MARK  ` {‟} {OP  };
-                  ucp `3001` `IDEOGRAPHIC COMMA                      ` {、} {JLCM};
-                  ucp `3002` `IDEOGRAPHIC FULL STOP                  ` {。} {JLFS};
-                  ucp `3008` `LEFT ANGLE BRACKET                     ` {〈} {JLOP};
-                  ucp `3009` `RIGHT ANGLE BRACKET                    ` {〉} {JLCP};
-                  ucp `300A` `LEFT DOUBLE ANGLE BRACKET              ` {《} {JLOP};
-                  ucp `300B` `RIGHT DOUBLE ANGLE BRACKET             ` {》} {JLCP};
-                  ucp `300C` `LEFT CORNER BRACKET                    ` {「} {JLOP};
-                  ucp `300D` `RIGHT CORNER BRACKET                   ` {」} {JLCP};
-                  ucp `300E` `LEFT WHITE CORNER BRACKET              ` {『} {JLOP};
-                  ucp `300F` `RIGHT WHITE CORNER BRACKET             ` {』} {JLCP};
-                  ucp `3010` `LEFT BLACK LENTICULAR BRACKET          ` {【} {JLOP};
-                  ucp `3011` `RIGHT BLACK LENTICULAR BRACKET         ` {】} {JLCP};
-                  ucp `3014` `LEFT TORTOISE SHELL BRACKET            ` {〔} {JLOP};
-                  ucp `3015` `RIGHT TORTOISE SHELL BRACKET           ` {〕} {JLCP};
-                  ucp `3016` `LEFT WHITE LENTICULAR BRACKET          ` {〖} {JLOP};
-                  ucp `3017` `RIGHT WHITE LENTICULAR BRACKET         ` {〗} {JLCP};
-                  ucp `3018` `LEFT WHITE TORTOISE SHELL BRACKET      ` {〘} {JLOP};
-                  ucp `3019` `RIGHT WHITE TORTOISE SHELL BRACKET     ` {〙} {JLCP};
-                  ucp `301A` `LEFT WHITE SQUARE BRACKET              ` {〚} {JLOP};
-                  ucp `301B` `RIGHT WHITE SQUARE BRACKET             ` {〛} {JLCP};
-                  ucp `30FC` `KATAKANA-HIRAGARA PROLONGED SOUND MARK ` {ー} {JLPL};
-                  ucp `FF08` `FULLWIDTH LEFT PARENTHESIS             ` {（} {JLOP};
-                  ucp `FF09` `FULLWIDTH RIGHT PARENTHESIS            ` {）} {JLCP};
-                  ucp `FF0C` `FULLWIDTH COMMA                        ` {，} {JLCM};
-                  ucp `FF0E` `FULLWIDTH FULL STOP                    ` {．} {JLFS};
-                  ucp `FF3B` `FULLWIDTH LEFT SQUARE BRACKET          ` {［} {JLOP};
-                  ucp `FF3D` `FULLWIDTH RIGHT SQUARE BRACKET         ` {］} {JLCP};
-                  ucp `FF5B` `FULLWIDTH LEFT CURLY BRACKET           ` {｛} {JLOP};
-                  ucp `FF5D` `FULLWIDTH RIGHT CURLY BRACKET          ` {｝} {JLCP};
-                  ucp `FF5F` `FULLWIDTH LEFT WHITE PARENTHESIS       ` {｟} {JLOP};
-                  ucp `FF60` `FULLWIDTH RIGHT WHITE PARENTHESIS      ` {｠} {JLCP};
-                ]
-              ))(fun xs ys ->
-                []
-              );
-            }}
-          >
-      }
-      +p{
-        また，これに伴ってUnicode Line Breaking Algorithmも一部拡張する．
-        具体的には
-
-        \listing{
-          * LB13: ${\times} \meta-or{|CL|CP|EX|IS|SY|JLCP|JLCM|JLFS|}
-          * LB14: \meta-or{|OP|JLOP|} ${\text!{SP}^{\ast}} ${\times}
-          * LB16: \meta-or{|CL|CP|} ${\text!{SP}^{\ast}} ${\times} \meta-or{|NS|CJ|JLPL|}
-          * LB21: ${\times} \meta-or{|BA|HY|NS|CJ|JLPL|}，\quad;BB ${\times}
-        }%
-
-        と変更する．規則の読み方は\cite[`unicode-lb`];を参照されたい．
-        なお，INBRクラスとSPクラスに該当する文字，つまり “改行文字” や “空白文字” は，
-        行分割候補箇所を決定する前に以下に挙げるような規則に基づく正規化処理により除去される場合がある．
-        すなわち，\meta-or{|ID|CJ|IN|SA|JLOP|JLCP|JLFS|JLCM|JLPL|} を IDs と略記するとして，
-        各 SP または INBR の文字は前後が
-        以下のどのパターンに（先に挙げたものほど高い優先度で）マッチするかによって，
-        除去するか，残すか，置換するか等の処理を決定する．
-
-        \listing{
-          * 前方が IDs，後方が AL にそれぞれマッチする SP または INBR は除去する．
-          * 前方が AL，後方が IDs にそれぞれマッチする SP または INBR は除去する．
-          * 前方が IDs，後方が IDs にそれぞれマッチする INBR は除去する．
-          * 前方が IDs，後方が IDs にそれぞれマッチする SP は残す．
-          * 前方が IDs に合致する SP または INBR は除去する．
-          * 後方が IDs に合致する SP または INBR は除去する．
-          * INBR は SP に置換する．
-        }%
-
-        この正規化の処理は，和文の途中にある改行文字は特に何も書いていないのと同じだが，
-        欧文の途中にある改行文字は単語間空白と扱われることが期待されている，
-        という区別が必要であることを反映したものになっている．
-      }
-    >
-    +section{フォントの扱い}<
-      +p{
-        \SATySFi;に於ける「フォント」を規定するのは，
-        単にOpenTypeフォントファイル\footnote{
-          TrueType Collectionの場合も加味すると，
-          正確には「フォントファイル内の要素のひとつ」．
-        }に関連づけられたフォント名 ${F} ではなく，
-        これに\dfn{拡大率} ${r} と\dfn{ベースライン調整率} ${r'} という2つの数値が備えつけられた3つ組
-        ${\tuple{|F|r|r'|}} である．
-        フォントは文字体系ごとに別個に設定され，
-        次のようなプリミティヴを用いる：
-
-        \val-explain?:(`set-font`)({set-font})%
-          (Type.(script --> (product [string; float; float] --> (context --> context)))) {
-            \codem{\meta{ctx} \|\> set-font \meta{script} (\meta{fontname}, \meta{r}, \meta{rb})}
-            で文字体系\codem{\meta{script}}のフォント設定を\codem{(\meta{fontname}, \meta{r}, \meta{rb})}
-            に更新したテキスト処理文脈\codem{\meta{ctx}}を返す．
-          }%
-
-        \val-explain?:(`get-font`)({get-font})%
-          (Type.(context --> (script --> product [string; float; float]))) {
-            \codem{get-font \meta{script} \meta{ctx}}で
-            \codem{\meta{ctx}}に格納されている\codem{\meta{script}}のフォント設定を取り出す．
-          }%
-
-        拡大率が ${r} に設定されている場合，テキスト処理文脈設定されている文字サイズを ${s} としたとき，
-        ${F} のもつグリフやメトリックの情報は ${r s} を1emとするようなサイズで使われる．
-        すなわち，${r < 1} なら “標準的な大きさ” から縮小補正がかかり，
-        ${r > 1} なら拡大補正，${r = 1} ならばそのまま，ということである．
-        さらに，ベースライン調整率が ${r'} に設定されている場合，
-        ${F} のグリフは通常よりも ${r' s} だけベースラインを持ち上げた位置に描かれる．
-        すなわち，${r' = 0} なら補正せず，${r' < 0} ならば基準よりも下に，
-        ${r' > 0} ならば上に補正される．
-        これら拡大率とベースライン調整率は，
-        ラテン文字と漢字などベースラインに対する捉え方の異なる文字体系をスムーズに共存させるための補正である．
-        実際，ラテン文字と漢字で異なるフォントデータ ${F_1}，${F_2} を用いて組み，
-        フォントサイズ ${s} をそのまま ${F_1} と ${F_2} の両方で素直に1emにすると，
-        大抵の場合はラテン文字の方が小さく見えてしまう．
-        そこで，通常は和文の方を小さくするように補正する．
-        本書では${r_1 = 1}，${r_2 = 0.88} という拡大率を
-        ラテン文字に使うフォントと漢字や仮名に使うフォントにそれぞれ設定している．
-        なお，ベースライン調整率は両者ともに ${0} にしている．
-        和文フォントは和欧混植を見越してか
-        もともとベースラインを仮想ボディの下端よりも上に設定しているものが多く，
-        改めて補正する必要がなかったためである．
-      }
-    >
-    +section{異なる文字体系間の空白}<
-      +p{
-        一般に，ラテン文字と漢字など，異なる文字体系の文字が隣接する際には
-        字間を空けないと詰まりすぎて見える．
-        \SATySFi;は，互いに異なる文字体系に属する文字が隣接している箇所に自動でグルーを挿入する．
-        このグルーの各長さに関する情報は単語間空白と同様にフォントサイズに対する比率で
-        テキスト処理文脈が保持している．
-        デフォルトでは
-        \codem{Latin}と\codem{HanIdeographic}の間，\codem{Latin}と\codem{Kana}の間，
-        およびそれらの前後逆の4種類の組み合わせに対して\codem{(0.24, 0.08, 0.16)}が設定されているが，
-        以下のプリミティヴによって変更できる：
-
-        \val-explain?:(`set-space-ratio-between-scripts`)({set-space-ratio-between-scripts})%
-          (Type.(script --> (script --> (float --> (float --> (float --> (context --> context))))))) {
-            \codem{\meta{ctx} \|\> set-space-ratio-between-scripts
-              \metasub(${1}){script} \metasub(${2}){script}
-                \metasub(${0}){r} \metasub(${1}){r} \metasub(${2}){r}}
-            で前方が文字体系\codem{\metasub(${1}){script}}の文字，
-            後方が文字体系\codem{\metasub(${2}){script}}の文字の隣接箇所で
-            自然長，収縮基準長，伸長基準長の文字サイズに対する比率が
-            それぞれ
-            \codem{\metasub(${0}){r}}，
-            \codem{\metasub(${1}){r}}，
-            \codem{\metasub(${2}){r}}であるようなグルーを挿入するように
-            \codem{\meta{ctx}}を更新したテキスト処理文脈を返す．
-          }%
-
-        スペーシングに関してインラインボックス列を
-        特定の文字体系のテキストに “擬態させる” 方法として，
-        次のプリミティヴが使える：
-
-        \val-explain?:(`script-guard`)({script-guard})%
-          (Type.(script --> (inline-boxes --> inline-boxes))) {
-            \codem{script-guard \meta{script} \meta{ib}}で
-            インラインボックス列\codem{\meta{ib}}を前後のスペーシングに関して
-            文字体系\codem{\meta{script}}のテキストとして扱う．
-          }%
-      }
-    >
-    +section{寡占的文字体系}<
-      +p{
-        文字の広い/狭いの区別は，文字体系が特に定まっていない約物などのUnicodeコードポイントを
-        特定の文字体系へと “吸収” するのに用いる．
-        \SATySFi;では，テキストは基本的に “代表となる文字体系” が意識されて書かれているという仮定のもと，
-        テキスト処理文脈に “現在の寡占的な文字体系” の情報を保持させるようになっている．
-        “寡占的な文字体系” は2つ設定することができ，
-        ひとつは特定の文字体系に属さない広い文字をどの文字体系に “吸収” して扱うかで，
-        もうひとつは特定の文字体系に属さない狭い文字をどの文字体系へと “吸収” して扱うかである．
-        前者に設定された文字体系を\dfnje{広い寡占的文字体系}{dominant wide script}，
-        後者を\dfnje{狭い寡占的文字体系}{dominant narrow script}と呼ぶ．
-        例えば和欧混植の場合，前者は\codem{Kana}，後者は\codem{Latin}に設定するとよい．
-        こうすることで，いわゆる “全角用の” 約物は仮名の仲間として扱われることになってフォントも仮名と揃えられ，
-        一方で “アルファベット用の” 約物はラテン文字の仲間として扱われ，
-        フォントがラテン文字のものと揃えられることになる．
-        このような設定に関与するのが以下のプリミティヴたちである：
-
-        \val-explain?:(`set-dominant-wide-script`)({set-dominant-wide-script})%
-          (Type.(script --> (context --> context))) {
-            第1引数に与えられた文字体系を広い寡占的文字体系に設定する．
-          }%
-
-        \val-explain?:(`get-dominant-wide-script`)({get-dominant-wide-script})%
-          (Type.(context --> script)) {
-            広い寡占的文字体系に設定されている文字体系を取得する．
-          }%
-
-        \val-explain?:(`set-dominant-narrow-script`)({set-dominant-narrow-script})%
-          (Type.(script --> (context --> context))) {
-            第1引数に与えられた文字体系を狭い寡占的文字体系に設定する．
-          }%
-
-        \val-explain?:(`get-dominant-narrow-script`)({get-dominant-narrow-script})%
-          (Type.(context --> script)) {
-            狭い寡占的文字体系に設定されている文字体系を取得する．
-          }%
-
-        以上の仕組みを知って「なんとアドホックな仕組みであることか」と驚かれる読者も多いかもしれない．
-        正直なところ著者もそう思うが，一応現状では和欧混植に関してよく効力を発揮している．
-        おそらく “より多言語な組版” を扱うには耐えない仕組みであろうから，
-        この仕組みが将来の非互換な変更で大きく形を変える可能性は高い．
-      }
-    >
-  >
+  +chapter?:(`typography`){文字組版}< #typography; >
   +chapter?:(`graphics`){グラフィックス}< #graphics; >
   +chapter?:(`math`){数式組版}<
     +p{
@@ -652,312 +1073,7 @@ document (|
     +p{ \REMAINS{} }
   >
   +chapter?:(`cross-reference`){相互参照}< #cross-reference; >
-  +chapter?:(`page-breaking`){ページ分割処理}<
-    +p{
-      ページ分割は，
-      おそらく\SATySFi;の機構の中でも最も理解が難しい部分だろう．
-      処理の概要自体はブロックボックス列になった文書の全内容を適切な長さで切り分けて
-      各ページの内容にするというだけなのだが，
-      まともな文書をつくるにはページ分割に伴って種々の手続き的処理を行なう必要があり，
-      したがってクラスファイルを開発するには避けて通れない道である．
-      まず，ページ分割処理に相当するプリミティヴは
-
-      \val({page-break})(Type.(page --> (tymtausub ${2} --> (tymtausub ${3} --> (block-boxes --> document)))));%
-
-      である．\type(Type.(tymtausub ${2}));と\type(Type.(tymtausub ${3}));は
-      やや複雑なため後述するが，
-      これらの型がつく第2・第3引数を置いておけば
-      \codem{page-break}のインターフェイスは単純極まりないもので，
-      第1引数は紙面のサイズ，第4引数はページ分割対象となるブロックボックス列である．
-      \type(Type.page);型は
-
-      \d-code(```
-        type page =
-          | A0Paper | A1Paper | A2Paper | A3Paper | A4Paper | A5Paper
-          | USLetter | USLegal
-          | UserDefinedPaper of length * length
-      ```);%
-
-      で定義されるようなデータ型で，
-      \codem{A4Paper}などのコンストラクタが
-      それぞれ何を表すのかは想像のとおりである\footnote{
-        正直なところ紙面のサイズ指定は
-        \type(Type.(product [length; length]));型で十分で，
-        \codem{A4Paper}などに相当する値は
-
-        \val({Paper.a4})(Type.(product [length; length]));%
-
-        のようにパッケージレヴェルで与えればよかったのだが，
-        過去の阿呆な著者はこんな形式化をしてしまった．
-        おそらく最も近い将来の非互換な変更でこの\type(Type.page);型は姿を消すだろう．
-      }．
-      要するに，ひとまず最も大雑把に言えば，
-      \codem{page-break}とは第4引数に与えられたブロックボックス列を
-      第1引数に与えられた紙面の大きさに基づいてページ分割を行なうプリミティヴ，
-      ということになる．
-      ただし，これだけでは説明としてあまりにも語弊が大きいので，
-      以降順次詳細に説明する．
-    }
-    +p{
-      まず注目すべきは\codem{page-break}の返り値の型\type(Type.document);だ．
-      この型は\codem{page-break}以外のプリミティヴには返り値の型として一切現れず，
-      したがって\type(Type.document);型の値を構築することは
-      本質的に\codem{page-break}によってしかできないようになっている．
-      \SATySFi;は文書ファイルにつく型が\type(Type.document);型であることを型検査時に要請するので，
-      クラスファイルの奥底には必ず\codem{page-break}があって\footnote{
-        ユーザに直接\codem{page-break}を書かせるような病的なクラスファイルなら
-        \codem{page-break}を含まないかもしれないが，
-        そんなクラスファイルをつくるような必要はほぼない．
-      }，
-      そこでユーザが与えた種々の情報をもとに組み上げられたブロックボックス列に
-      ページ分割処理を施すための記述が為されている．
-      \pkg{stdjareport}クラスに基づいて文書を作成するときに書いていた
-
-      \d-code(```
-        @require: stdjareport
-
-        document (|
-          （文書情報）
-        |) '<
-          （内容）
-        >
-      ```);%
-
-      の\codem{document}は実は単なる函数であり，上の記述は
-      \codem{document}という函数の適用である．\codem{document}函数は
-
-      \quote{
-        \type(Type.(forall-kinded ${\alpha}
-          [
-            (`title`, inline-text);
-            (`author`, inline-text);
-          ]
-          (tymalpha --> (block-text --> document))));
-      }%
-
-      という型をもつので，タイトルおよび著者を記述したレコードを第1引数に，
-      文書内容のブロックテキストを第2引数に受け取り，
-      最終的に\type(Type.document);型の値を返すということになっているのである．
-    }
-    +p{
-      さて，後回しにしていた\type(Type.(tymtausub ${2}));の話である．
-      これは以下のような型だ：
-
-      \quote{
-        \type(Type.(
-          record [(`page-number`, int)] -->
-            record [(`text-height`, length); (`text-origin`, point)]
-        ));
-      }%
-
-      ここから，ひとまず\codem{page-break}に与える第2引数は
-      レコードを受け取ってレコードを返す函数であることがわかる．
-      この函数は，ページ分割処理の最中に ${\paren{n - 1}} ページまでの内容が確定し，
-      今まさに残りのブロックボックス列から ${n} ページ目の内容を切り分ける箇所を
-      探し始めるというときに
-      \codem{(\| page-number = \meta{n}\; \|)}
-      というレコードが渡されることで呼び出され，
-      \codem{(\| text-height = \meta{h}\; text-origin = (\meta{x}, \meta{y})\; \|)}
-      という形の値を返すことで
-
-      \listing{
-        * ${h}：\quad;
-            ${n} ページ目の内容のテキストの領域の段落方向の長さ
-        * ${\tuple{|x|y|}}：\quad;
-            実際に切り分けられた内容を配置するときの左上の座標
-      }%
-
-      という情報をページ分割処理を担う機構に教える．
-      ただし，グラフィックスの座標系とは異なり，
-      ここでの ${\tuple{|x|y|}} の ${y} は
-      紙面の左上を原点とし下向きを ${+y} 方向とする座標系に基づく値なので
-      注意されたい．
-      どのページも同じ地点から同じ長さだけ本文が記述されているような文書を出力したいなら
-      ${n} によらず同一の ${h} と ${\tuple{|x|y|}} を返すような函数にすればよいし，
-      ページの左右で（綴じしろなどの都合で）余白を変えたい場合は
-      ${n} の偶奇で異なる値を返すような函数にすればよいだろう．
-    }
-    +p{
-      同様に，\codem{page-break}の第3引数につく型である
-      \type(Type.(tymtausub ${3}));についても述べると，
-      以下のようなものである：
-
-      \quote{
-        \type(Type.(
-          record [(`page-number`, int)] -->
-            record [
-              (`header-content`, block-boxes);
-              (`header-origin`, point);
-              (`footer-content`, block-boxes);
-              (`footer-origin`, point);
-            ]
-        ));
-      }%
-
-      やはりレコードを受け取ってレコードを返す函数の型である．
-      \codem{page-break}の第3引数に指定された函数は，
-      第 ${n} ページの内容が確定し，
-      後述するようなページ内の “フック処理” がすべて終了したときに
-      \codem{(\| page-number = \meta{n}\; \|)}
-      というレコードが渡されることで呼び出され，
-
-      \d-codem{
-        (\|
-        \new-line;\quad;
-        header-content = \metasub(${1}){bb}\;
-        header-origin = (\metasub(${1}){x}, \metasub(${1}){y})\;
-        \new-line;\quad;
-        footer-content = \metasub(${2}){bb}\;
-        footer-origin = (\metasub(${2}){x}, \metasub(${2}){y})\;
-        \new-line;
-        \|)
-      }%
-
-      という形のレコードを返すことで
-
-      \listing{
-        * ${\tuple{|x_1|y_1|}} を左上としてブロックボックス列 ${bb_1} をヘッダとして描く
-        * ${\tuple{|x_2|y_2|}} を左上としてブロックボックス列 ${bb_2} をフッタとして描く
-      }%
-
-      という情報を与える．
-      上で説明した第2引数と同じく，
-      ここで返す座標も左上を原点とし下向きを ${+y} 方向とする座標系であるので注意されたい．
-      この座標系を用いるのは\codem{page-break}の第2・第3引数のみである．
-    }
-    +p{
-      以上がプリミティヴ\codem{page-break}の仕様なのだが，
-      ほんの少しつけ加えるとすれば，それは “実際に行分割が行なわれるタイミング” についてである．
-      実は “\codem{page-break}自体がページ分割処理をしている” わけではなく，
-      文書全体が\type(Type.document);型の値として返された時，
-      初めてページ分割処理が起動する．
-      言うなれば，\type(Type.document);型の値とは
-      最終的なページ分割に関わる情報を実際にページ分割を行なわずに “凍結” したものである．
-      したがって，最終的に返される\type(Type.document);型の値以外に
-      \type(Type.document);型の値をつくるような処理を書いたとしても，
-      それが実際にページ分割されることはない．
-      そもそも\type(Type.document);型の値を加工するようなプリミティヴは一切ないので，
-      PDFに出力する内容を返す以外で
-      \codem{page-break}によって\type(Type.document);型の値をつくる意味はなく，
-      意味があるとすればそれは返り値を使わずに
-      ページ分割時の “副作用” だけ起こすことを意図したものであろうが，
-      それもできないようになっているのである\footnote{
-        できないようになっている理由は特にないので，
-        必要があれば将来の非互換な変更で仕様を変え，
-        “\codem{page-break}自体がページ分割処理をする”
-        ようにしてもよいかもしれない．
-      }．
-    }
-    +section{ページ分割に関連するプリミティヴ}<
-      +p{
-        ページ分割に関する処理を行なうためのプリミティヴがいくつかあるので，
-        ここで紹介する．
-
-        \val-explain?:(`clear-page`)({clear-page})%
-          (Type.(block-boxes)) {
-            強制的に改ページする．
-            ページ分割される対象ではない箇所に挿入されている場合は
-            \codem{block-nil}と等価である．
-          }%
-
-        \val-explain?:(`add-footnote`)({add-footnote})%
-          (Type.(block-boxes --> inline-boxes)) {
-            \codem{add-footnote \meta{bb}}で
-            ブロックボックス列\codem{\meta{bb}}を脚註として挿入する．
-            返り値は\type(Type.inline-boxes);型で，
-            この返り値のインラインボックス列を挿入した場所に関連づけられて
-            ページ分割処理時に脚註の挿入されるページが決まる．
-            インラインボックス列としての効能自体は
-            \codem{inline-nil}と同等である．
-          }%
-
-        \val-explain?:(`hook-page-break`)({hook-page-break})%
-          (Type.(((record [(`page-number`, int)] --> (point --> unit))) --> inline-boxes)) {
-            \codem{hook-page-break \meta{f}}の形で使う．
-            返り値はインラインボックス列であり，組版上の効能は\codem{inline-nil}と同等なのだが，
-            ページ分割処理の最中にこれが挿入されている箇所がどのページに含まれるか確定したときに
-            “フック函数” である\codem{\meta{f}}が起動される．
-            同一ページ内に複数の “フック函数” が仕込まれている場合，
-            ページ内容上で手前にあるものから順に起動される．
-            この “フック” 函数の潜んだインラインボックス列が
-            ページ分割の結果 ${n} ページ目に含まれることになり，
-            その参照点が ${\tuple{|x|y|}} であったとき，
-            \codem{\meta{f}}には第1引数として
-            \codem{(\| page-number = \meta{n}\; \|)}
-            が，第2引数として
-            \codem{(\meta{x}, \meta{y})}
-            が渡されることで起動される．
-            そしてそれらの引数の値を用いてこの\codem{\meta{f}}の “函数の中身” で
-            ページ番号に基づく相互参照の紐づけを新たに登録したりといった
-            様々な “副作用” が起こせる，というわけである．
-          }%
-
-        \ref-chapter(`graphics`);で説明した
-        「グラフィックスの評価はページ分割時に行なわれる」という話は，
-        実はこの\codem{hook-page-break}と同様である．
-        \codem{inline-graphics}の第4引数など，
-        参照点を受け取ってグラフィックスを返す類いの函数は，
-        \codem{hook-page-break}による “フック函数” と同じタイミングで評価が起動するのである．
-      }
-    >
-    +section{クラスファイルの基礎}<
-      +p{
-        さて，ページ分割処理について把握したところで
-        クラスファイルを創ろうと軽く思い立ったとき，
-        ふと今まで特に意識していなかったことに気づくかもしれない：\quad;
-        “最も外側の” テキスト処理文脈はどこから来るのだろう？\quad;
-        これはごく単純で，次のようなプリミティヴによって受け取れる：
-
-        \val-explain?:(`get-initial-context`)({get-initial-context})%
-          (Type.(length --> (cmdI [math] --> context))) {
-            デフォルトのテキスト処理文脈を返す．
-            第1引数は段落幅を，
-            第2引数はインラインテキスト中に現れた数式に適用するコマンドを
-            \codem{set-math-command}と同じ要領で与える．
-          }%
-
-        段落幅を指定できるのはこの\codem{get-initial-context}のみである．
-        “まともな” クラスファイルの中にはこの\codem{get-initial-context}が必ずどこかにあり，
-        これが返したテキスト処理文脈を適宜加工して “最も外側の” テキスト処理文脈としているのである．
-      }
-      +example{
-        “多少なりともまともに使える，実質的に最小のクラスファイル” は以下のように定義できる：
-
-        \d-code(```
-          let-inline ctx \math m =
-            script-guard Latin (embed-math ctx m)
-
-          let-block ctx +p it =
-            line-break true true ctx
-              (read-inline ctx it ++ inline-fil)
-
-          let document bt =
-            let ctx =
-              get-initial-context 440pt (command \math)
-                |> set-dominant-narrow-script Latin
-            in
-            let bb = read-block ctx bt in
-            page-break A4Paper
-              (fun _ -> (|
-                text-origin = (80pt, 100pt);
-                text-height = 630pt;
-              |))
-              (fun _ -> (|
-                header-origin  = (0pt, 0pt);
-                header-content = block-nil;
-                footer-origin  = (0pt, 0pt);
-                footer-content = block-nil;
-              |))
-              bb
-        ```);%
-
-        このクラスファイルの下では，
-        ユーザが新たにコマンドを定義しない限り，
-        \codem{+p}を用いてひたすら段落が並べられたブロックテキストを
-        \codem{document}の引数に渡した文書しか記述することができない．
-      }
-    >
-  >
+  +chapter?:(`page-breaking`){ページ分割処理}< #page-breaking; >
   +chapter?:(`future-work`){Future Work}< #future-work; >
   +chapter?:(`specification`){言語仕様}< #specification; >
 >
