@@ -323,6 +323,14 @@ module Sample = struct
       (float (m-yen)) /. rate
 
 
+  let to-dollar-2 rate m-yen =
+    (float m-yen) /. rate
+
+
+  let abs n =
+    if n < 0 then - n else n
+
+
   let-inline ctx \simple-frame it =
     let pads = (2pt, 2pt, 2pt, 2pt) in
     let decoset = HDecoSet.simple-frame-stroke 1pt (Gray(0.5)) in
@@ -442,6 +450,8 @@ module Type : sig
   val forall-kinded : math -> (string * t) list -> t -> t
   val star : t -> t
 
+  val synt-paren : t -> t
+
   val unit : t
   val bool : t
   val int : t
@@ -492,6 +502,7 @@ end = struct
     | Cmd    of inline-text * t list
     | Forall of math * ((string * t) list) option * t
     | Record of (string * t) list
+    | Paren  of t
 
 
   type paren-mode =
@@ -533,6 +544,7 @@ end = struct
     ))
 
 
+  let synt-paren ty = Paren(ty)
 
 
   let to-math is-inline =
@@ -572,7 +584,7 @@ end = struct
           let ms = List.map (aux Single) tys in
           let m = Math.join ${\mathbin{\ast}} ms in
           ( match mode with
-            | Single -> ${\paren{m}}
+            | Single -> ${\paren{#m}}
             | _      -> m
           )
 
@@ -594,6 +606,11 @@ end = struct
       | mode (Record(assoc)) =
           let m = make-record-math assoc in
             ${\record-paren{#m}}
+
+      | _ (Paren(ty)) =
+          let m = aux Normal ty in
+            ${\paren{#m}}
+
 
     and make-record-math assoc =
       let ms =
@@ -681,12 +698,19 @@ end = struct
 end
 
 
-let val-scheme ctx indexopt it-cmd ty explainopt =
+let val-scheme ctx indexopt it-cmds ty explainopt =
   let m = Type.to-math false ty in
+  let it-cmd =
+    it-cmds |> List.fold-left-adjacent (fun itacc it prevopt _ -> (
+      match prevopt with
+      | None    -> {\codem{#it;}}
+      | Some(_) -> {#itacc;, \codem{#it;}}
+    )) {}
+  in
   let it =
     match indexopt with
-    | None    -> {\codem{#it-cmd;} : ${#m}}
-    | Some(s) -> {\index(s)?:({\code(s);}){\codem{#it-cmd;}} : ${#m}}
+    | None    -> {#it-cmd; : ${#m}}
+    | Some(s) -> {\index(s)?:({\code(s);}){#it-cmd;} : ${#m}}
   in
   let wid = get-text-width ctx in
   let len = quote-indent-1 +' quote-indent-2 in
@@ -740,11 +764,15 @@ let-block ctx +example ?:labelopt it =
 
 
 let-inline ctx \val ?:indexopt it-cmd ty =
-  val-scheme ctx indexopt it-cmd ty None
+  val-scheme ctx indexopt [it-cmd] ty None
+
+
+let-inline ctx \vals-explain it-cmds ty it =
+  val-scheme ctx None it-cmds ty (Some(it))
 
 
 let-inline ctx \val-explain ?:indexopt it-cmd ty it =
-  val-scheme ctx indexopt it-cmd ty (Some(it))
+  val-scheme ctx indexopt [it-cmd] ty (Some(it))
 
 
 let-inline ctx \type ty =
@@ -773,6 +801,10 @@ let-inline ctx \metasub msub it =
 
 let-inline ctx \meta-star it =
   embed-math ctx ${\sqbracket{\text!{#it;}}^{\ast}}
+
+
+let-inline ctx \meta-plus it =
+  embed-math ctx ${\sqbracket{\text!{#it;}}^{+}}
 
 
 let-inline ctx \meta-or its =
