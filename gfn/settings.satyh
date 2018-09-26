@@ -471,11 +471,13 @@ module Type : sig
 
   val list : t -> t
   val option : t -> t
+  val ref : t -> t
 
   % ---- metavariables --
 
   val tymb : t
   val tymalpha : t
+  val tymbeta : t
   val tymsigma : t
   val tymtau : t
   val tymtaup : t
@@ -662,6 +664,7 @@ end = struct
 
   let list ty = Ctr({list}, [ty])
   let option ty = Ctr({option}, [ty])
+  let ref ty = Ctr({ref}, [ty])
 
 
   % ---- metavariables --
@@ -669,6 +672,7 @@ end = struct
   let meta m = Ctr({${#m}}, [])
   let tymb = meta ${b}
   let tymalpha = meta ${\alpha}
+  let tymbeta = meta ${\beta}
   let tymsigma = meta ${\sigma}
   let tymtau = meta ${\tau}
   let tymtaup = meta ${\tau'}
@@ -1004,3 +1008,11 @@ let-inline ctx \tokens its =
     embed-block-breakable ctx
       (block-frame-breakable ctx pads display-code-decoset (fun ctx ->
         line-break true true ctx (ib ++ inline-fil)))
+
+
+let tylogical = Type.(bool --> (bool --> bool))
+let tyarithI = Type.(int --> (int --> int))
+let tycompI = Type.(int --> (int --> bool))
+let tyarithF = Type.(float --> (float --> int))
+let tycompF = Type.(float --> (float --> bool))
+let tysine = Type.(float --> float)

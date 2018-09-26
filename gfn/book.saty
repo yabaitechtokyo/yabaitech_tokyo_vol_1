@@ -787,7 +787,13 @@ document (|
           というわけで10000円は大体88.7ドルくらいであることが計算できた．
         }
         +p{
-          \REMAINS{函数定義と条件分岐}
+          \REMAINS{2引数以上の函数の定義}
+        }
+        +p{
+          \REMAINS{函数の型と部分適用}
+        }
+        +p{
+          \REMAINS{真偽値と条件分岐}
         }
       >
       +subsection{型システムと型推論の恩恵}<
@@ -945,9 +951,188 @@ document (|
           \REMAINS{レコード}
         }
       >
+      +subsection{手続き}<
+      >
       +subsection{算術に関するプリミティヴ}<
         +p{
-          \REMAINS{プリミティヴ}
+          主な “算術演算” 用のプリミティヴについてまとめて紹介する：
+
+          \val-explain({+})(tyarithI) {
+            整数の加算．
+          }%
+          \val-explain({-})(tyarithI) {
+            整数の減算．
+          }%
+          \val-explain({\*})(tyarithI) {
+            整数の乗算．
+          }%
+          \val-explain({/})(tyarithI) {
+            整数の除算．第2引数に\codem{0}が与えられた場合は実行時エラーとなる．
+          }%
+          \val-explain({mod})(tyarithI) {
+            整数の剰余．第2引数に\codem{0}が与えられた場合は実行時エラーとなる．
+          }%
+          \val-explain({==})(tycompI) {
+            整数の等号．
+          }%
+          \val-explain({\>})(tycompI) {
+            “大也”．
+          }%
+          \val-explain({\<})(tycompI) {
+            “小也”．
+          }%
+          \val-explain({\<\>})(tycompI) {
+            整数の不等号．
+          }%
+          \val-explain({\>=})(tycompI) {
+            “大きいかまたは等しい”．
+          }%
+          \val-explain({\<=})(tycompI) {
+            “小さいかまたは等しい”．
+          }%
+
+          % -- 真偽値 --
+          \val-explain({\&\&})(tylogical) {
+            連言．
+          }%
+          \val-explain({\|\|})(tylogical) {
+            選言．
+          }%
+          \val-explain({not})(Type.(bool --> bool)) {
+            否定．
+          }%
+
+          % -- 浮動小数点数 --
+          \val-explain({float})(Type.(int --> float)) {
+            整数を浮動小数点数に変換する．
+          }%
+          \val-explain({round})(Type.(float --> int)) {
+            浮動小数点数を，小数部分を切り捨てて整数に変換する．
+            引数が正負無限やNaN，あるいは小数部分を切り捨てた整数が\type(Type.int);型で
+            表現不可能なときの結果は未定義．
+          }%
+          \val-explain({+.})(tyarithF) {
+            浮動小数点数の加算．
+          }%
+          \val-explain({-.})(tyarithF) {
+            浮動小数点数の減算．
+          }%
+          \val-explain({\*.})(tyarithF) {
+            浮動小数点数の乗算．
+          }%
+          \val-explain({/.})(tyarithF) {
+            浮動小数点数の除算．
+          }%
+          \val-explain({sin})(tysine) {
+            正弦函数．
+          }%
+          \val-explain({asin})(tysine) {
+            アークサイン，つまり正弦関数の“逆函数”．
+          }%
+          \val-explain({cos})(tysine) {
+            余弦函数．
+          }%
+          \val-explain({acos})(tysine) {
+            アークコサイン，つまり余弦函数の“逆函数”．
+          }%
+          \val-explain({tan})(tysine) {
+            正接函数．
+          }%
+          \val-explain({atan})(tysine) {
+            アークタンジェント，つまり正接函数の“逆函数”．
+          }%
+          \val-explain({atan2})(Type.(float --> (float --> float))) {
+            \codem{atan2 \meta{y} \meta{x}}で
+            \codem{\meta{y} /. \meta{x}}のアークタンジェントを返すが，
+            \codem{\meta{y}}と\codem{\meta{x}}の符号が象限の決定に用いられる．
+            返される値は ${-\pi} から ${\pi} の間の値である．
+          }%
+
+          % -- 長さ --
+          \val-explain({+'})(Type.(length --> (length --> length))) {
+            長さの加算．
+          }%
+          \val-explain({-'})(Type.(length --> (length --> length))) {
+            長さの減算．
+          }%
+          \val-explain({\*'})(Type.(length --> (float --> length))) {
+            長さのスカラー倍．
+          }%
+          \val-explain({/'})(Type.(length --> (length --> float))) {
+            長さの “除算”．
+          }%
+          \val-explain({\>'})(Type.(length --> (length --> bool))) {
+            長さの “大也”．
+          }%
+          \val-explain({\<'})(Type.(length --> (length --> bool))) {
+            長さの “小也”．
+          }%
+
+          % -- 文字列 --
+          \val-explain({^})(Type.(string --> (string --> string))) {
+            文字列の結合．
+          }%
+          \val-explain({arabic})(Type.(int --> string)) {
+            整数を十進文字列に変換する．
+          }%
+          \val-explain({show-float})(Type.(float --> string)) {
+            浮動小数点数を十進文字列に変換する．
+          }%
+          \val-explain({string-same})(Type.(string --> (string --> bool))) {
+            文字列の等価性の判定．
+            バイト列として等価かどうかの判定であり，
+            Unicodeによって規定された正規化等は行なわない．
+          }%
+          \val-explain({string-sub})(Type.(string --> int --> int --> string)) {
+            \codem{string-sub \meta{s} \meta{i} \meta{l}}で
+            文字列\codem{\meta{s}}の第\codem{\meta{i}}番目の文字を先頭とする
+            長さ\codem{\meta{l}}の部分文字列を取り出す．
+            文字数はUnicodeコードポイント単位．
+            \codem{\meta{i}}と\codem{\meta{l}}による
+            指定が部分文字列の範囲でない場合は実行時エラーが出る．
+          }%
+          \val-explain({string-length})(Type.(string --> int)) {
+            与えられた文字列がUnicodeコードポイント単位で何文字かを返す．
+          }%
+          \val-explain({string-unexplode})(Type.(list int --> string)) {
+            与えられた整数列の各整数をUnicodeコードポイントと解釈した文字列を返す．
+            Unicodeコードポイントの範囲にない整数が与えられた場合の動作は未定義．
+          }%
+          \val-explain({embed-string})(Type.(string --> inline-text)) {
+            文字列をインラインテキストに変換する．
+          }%
+
+%          \val-explain({regexp-of-string})(Type.()) {}
+%          \val-explain({string-match})(Type.()) {}
+%          \val-explain({split-on-regexp})(Type.()) {}
+
+          \val-explain({split-into-lines})%
+            (Type.(string --> list (product [int; string]))) {
+              与えられた文字列を各行に分解してリストを返す．
+              返されるリストの各要素\codem{(\meta{i}, \meta{s})}は
+              “インデントが\codem{\meta{i}}個挿入された内容文字列\codem{\meta{s}}の行”
+              に相当する．
+            }%
+
+           \val-explain({!})%
+             (Type.(forall ${\alpha} (ref tymalpha --> tymalpha))) {
+               \codem{!\meta{r}}で可変参照\codem{\meta{r}}の参照する現在の値を返す．
+             }%
+           \val-explain({::})(Type.(forall ${\alpha}
+             (tymalpha --> (list tymalpha --> list tymalpha)))) {
+               リストの “コンス”，すなわち第1引数を第2引数のリストの先頭につけてできるリストを返す．
+             }%
+           \val-explain({\|\>})(Type.(forall ${\alpha} (forall ${\beta}
+             (tymalpha --> ((tymalpha --> tymbeta) --> tymbeta))))) {
+               前後逆の函数適用，すなわち
+               \codem{\meta{x} \|\> \meta{f}}で
+               \codem{\meta{f} \meta{x}}に同じ．
+               ただし，式\codem{\meta{x}}と\codem{\meta{f}}の評価に
+               ともに “副作用” がある場合は評価順序の逆転に注意を要する．
+             }%
+           \val-explain({display-message})(Type.(string --> unit)) {
+             与えられた文字列を1行として標準出力に表示する．
+           }%
         }
       >
       +subsection?:(`diff-from-ocaml`){OCamlとの顕著な差異}<

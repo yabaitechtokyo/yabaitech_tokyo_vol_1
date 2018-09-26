@@ -10,7 +10,7 @@
  [ ] get-text-width
 
  [ ] set-manual-rising
- [ ] raise-inline
+ [/] raise-inline
 
 == コマンド定義：発展編 ==
 D[o] set-font-size
@@ -145,64 +145,64 @@ P[o] get-initial-context
 
 == 基本演算 ==
 -- 整数 --
-A[ ] mod
-A[ ] +
-A[ ] -
-A[ ] *
-A[ ] /
-A[ ] ==
-A[ ] >
-A[ ] <
-A[ ] <>
-A[ ] >=
-A[ ] <=
+A[o] +
+A[o] -
+A[o] *
+A[o] /
+A[o] mod
+A[o] ==
+A[o] >
+A[o] <
+A[o] <>
+A[o] >=
+A[o] <=
 
 -- 真偽値 --
-A[ ] &&
-A[ ] ||
-A[ ] not
+A[o] &&
+A[o] ||
+A[o] not
 
 -- 浮動小数点数 --
 A[o] float
 A[o] round
-A[ ] +.
-A[ ] -.
-A[ ] *.
-A[ ] /.
-A[ ] sin
-A[ ] asin
-A[ ] cos
-A[ ] acos
-A[ ] tan
-A[ ] atan
-A[ ] atan2
+A[o] +.
+A[o] -.
+A[o] *.
+A[o] /.
+A[o] sin
+A[o] asin
+A[o] cos
+A[o] acos
+A[o] tan
+A[o] atan
+A[o] atan2
 
 -- 長さ --
-A[ ] +'
-A[ ] -'
-A[ ] *'
-A[ ] /'
-A[ ] <'
-A[ ] >'
+A[o] +'
+A[o] -'
+A[o] *'
+A[o] /'
+A[o] <'
+A[o] >'
 
 -- 文字列 --
 A[o] ^
 A[o] arabic
-A[ ] string-same
-A[ ] string-sub
-A[ ] string-length
-A[ ] string-unexplode
-A[ ] embed-string
-A[ ] regexp-of-string
-A[ ] string-match
-A[ ] split-into-lines
-A[ ] split-on-regexp
+A[o] string-same
+A[o] string-sub
+A[o] string-length
+A[o] string-unexplode
+A[o] embed-string
+A[/] regexp-of-string
+A[/] string-match
+A[/] split-on-regexp
+A[o] split-into-lines
 
 -- その他 --
-A[ ] !
-A[ ] ::
-A[ ] |>
-A[ ] display-message
+A[o] !
+A[o] ::
+A[o] |>
+A[o] display-message
 
 == 非収録 ==
 /[/] set-language
