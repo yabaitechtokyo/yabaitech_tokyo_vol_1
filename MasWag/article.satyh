@@ -12,6 +12,7 @@ let maswag-article = '<
   +chapter ?:(`maswag-article`) (|
   bibliography = maswag-bibliography;
   title = {RNNからのオートマトン学習};
+  title-toc = {RNNからのオートマトン学習};
   author = {MasWag};
   |) <
    #introduction;

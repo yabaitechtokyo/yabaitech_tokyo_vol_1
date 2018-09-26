@@ -6,7 +6,8 @@
 let wasabiz-article = '<
   +chapter ?:(`wasabiz-article`) (|
     bibliography = wasabiz-bibliography;
-    title = {"Schemeの実装におけるスタックフレーム(Draft)" を実装する};
+    title = {"Schemeの実装におけるスタックフレーム\break; (Draft)" を実装する};
+    title-toc = {"Schemeの実装におけるスタックフレーム(Draft)" を実装する};
     author = {wasabiz};
   |) <
     +section {はじめに}<

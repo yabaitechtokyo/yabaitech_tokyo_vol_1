@@ -4,6 +4,7 @@ let postscript-article = '<
   +chapter ?:(`postscript-article`) (|
   bibliography = [];
   title = {あとがき: \SATySFi; で技術系同人誌を書いた話};
+  title-toc = {あとがき: \SATySFi; で技術系同人誌を書いた話};
   author = {};
   |) <
   +p {このたびはyabaitech.tokyo vol.1をご購入いただきありがとうございます。この同人誌は大学院の同期で何か同人誌書いてみないかというユルいノリで始まったもので、途中には様々な犠牲が発生しました\footnote{nullpo_headは内蔵を痛め、wasabizは自転車で転倒し手を骨折。どうしてこうなった}がなんにせよ出版までこぎつけられてよかったです。実はこの同人誌はgfn氏の開発する組版システム\SATySFi;を用いて組版されています。あとがきではそのあたりの話をしようかと。}

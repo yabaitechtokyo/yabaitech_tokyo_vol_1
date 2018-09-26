@@ -1,5 +1,6 @@
 @require: code
 @require: hdecoset
+@require: pervasives
 
 % Most of the followings contents are taken from the satysfi book.
 
@@ -51,3 +52,6 @@ let-inline ctx \insert-image w path =
     use-image-by-width img w
 
 let-block ctx +clear-page = clear-page
+
+let-inline ctx \break =
+  mandatory-break ctx
