@@ -1,31 +1,31 @@
 @import: ../main/book-class
 
 let wasabiz-bibliography = [
-  (`qiitanoyatu`, WebSite(|
-    author = {|wasabiz|};
-    title = {C言語でインクルードするだけで使えるNon-movingで正確なコピーGCを作った};
-    url = `https://qiita.com/wasabiz/items/bc80581ba24eaaf0ece1`;
-    year = 2017;
-  |));
+  % (`qiitanoyatu`, WebSite(|
+  %   author = {|wasabiz|};
+  %   title = {C言語でインクルードするだけで使えるNon-movingで正確なコピーGCを作った};
+  %   url = `https://qiita.com/wasabiz/items/bc80581ba24eaaf0ece1`;
+  %   year = 2017;
+  % |));
 
-  (`cheney-wiki`, WebSite(|
-    author = {|Wikipedia|};
-    title = {Cheney's algorithm};
-    url = `https://en.wikipedia.org/wiki/Cheney%27s_algorithm`;
-    year = 2018;
-  |));
+  % (`cheney-wiki`, WebSite(|
+  %   author = {|Wikipedia|};
+  %   title = {Cheney's algorithm};
+  %   url = `https://en.wikipedia.org/wiki/Cheney%27s_algorithm`;
+  %   year = 2018;
+  % |));
 
-  (`gc-h`, WebSite(|
-    author = {|Yuichi Nishiwaki|};
-    title = {gc.h};
-    url = `https://github.com/nyuichi/gc.h`;
-    year = 2017;
-  |));
+  % (`gc-h`, WebSite(|
+  %   author = {|Yuichi Nishiwaki|};
+  %   title = {gc.h};
+  %   url = `https://github.com/nyuichi/gc.h`;
+  %   year = 2017;
+  % |));
 
-  (`treadmill-gc-wiki`, WebSite(|
-    author = {|Nari|};
-    title = {Treadmill GC};
-    url = `http://seesaawiki.jp/w/author_nari/d/GC/extend/TreadmillGC%28Barker%201992%29`;
-    year = 2009;
-  |));
+  % (`treadmill-gc-wiki`, WebSite(|
+  %   author = {|Nari|};
+  %   title = {Treadmill GC};
+  %   url = `http://seesaawiki.jp/w/author_nari/d/GC/extend/TreadmillGC%28Barker%201992%29`;
+  %   year = 2009;
+  % |));
 ]
