@@ -41,6 +41,10 @@ let-inline ctx \new-line =
   mandatory-break ctx
 
 
+let-math \math-unit it =
+  ${\math-skip!(2pt)\text!(it)}
+
+
 let-inline ctx \quote it =
   let pads = (quote-indent-1, 0pt, 0pt, 0pt) in
     inline-fil ++

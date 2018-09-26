@@ -1,6 +1,12 @@
 @import: settings
 
 let bibliography = [
+  (`PostScript`, Book(|
+    author = {| Adobe Systems |};
+    title = {PostScript Language Reference Manual};
+    publisher = {Addison Wesley Longman};
+    year = 1985;
+  |));
   (`Asai-OCaml`, Book(|
     author = {| 浅井 健一 |};
     title = {プログラミングの基礎};
@@ -47,6 +53,13 @@ let bibliography = [
     number = None;
     pages = (29, 60);
     year = 1969;
+  |));
+  (`IEEE754`, Book(|
+    author = {| IEEE Computer Society |};
+    title = {IEEE Standard for Floating-Point Arithmetic};
+    publisher = {IEEE};
+    year = 2008;
+    % August 29
   |));
   (`Igarashi-OCaml`, Book(|
     author = {| 五十嵐 淳 |};
