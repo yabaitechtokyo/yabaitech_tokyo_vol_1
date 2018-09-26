@@ -68,13 +68,13 @@ end = struct
     let ib = read-inline ctx inner in
       repeat-inline inline-nil n ib
 
-  let-math \adj-up p = ${\uparrow #p}
+  let-math \adj-up p = ${\mathord{\uparrow} #p}
 
-  let-math \adj-down p = ${\downarrow #p}
+  let-math \adj-down p = ${\mathord{\downarrow} #p}
 
-  let-math \fmodal p = let box = bin `▲` in ${#box #p}
-  let-math \dmodal p = let box = bin `▼` in ${#box #p}
-  let-math \box = let box = bin `□` in ${#box}
+  let-math \fmodal p = let box = bin `▲` in ${\mathord{#box} #p}
+  let-math \dmodal p = let box = bin `▼` in ${\mathord{#box} #p}
+  let-math \box = let box = bin `□` in ${\mathord{#box}}
 
   let-inline ctx \todo text =
     let ctx-red = ctx |> set-text-color Color.red in
