@@ -265,6 +265,11 @@ let-block ctx +centered-graphics w h grf =
     (inline-fil ++ ib-gr ++ inline-fil)
 
 
+type geometry =
+  | Rectangle of (length * length) * (length * length)
+  | Circle    of (length * length) * length
+
+
 module Sample = struct
 
   let-inline ctx \enlarge it =
@@ -329,6 +334,30 @@ module Sample = struct
 
   let abs n =
     if n < 0 then - n else n
+
+
+  let pi = 3.1415926535
+
+
+  let length-abs len =
+    if len <' 0pt then 0pt -' len else len
+
+
+  let area geom =
+    match geom with
+    | Rectangle((x1, y1), (x2, y2)) ->
+        let w = (length-abs (x1 -' x2) /' 1cm) in
+        let h = (length-abs (y1 -' y2) /' 1cm) in
+          w *. h
+
+    | Circle(_, r) ->
+        let rf = r /' 1cm in
+          rf *. rf *. pi
+
+
+  let-rec fact n =
+    if n <= 0 then 1 else
+      n * fact (n - 1)
 
 
   let-inline ctx \simple-frame it =

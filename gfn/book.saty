@@ -620,11 +620,12 @@ document (|
             \codem{get-font-size}というプリミティヴを用いて実現する．
           }．
           さらに引っかかりやすいポイントは，ポイントという単位の定義だ．
-          “point” と呼ばれる単位には歴史的に様々な定義が与えられてきた：
+          “point” と呼ばれる単位には歴史的に様々な定義が与えられてきた．
+          代表的なものを掲げる：
 
           \listing{
-            * \dfnje{Didotポイント}{Dodot point}：\quad;
-
+            * \dfnje{Didotポイント}{Didot’s point}（1783年）：\quad;
+              pied du Roi（royal foot，王のフィート）に基づくフランスのインチの厳密に${\paren{1/72}}倍．
 
             * アメリカンポイント（1886年）：\quad;
               インチの厳密に${0.013837}倍．
@@ -1324,16 +1325,247 @@ document (|
       >
       +subsection{代数的データ型}<
         +p{
-          \dfnje{代数的データ型}{algebraic data type, ADT}は
-          \REMAINS{代数的データ型}
+          \dfnje{代数的データ型}{algebraic data type, ADT}は，
+          非常に大雑把に言えば “構成に独立な複数の方法があるデータ” を扱う型である．
+          \dfnje{ヴァリアント型}{variant type}とか
+          \dfnje{合併型}{union type}と呼ばれることもあり\footnote{
+            「合併型」や “union type” は\dfn{Elm}などの言語で用いられる用語だが，
+            型システムの議論ではこれらの語がよく似た別物を指すこともあるので注意を要する．
+          }，
+          数学的には直和に対応する．
         }
         +p{
-          \REMAINS{itemize}
+          代数的データ型を扱う必要性を感じるために，
+          まず「長方形または円からなる図形のデータを扱いたい」という場面を考える．
+          長方形は対角線となる2点を記録すればよく，
+          円は中心座標と半径を記録すればよいだろう．
+          それぞれ図形に対して一意的な表現方法にはなっていないが，それは特に問題にせず，
+          単にデータとして不足なく保持できればよい．
+          ここまでに紹介した言語機能を用いて長方形と円を一緒に扱うナイーヴな方法のひとつは，
+          \type(Type.(product [string; length; length; length; length]));
+          という型のタプルを用いる方法だ．
+          ${\tuple{|x_1|y_1|}} と ${\tuple{|x_2|y_2|}} とが対角線をなす長方形は
+          \codem{(\`rectangle\`, \metasub(${1}){x}, \metasub(${1}){y},
+            \metasub(${2}){x}, \metasub(${2}){y})}
+          で，
+          ${\tuple{|x|y|}} を中心とする半径 ${r} の円は
+          \codem{(\`circle\`, \meta{x}, \meta{y}, \meta{r}, 0pt)}
+          でそれぞれ表すことにするのである．
+          しかし，これはかなり “荒っぽい” 方法であり，いくつもの問題を孕んでいる．
+          まず\codem{(\`hoge\`, 2pt, -5pt, 0pt, 3pt)}のような
+          “意味をなさないデータ” が同じ型で作れてしまう．
+          勿論図形を受け取る各函数でそのデータが正しいか逐一確認することはできるが，
+          複雑な処理では確認を忘れてしまうことも十分ありうるし，
+          何より正しくないデータだった場合に実行時エラーにするしかないのは不便である．
+          このほか，図形が格納された変数\codem{geom}に対して
+          \codem{let (_, _, _, x, _) = geom in ${\cdots}}
+          として\codem{x}に値を取り出せるが，この\codem{x}は図形ごとに
+          全然違う役割を担っている．
+          このような操作が安易にできてしまうと，複雑化するにしたがって見つけにくい実装のミスに繋がる．
+        }
+        +p{
+          代数的データ型を用いれば，このような状況をはるかにスマートに扱える．
+          まずは具体例として，上で挙げた図形を扱うための型
+          \type(Type.(base-type {geometry}));を定義してみる：
+
+          \d-code(```
+            type geometry =
+              | Rectangle of (length * length) * (length * length)
+              | Circle    of (length * length) * length
+          ```);%
+
+          この定義は，新たに定義する\type(Type.(base-type {geometry}));型に於いて
+
+          \listing{
+            * ${\tuple{|x_1|y_1|}} と ${\tuple{|x_2|y_2|}} とが対角線をなす長方形は
+              \codem{Rectangle((\metasub(${1}){x}, \metasub(${1}){y}),
+                (\metasub(${2}){x}, \metasub(${2}){y}))}
+              という形で扱われる
+
+            * ${\tuple{|x|y|}} を中心とする半径 ${r} の円が
+              \codem{Circle((\meta{x}, \meta{y}), \meta{r})}
+              という形で扱われる
+
+            * この形以外のデータは扱わない
+          }%
+
+          ということを宣言している．
+          この宣言以降，\codem{Rectangle \meta{expr}}および
+          \codem{Circle \meta{expr}}で
+          \type(Type.(base-type {geometry}));型のつく式を書ける．
+          一般に代数的データ型の定義は以下のような構文で宣言される：
+
+          \d-codem{
+            type \metasub(${1}){'a} ${\cdots} \metasub(${m}){'a} \meta{tyname} =
+              \| \metasub(${1}){Ctr} of \metasub(${1}){ty}
+              \| ${\cdots}
+              \| \metasub(${n}){Ctr} of \metasub(${1}){ty}
+          }%
+
+          ただし ${m \geq 0} かつ ${n \geq 1}で，また\codem{=}の直後の\codem{\|}は省略でき，
+          宣言される型の名前\meta{tyname}に使えるのは変数名に使える文字列である．
+          各\codem{\metasub(${i}){Ctr}}は\dfnje{コンストラクタ}{constructor}と呼ばれ，
+          コード中の相異なる文字列である．
+          コンストラクタとして使えるのは
+
+          \listing{
+            * 1文字目はラテン大文字
+            * 2文字目以降は大小ラテン文字，数字，ハイフンのいずれか
+          }%
+
+          を満たす1文字以上の長さの文字列である．
+          \codem{\meta{Ctr} of \meta{ty}}は
+          \codem{\meta{Ctr}}と書く構文もあり，
+          これは\codem{\meta{Ctr} of unit}と等価である．
+          \type(Type.unit);型は唯一の値\codem{()}をもつ型で，
+          \ref-subsection(`imperative`);で説明する手続き的処理などに援用される．
+          \codem{\metasub(${j}){'a}}は\dfn{型引数}と呼ばれるものだが，
+          今は触れず，${m = 0} とする．
+        }
+        +p{
+          さて，代数的データ型とそれに属するデータの作り方はわかったが，
+          そのデータをどうやって使えばいいのだろう？\quad;
+          実は代数的データ型のデータも，タプルと同様にパターンマッチによって分解する．
+          例として，上で定義した\type(Type.(base-type {geometry}));型のデータを受け取って
+          その（平方センチメートル単位の）面積を浮動小数点数で返す函数
+          \codem{area} : \type(Type.(base-type {geometry} --> float));を定義してみる：
+
+          \d-code(```
+            let pi = 3.1415926535
+
+            let length-abs len =
+              if len <' 0pt then 0pt -' len else len
+
+            let area geom =
+              match geom with
+              | Rectangle((x1, y1), (x2, y2)) ->
+                  let w = (length-abs (x1 -' x2) /' 1cm) in
+                  let h = (length-abs (y1 -' y2) /' 1cm) in
+                    w *. h
+
+              | Circle(_, r) ->
+                  let rf = r /' 1cm in
+                    rf *. rf *. pi
+          ```);%
+
+          与えられた図形が長方形なのか円なのかパターンマッチで分岐して処理している．
+          \codem{\meta{Ctr}}が何らかのデータ型に属するものとして定義済みのコンストラクタであるとき，
+          \codem{\meta{Ctr} \meta{pat}}がパターンとして使え，
+          \codem{\meta{Ctr} \meta{v}}の形の値が
+          （\codem{\meta{v}}が\codem{\meta{pat}}にマッチするときに）マッチするのである．
+          上で定義した\codem{area}を実際に使ってみよう：
+
+          \d-code-and-block(```
+            +p{ Answer:
+              \show-float(area (Rectangle((1cm, 2.4cm), (-3cm, 10cm)))); }
+            +p{ Answer:
+              \show-float(area (Circle((5cm, 0cm), 2cm))); }
+          ```)(open Sample in '<
+            +p{ Answer:
+              \show-float(area (Rectangle((1cm, 2.4cm), (-3cm, 10cm)))); }
+            +p{ Answer:
+              \show-float(area (Circle((5cm, 0cm), 2cm))); }
+          >);%
+
+          長方形と円のそれぞれについて正しく面積が計算できていることがわかる．
+        }
+        +p{
+          \SATySFi;には，いくつかの代数的データ型がデフォルトで備わっている．
+          特に組版処理特有のデータは次のように定義される\type(Type.color);型である：
+
+          \d-code(```
+            type color =
+              | Gray of float
+              | RGB  of float * float * float
+              | CMYK of float * float * float * float
+          ```);%
+
+          \codem{Gray}，\codem{RGB}，\codem{CMYK}は
+          それぞれグレイスケール，RGB，CMYKの色空間で色を表現するためのコンストラクタで，
+          PDFの仕様に於ける
+          \code(`/DeviceGray`);，\code(`/DeviceRGB`);，および\no-break{\code(`/DeviceCMYK`);}に
+          それぞれ対応する．
+          引数の各浮動小数点数は\codem{0.}で最小，\codem{1.}で最大を表し，
+          例えば\codem{Gray(0.)}は黒，\codem{Gray(1.)}は白，
+          \codem{RGB(1., 0., 0.)}は赤，といった具合である．
+          この\type(Type.color);型は，\ref-chapter(`graphics`);で紹介する
+          グラフィックス関連の種々の記述で使われるほか，
+          \pkg{color}パッケージではこの型を用いていくつかの頻出の色が定義されている．
         }
       >
       +subsection{再帰函数}<
         +p{
-          \REMAINS{再帰函数}
+          この節では\dfnje{再帰函数}{recursive function}を扱う．
+          再帰函数とは，簡単に言えば
+          “定義中で自分自身を呼び出すように記述されている函数” である．
+          再帰函数の説明としてあまりにも月並みではあるが，
+          例として整数の階乗を求める函数\codem{fact}を定義する
+          （ただし，ここでは ${0\! \defeq 1} と定めるものとする）：
+
+          \d-code(```
+            let-rec fact n =
+              if n <= 0 then 1 else n * fact (n - 1)
+          ```);%
+
+          \codem{let}の代わりに\codem{let-rec}から始める構文である．
+          とりあえず使ってみて，結果が期待どおりであることを確認しよう：
+
+          \d-code-and-block(```
+            +p{ Answer: \show-int(fact 6); }
+          ```)(open Sample in '<
+            +p{ Answer: \show-int(fact 6); }
+          >);%
+
+          再帰函数の定義は，一般には以下のような形をしている：
+
+          \d-codem{
+            let-rec \meta{f} \metasub(${1}){x} ${\cdots} \metasub(${n}){x} =
+              \metasub(${1}){expr}
+            in
+              \metasub(${2}){expr}
+          }%
+
+          \codem{let}の場合とは違い，\codem{\metasub(${1}){expr}}の中でも
+          定義しようとしている\codem{\meta{f}}が使えるのが特徴である．
+          ただし，この\codem{let-rec}による定義では，
+          糖衣構文を “はがした” 上で最終的に\codem{\meta{f}}が束縛される式は
+          函数の形の式\codem{(fun \meta{x} -\> \meta{expr})}でなければならず，
+          したがって\codem{let-rec n = n + 1}のような定義は書けないようになっている．
+          さて，もとの例である\codem{fact}の定義を理解しよう．
+          これはたしかに\codem{fact \meta{n}}で階乗 ${n\!} を返すような定義になっており，
+          慣れれば一目瞭然なのだが，
+          “プログラムを手続き的に理解するという観念に拘束されている人” には少し飛躍があるかもしれない．
+          再帰函数はいわゆる函数型プログラミングを最大に特徴づける重要な点とさえ言えるので是非とも理解されたい．
+          再帰を理解する有用な直観は，いわゆる数学的帰納法によく似ている．
+          すなわち，“より小さいものに対する解決がより大きいものの解決に使える” のである．
+          上記の\codem{fact}の定義は，次のような直観に基づいて理解できる：
+
+          \listing{
+            * 与えられた引数が\codem{0}（またはそれ未満）の場合は，
+              返り値として即座に\codem{1}を返してよい．
+
+            * 与えられた引数\codem{\meta{n}}が\codem{1}以上の場合，
+              返すべき値は\codem{\meta{n}}と\codem{\meta{n} - 1}の階乗との積である．
+              したがって，\codem{\meta{n} - 1}の階乗を（\codem{fact}自分自身を呼び出すことで）計算し，
+              その計算結果に\codem{\meta{n}}を掛けて返り値とすればよい．
+          }%
+
+          或る意味では，階乗函数の（数学的な）定義：
+
+          \align[
+            ${| 0\! |\defeq 1 |};
+            ${| n\! |\defeq n \times \paren{n - 1}\! \text!{\quad;(${n \geq 1})} |};
+          ];%
+
+          に近い記述ができているとも言える．
+          ともかく，「再帰は再帰がわかるとわかる」のだ．
+        }
+        +p{
+          さて，もう一度代数的データ型の話をしよう．
+          実は，代数的データ型の重要な特徴として，再帰的なデータを扱う型を定義できるというものがある．
+        }
+        +p{
+          \REMAINS{itemize}
         }
       >
       +subsection{レコード}<
@@ -1341,7 +1573,7 @@ document (|
           \REMAINS{レコード}
         }
       >
-      +subsection{手続き}<
+      +subsection?:(`imperative`){手続き}<
         +p{
           \REMAINS{手続き}
         }
@@ -1355,7 +1587,7 @@ document (|
           }%
           \vals-explain({|/|mod|})(tyarithI) {
             整数の除算と剰余．
-            \codem{mod}は通常の変数名と同様だが，例外的に2項演算子である．
+            \codem{mod}は通常の変数名のように見えるが，例外的に2項演算子である．
             いずれも第2引数に\codem{0}が与えられた場合は実行時エラーとなる．
           }%
           \vals-explain({|==|\<\>|})(tycompI) {
