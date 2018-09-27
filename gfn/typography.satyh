@@ -131,90 +131,90 @@ let typography = '<
       すべて掲載すると長いので，
       Unicode Line Breaking Algorithmが定義する
       line breaking classとの差分を以下に述べる：
-    }
-    +listing{
-      * BK (Mandatory Break)，CR (Carriage Return)，LF (Line Feed)，NL (Next Line)を廃止し，
-        代わりにいずれもINBR (Input Break)という新しい分類に統一する．
 
-%        * \ucp(`2018`)(`LEFT SINGLE QUOTATION MARK`);
+      \listing{
+        * BK (Mandatory Break)，CR (Carriage Return)，LF (Line Feed)，NL (Next Line)を廃止し，
+          代わりにいずれもINBR (Input Break)という新しい分類に統一する．
 
-      * JLreqが定義する文字クラス
-        cl-01（始め括弧類），
-        cl-02（終わり括弧類），
-%          cl-03（ハイフン類），
-%          cl-04（区切り約物），
-%          cl-05（中点類），
-        cl-06（句点類），
-        cl-07（読点類），
-        cl-10（長音記号）
-%          cl-11（小書きの仮名）
-        に相当する
-        JLOP (JL Open Punctuation)，
-        JLCP (JL Close Punctuation)，
-%          JLHY (JL Hyphens)，
-%          JLNS (JL Nonstarter)，
-%          JLMD (JL Middle Dot)，
-        JLFS (JL Full Stops)，
-        JLCM (JL Commas)，
-        JLPL (JL Prolonged Sound Mark)
-%          JLSM (JL Small Kanas)
-        という分類をそれぞれ新たに用意する．
+  %        * \ucp(`2018`)(`LEFT SINGLE QUOTATION MARK`);
 
-      * \ref-table(`lb`);のとおりに上書きする．
-        \table?:(`lb`){行分割クラスの上書き定義}<
-          +centering{\size(8.5pt){
-            \tabular(fun t -> (
-              let l = t#l in
-              let ucp snum sname itch itlbc =
-                [ l {\code(`U+` ^ snum);}; l (embed-string sname);
-                    l {\fbox{#itch;}}; l itlbc ]
-              in
-              [
-                ucp `2018` `LEFT SINGLE QUOTATION MARK             ` {‘} {OP};
-                ucp `2019` `RIGHT SINGLE QUOTATION MARK            ` {’} {CP};
-                ucp `201B` `SINGLE HIGH-REVERSED-9 QUOTATION MARK  ` {‛} {OP  };
-                ucp `201C` `LEFT DOUBLE QUOTATION MARK             ` {“} {OP  };
-                ucp `201D` `RIGHT DOUBLE QUOTATION MARK            ` {”} {CP  };
-                ucp `201F` `DOUBLE HIGH-REVERSED-9 QUOTATION MARK  ` {‟} {OP  };
-                ucp `3001` `IDEOGRAPHIC COMMA                      ` {、} {JLCM};
-                ucp `3002` `IDEOGRAPHIC FULL STOP                  ` {。} {JLFS};
-                ucp `3008` `LEFT ANGLE BRACKET                     ` {〈} {JLOP};
-                ucp `3009` `RIGHT ANGLE BRACKET                    ` {〉} {JLCP};
-                ucp `300A` `LEFT DOUBLE ANGLE BRACKET              ` {《} {JLOP};
-                ucp `300B` `RIGHT DOUBLE ANGLE BRACKET             ` {》} {JLCP};
-                ucp `300C` `LEFT CORNER BRACKET                    ` {「} {JLOP};
-                ucp `300D` `RIGHT CORNER BRACKET                   ` {」} {JLCP};
-                ucp `300E` `LEFT WHITE CORNER BRACKET              ` {『} {JLOP};
-                ucp `300F` `RIGHT WHITE CORNER BRACKET             ` {』} {JLCP};
-                ucp `3010` `LEFT BLACK LENTICULAR BRACKET          ` {【} {JLOP};
-                ucp `3011` `RIGHT BLACK LENTICULAR BRACKET         ` {】} {JLCP};
-                ucp `3014` `LEFT TORTOISE SHELL BRACKET            ` {〔} {JLOP};
-                ucp `3015` `RIGHT TORTOISE SHELL BRACKET           ` {〕} {JLCP};
-                ucp `3016` `LEFT WHITE LENTICULAR BRACKET          ` {〖} {JLOP};
-                ucp `3017` `RIGHT WHITE LENTICULAR BRACKET         ` {〗} {JLCP};
-                ucp `3018` `LEFT WHITE TORTOISE SHELL BRACKET      ` {〘} {JLOP};
-                ucp `3019` `RIGHT WHITE TORTOISE SHELL BRACKET     ` {〙} {JLCP};
-                ucp `301A` `LEFT WHITE SQUARE BRACKET              ` {〚} {JLOP};
-                ucp `301B` `RIGHT WHITE SQUARE BRACKET             ` {〛} {JLCP};
-                ucp `30FC` `KATAKANA-HIRAGARA PROLONGED SOUND MARK ` {ー} {JLPL};
-                ucp `FF08` `FULLWIDTH LEFT PARENTHESIS             ` {（} {JLOP};
-                ucp `FF09` `FULLWIDTH RIGHT PARENTHESIS            ` {）} {JLCP};
-                ucp `FF0C` `FULLWIDTH COMMA                        ` {，} {JLCM};
-                ucp `FF0E` `FULLWIDTH FULL STOP                    ` {．} {JLFS};
-                ucp `FF3B` `FULLWIDTH LEFT SQUARE BRACKET          ` {［} {JLOP};
-                ucp `FF3D` `FULLWIDTH RIGHT SQUARE BRACKET         ` {］} {JLCP};
-                ucp `FF5B` `FULLWIDTH LEFT CURLY BRACKET           ` {｛} {JLOP};
-                ucp `FF5D` `FULLWIDTH RIGHT CURLY BRACKET          ` {｝} {JLCP};
-                ucp `FF5F` `FULLWIDTH LEFT WHITE PARENTHESIS       ` {｟} {JLOP};
-                ucp `FF60` `FULLWIDTH RIGHT WHITE PARENTHESIS      ` {｠} {JLCP};
-              ]
-            ))(fun xs ys ->
-              []
-            );
-          }}
-        >
-    }
-    +p{
+        * JLreqが定義する文字クラス
+          cl-01（始め括弧類），
+          cl-02（終わり括弧類），
+  %          cl-03（ハイフン類），
+  %          cl-04（区切り約物），
+  %          cl-05（中点類），
+          cl-06（句点類），
+          cl-07（読点類），
+          cl-10（長音記号）
+  %          cl-11（小書きの仮名）
+          に相当する
+          JLOP (JL Open Punctuation)，
+          JLCP (JL Close Punctuation)，
+  %          JLHY (JL Hyphens)，
+  %          JLNS (JL Nonstarter)，
+  %          JLMD (JL Middle Dot)，
+          JLFS (JL Full Stops)，
+          JLCM (JL Commas)，
+          JLPL (JL Prolonged Sound Mark)
+  %          JLSM (JL Small Kanas)
+          という分類をそれぞれ新たに用意する．
+
+        * \ref-table(`lb`);のとおりに上書きする．
+          \table?:(`lb`){行分割クラスの上書き定義}<
+            +centering{\size(8.5pt){
+              \tabular(fun t -> (
+                let l = t#l in
+                let ucp snum sname itch itlbc =
+                  [ l {\code(`U+` ^ snum);}; l (embed-string sname);
+                      l {\fbox{#itch;}}; l itlbc ]
+                in
+                [
+                  ucp `2018` `LEFT SINGLE QUOTATION MARK             ` {‘} {OP};
+                  ucp `2019` `RIGHT SINGLE QUOTATION MARK            ` {’} {CP};
+                  ucp `201B` `SINGLE HIGH-REVERSED-9 QUOTATION MARK  ` {‛} {OP  };
+                  ucp `201C` `LEFT DOUBLE QUOTATION MARK             ` {“} {OP  };
+                  ucp `201D` `RIGHT DOUBLE QUOTATION MARK            ` {”} {CP  };
+                  ucp `201F` `DOUBLE HIGH-REVERSED-9 QUOTATION MARK  ` {‟} {OP  };
+                  ucp `3001` `IDEOGRAPHIC COMMA                      ` {、} {JLCM};
+                  ucp `3002` `IDEOGRAPHIC FULL STOP                  ` {。} {JLFS};
+                  ucp `3008` `LEFT ANGLE BRACKET                     ` {〈} {JLOP};
+                  ucp `3009` `RIGHT ANGLE BRACKET                    ` {〉} {JLCP};
+                  ucp `300A` `LEFT DOUBLE ANGLE BRACKET              ` {《} {JLOP};
+                  ucp `300B` `RIGHT DOUBLE ANGLE BRACKET             ` {》} {JLCP};
+                  ucp `300C` `LEFT CORNER BRACKET                    ` {「} {JLOP};
+                  ucp `300D` `RIGHT CORNER BRACKET                   ` {」} {JLCP};
+                  ucp `300E` `LEFT WHITE CORNER BRACKET              ` {『} {JLOP};
+                  ucp `300F` `RIGHT WHITE CORNER BRACKET             ` {』} {JLCP};
+                  ucp `3010` `LEFT BLACK LENTICULAR BRACKET          ` {【} {JLOP};
+                  ucp `3011` `RIGHT BLACK LENTICULAR BRACKET         ` {】} {JLCP};
+                  ucp `3014` `LEFT TORTOISE SHELL BRACKET            ` {〔} {JLOP};
+                  ucp `3015` `RIGHT TORTOISE SHELL BRACKET           ` {〕} {JLCP};
+                  ucp `3016` `LEFT WHITE LENTICULAR BRACKET          ` {〖} {JLOP};
+                  ucp `3017` `RIGHT WHITE LENTICULAR BRACKET         ` {〗} {JLCP};
+                  ucp `3018` `LEFT WHITE TORTOISE SHELL BRACKET      ` {〘} {JLOP};
+                  ucp `3019` `RIGHT WHITE TORTOISE SHELL BRACKET     ` {〙} {JLCP};
+                  ucp `301A` `LEFT WHITE SQUARE BRACKET              ` {〚} {JLOP};
+                  ucp `301B` `RIGHT WHITE SQUARE BRACKET             ` {〛} {JLCP};
+                  ucp `30FC` `KATAKANA-HIRAGARA PROLONGED SOUND MARK ` {ー} {JLPL};
+                  ucp `FF08` `FULLWIDTH LEFT PARENTHESIS             ` {（} {JLOP};
+                  ucp `FF09` `FULLWIDTH RIGHT PARENTHESIS            ` {）} {JLCP};
+                  ucp `FF0C` `FULLWIDTH COMMA                        ` {，} {JLCM};
+                  ucp `FF0E` `FULLWIDTH FULL STOP                    ` {．} {JLFS};
+                  ucp `FF3B` `FULLWIDTH LEFT SQUARE BRACKET          ` {［} {JLOP};
+                  ucp `FF3D` `FULLWIDTH RIGHT SQUARE BRACKET         ` {］} {JLCP};
+                  ucp `FF5B` `FULLWIDTH LEFT CURLY BRACKET           ` {｛} {JLOP};
+                  ucp `FF5D` `FULLWIDTH RIGHT CURLY BRACKET          ` {｝} {JLCP};
+                  ucp `FF5F` `FULLWIDTH LEFT WHITE PARENTHESIS       ` {｟} {JLOP};
+                  ucp `FF60` `FULLWIDTH RIGHT WHITE PARENTHESIS      ` {｠} {JLCP};
+                ]
+              ))(fun xs ys ->
+                []
+              );
+            }}
+          >
+      }%
+
       また，これに伴ってUnicode Line Breaking Algorithmも一部拡張する．
       具体的には
 

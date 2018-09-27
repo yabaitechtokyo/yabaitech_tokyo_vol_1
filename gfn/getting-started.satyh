@@ -309,7 +309,8 @@ let getting-started = '<
       インラインコマンドの場合とは違い，引数のない数式コマンドの使用に\codem{\;}はつけない．
     }
     +p{
-      \LaTeX;の数式の記法とよく似ているものの，特に括弧の扱いに顕著な違いがある．
+      \LaTeX;の数式の記法とよく似ているもののいくつかの違いがあり，
+      特に括弧類の扱いは顕著に\LaTeX;とは異なる．
       \LaTeX;の
       \code(`\left`);・\code(`\right`);・\code(`\middle`);
       に相当するものはなく，
@@ -340,20 +341,16 @@ let getting-started = '<
       \d-code-and-block(```
         +p{
           別行立て数式は，少し前後がゴチャッとしているが
-
           \eqn(${
             \int_a^b \frac{\ordd x}{\sqrt{x^2 + 1}}
               = \sqbracket{\log \paren{x + \sqrt{x^2 + 1}}}_a^b
           });%
-
           という具合に書く．位置を揃えたい場合は，さらにゴチャッとするが
-
           \align[
             ${| \paren{x - a} \paren{x - b}
                   |= x^2 - a x - b x + a b |};
             ${|   |= x^2 - \paren{a + b} + a b |};
           ];%
-
           という要領で書く．
         }
       ```)(open Sample in '<
@@ -378,7 +375,7 @@ let getting-started = '<
       >);%
 
       \codem{\\align}の引数の\codem{[ ${\cdots} ]}は
-      直下に四角括弧があるプログラム引数\codem{([ ${\cdots }])}の略記であり，
+      直下に四角括弧があるプログラム引数\codem{([ ${\cdots} ])}の略記であり，
       プログラムに於ける\codem{[ ${\cdots} ]}は
       \dfnje{リスト}{list}である\footnote{
         リストといっても，箇条書きの意味のリストとは特に関係がないことに注意．

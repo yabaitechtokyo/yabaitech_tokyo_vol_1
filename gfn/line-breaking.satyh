@@ -86,7 +86,7 @@ let line-breaking = '<
       段落全体として最も端整な行のセットが得られ，
       その経路をなす頂点で行分割すればよいことがわかる，という仕組みである．
       前述のとおり，\SATySFi;も\TeX;で採用されたこの巧妙な仕組みを継承して用いている．
-      以下でこの行分割処理を制御するためのプリミティヴを紹介する．
+      以下でこの行分割処理を制御するプリミティヴを紹介する．
     }
   >
   +section{行分割に関するプリミティヴ}<
@@ -200,12 +200,12 @@ let line-breaking = '<
         \val?:(`set-word-break-penalty`)({set-word-break-penalty})%
           (Type.(int --> (context --> context)));%
 
-        により変更することができる．すなわち，
+        により変更できる．すなわち，
         テキスト処理文脈\codem{\meta{ctx}}と
         単語間空白の行分割候補箇所に対して設定したいペナルティ値\codem{\meta{p}}に対して
         \codem{set-word-break-penalty \meta{p} \meta{ctx}}で
         ペナルティ値が\codem{\meta{p}}に更新されたテキスト処理文脈が返される．
-        ${b_1} と ${b_2} も変更することができ，
+        ${b_1} と ${b_2} も変更でき，
 
         \val?:(`set-every-word-break`)({set-every-word-break})%
           (Type.(inline-boxes --> (inline-boxes --> (context --> context))));%
