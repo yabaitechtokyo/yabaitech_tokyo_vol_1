@@ -33,6 +33,10 @@ let-inline ctx \REMAINS msg =
       (read-inline ctx {要加筆： #msg;})
 
 
+let-block ctx +ragged-right it =
+  line-break true true ctx (inline-fil ++ read-inline ctx it)
+
+
 let-inline ctx \new-line =
   mandatory-break ctx
 
@@ -134,7 +138,7 @@ let-inline ctx \d-code-and-block s bt =
   let pads = (5pt, 5pt, 5pt, 5pt) in
   let wid = get-text-width ctx in
   let bb =
-    display-code-scheme ctx s +++
+    display-code-scheme ctx s +++ block-skip -26pt +++
       block-frame-breakable ctx pads VDecoSet.paper (fun ctx ->
         read-block ctx bt
       )
@@ -156,10 +160,11 @@ let-inline ctx \d-codem it =
 
 module BoxGraphics = struct
 
-  let-inline ctx \roman its =
+  let-inline ctx \roman ?:sizeopt its =
+    let size = Option.from 10mm sizeopt in
     let ctx =
       ctx |> Book.set-latin-font Book.font-latin-roman
-          |> set-font-size 10mm
+          |> set-font-size size
     in
     let pads = (0pt, 0pt, 0pt, 0pt) in
     let deco (x, y) w h d =
@@ -304,8 +309,14 @@ module Sample = struct
       )
 
 
-  let-inline \show-int n =
-    embed-string (arabic n)
+  let-inline \show-int n = embed-string (arabic n)
+  let-inline \show-float x = embed-string (show-float x)
+  let-inline \show-string s = embed-string s
+
+
+  let to-dollar m-yen =
+    let rate = 112.73 in
+      (float (m-yen)) /. rate
 
 
   let-inline ctx \simple-frame it =
@@ -749,7 +760,7 @@ let-inline ctx \meta it =
 
 
 let-inline ctx \metasub msub it =
-  read-inline ctx {${\text!{\meta{#it;}}_{#msub}}}
+  read-inline ctx {${\text!{\meta{#it;}}\text!{}_{#msub}}}
 
 
 let-inline ctx \meta-star it =
@@ -955,3 +966,37 @@ let draw-directory-tree r pt dx dy fe =
 let-block ctx +centering it =
   line-break true true ctx
     (inline-fil ++ read-inline ctx it ++ inline-fil)
+
+
+let-inline ctx \glue-between-tokens =
+  let size = get-font-size ctx in
+  discretionary 1000
+    (inline-glue (size *' 0.5) (size *' 0.125) (size *' 0.125))
+%    (inline-skip (size *' 1.0) ++ inline-fil)
+    (inline-glue 0pt 0pt 1cm)
+    inline-nil
+
+
+let-inline ctx \reserved-word it =
+  let ctx =
+    ctx |> Book.set-latin-font Book.font-latin-mono
+  in
+  read-inline ctx it
+
+
+let-inline ctx \tokens its =
+  let ib =
+    its |> List.fold-left-adjacent (fun ibacc it _ opt -> (
+      let ib =
+        match opt with
+        | None    -> read-inline ctx {\no-break{\reserved-word{#it;}}}
+        | Some(_) -> read-inline ctx {\no-break{\reserved-word{#it;}}\glue-between-tokens;}
+      in
+      ibacc ++ ib
+    )) inline-nil
+  in
+  let pads = (5pt, 5pt, 5pt, 5pt) in
+  inline-fil ++
+    embed-block-breakable ctx
+      (block-frame-breakable ctx pads display-code-decoset (fun ctx ->
+        line-break true true ctx (ib ++ inline-fil)))

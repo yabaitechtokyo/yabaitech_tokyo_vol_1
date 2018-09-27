@@ -196,4 +196,8 @@ let preface = '<
     }%
     にはここに感謝の意を表明したいと思います．
   }
+  +ragged-right{
+    2018年9月\quad;
+    Takashi SUWA
+  }
 >
