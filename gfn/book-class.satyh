@@ -408,6 +408,12 @@ end = struct
   let-mutable num-theorems <- 0
 
 
+  let get-shifted-page-number pbinfo =
+    match !show-page-number-ref with
+    | None         -> 0
+    | Some(lastno) -> pbinfo#page-number - lastno + 1
+
+
   let chapter-scheme ctx label title inner =
     let () = increment num-chapter in
     let () = num-section <- 0 in
@@ -419,8 +425,9 @@ end = struct
     let ctx-title = make-chapter-title ctx in
     let ib-num =
       read-inline ctx-title (embed-string (`Chapter `# ^ s-num))
-        ++ hook-page-break (fun pbinfo _ ->
-             register-cross-reference (`chapter:` ^ label ^ `:page`) (arabic pbinfo#page-number))
+        ++ hook-page-break (fun pbinfo _ -> (
+             let pageno = get-shifted-page-number pbinfo in
+               register-cross-reference (`chapter:` ^ label ^ `:page`) (arabic pageno)))
     in
     let ib-title = read-inline ctx-title title in
     let bb-title = chapter-heading ctx (Some(ib-num)) ib-title in
@@ -438,8 +445,9 @@ end = struct
     let () = toc-acc-ref <- (TOCElementSection(label, title)) :: !toc-acc-ref in
     let ib-num =
       read-inline ctx-title (embed-string (s-num ^ `.`))
-        ++ hook-page-break (fun pbinfo _ ->
-             register-cross-reference (`section:` ^ label ^ `:page`) (arabic pbinfo#page-number))
+        ++ hook-page-break (fun pbinfo _ -> (
+             let pageno = get-shifted-page-number pbinfo in
+               register-cross-reference (`section:` ^ label ^ `:page`) (arabic pageno)))
     in
     let ib-title = read-inline ctx-title title in
     let bb-title = section-heading ctx (ib-num ++ (inline-skip 10pt) ++ ib-title ++ (inline-fil)) in
@@ -455,8 +463,9 @@ end = struct
     let ctx-title = make-subsection-title ctx in
     let ib-num =
       read-inline ctx-title (embed-string (s-num ^ `.`))
-        ++ hook-page-break (fun pbinfo _ ->
-             register-cross-reference (`subsection:` ^ label ^ `:page`) (arabic pbinfo#page-number))
+        ++ hook-page-break (fun pbinfo _ -> (
+             let pageno = get-shifted-page-number pbinfo in
+               register-cross-reference (`subsection:` ^ label ^ `:page`) (arabic pageno)))
     in
     let ib-title = read-inline ctx-title title in
     let bb-title =

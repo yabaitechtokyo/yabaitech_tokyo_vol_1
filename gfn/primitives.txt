@@ -17,7 +17,7 @@ D[o] set-font-size
 D[o] get-font-size
 D[ ] set-text-color
 D[ ] get-text-color
-D[ ] ++
+D[o] ++
 D[ ] +++
 D[ ] inline-nil
 D[ ] get-natural-metrics

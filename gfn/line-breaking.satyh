@@ -98,9 +98,12 @@ let line-breaking = '<
         \val?:(`line-break`)({line-break})(Type.(bool --> (bool -->
           (context --> (inline-boxes --> block-boxes)))));%
 
-        であることは既に紹介したが，分割される箇所の候補がどのように決定され，
+        であることはすでに\ref-chapter(`advanced-command-definition`);で紹介したが，
+        分割される箇所の候補がどのように決定され，
         その処理にユーザやパッケージ開発者がどのように介入できるかについてはまだ触れていなかった．
         これについて以下で少し解説する．
+        本章のほかに，行分割の仕組みを扱っているわかりやすい文献としては
+        \cite[`Kuroki2015`; `TeXbyTopic`];などがあるので是非参照されたい．
       }
       +p{
         \SATySFi;では，行分割の候補となる箇所がインラインボックス列の中に含まれており，

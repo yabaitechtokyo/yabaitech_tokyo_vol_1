@@ -19,6 +19,12 @@ let bibliography = [
     url = `https://github.com/gfngfn/otfm`;
     year = 2017;
   |));
+  (`TeXbyTopic`, Book(|
+    author = {| Victor Eijkhout |};
+    title = {\TeX; by Topic};
+    publisher = {Addison–Wesley};
+    year = 1991;
+  |));
   (`LyX`, WebSite(|
     author = {| Matthias Ettrich |};
     title = {LyX – The Document Processor};
@@ -104,6 +110,15 @@ let bibliography = [
     volume = Some(11);
     number = None;
     pages = (1119, 1184);
+  |));
+  (`Kuroki2015`, Article(|
+    author = {| 黒木 裕介 |};
+    title = {組版におけるオペレーションズ・リサーチ};
+    year = 2015;
+    journal = {オペレーションズ・リサーチ};
+    volume = Some(60);
+    number = Some({9});
+    pages = (536, 542);
   |));
   (`liang-knuth`, Book(|
     author = {| Franklin M. Liang |};
