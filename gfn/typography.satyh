@@ -37,7 +37,7 @@ let typography = '<
       という処理を繰り返すことによりテキストをグリフの列として描画する，
       というモデルが採られている：
     }
-    +centered-graphics(15cm)(3.5cm)(fun r -> (
+    +centered-graphics(14cm)(3.5cm)(fun r -> (
       let draw-point pt =
         let path = Gr.circle pt 3pt in
         [ fill Color.white path;
@@ -46,11 +46,11 @@ let typography = '<
       let draw-arrow pt1 pt2 =
         Gr.arrow 0.5pt Color.black 6pt 5pt 1.5pt pt1 pt2
       in
-      let x = 7.5cm in
+      let x = 7cm in
       let y = 1.5cm in
       List.concat [
         [
-          stroke 0.5pt Color.black (Gr.rectangle (0cm, 0cm) (15cm, 3.5cm));
+          stroke 0.5pt Color.black (Gr.rectangle (0cm, 0cm) (14cm, 3.5cm));
           r#text-centering (x, y) {\BoxGraphics.roman?:(20mm){|g|l|y|p|h|s|}};
           stroke 0.5pt Color.black (Gr.line (x -' 3.5cm, y) (x +' 3.5cm, y));
         ];
@@ -263,7 +263,7 @@ let typography = '<
       \val-explain?:(`set-font`)({set-font})%
         (Type.(script --> (product [string; float; float] --> (context --> context)))) {
           \codem{\meta{ctx} \|\> set-font \meta{script} (\meta{fontname}, \meta{r}, \meta{rb})}
-          で文字体系\codem{\meta{script}}のフォント設定を\codem{(\meta{fontname}, \meta{r}, \meta{rb})}
+          で文字体系\codem{\meta{script}}に対するフォント設定を\codem{(\meta{fontname}, \meta{r}, \meta{rb})}
           に更新したテキスト処理文脈\codem{\meta{ctx}}を返す．
         }%
 

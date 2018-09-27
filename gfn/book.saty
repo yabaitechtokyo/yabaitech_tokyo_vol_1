@@ -18,7 +18,7 @@
 
 document (|
   title = {The \SATySFi;book};
-  author = {T. Suwa};
+  author = {Takashi SUWA};
   preface = preface;
   bibliography = bibliography;
 |) '<
@@ -180,12 +180,62 @@ document (|
     +p{
       \REMAINS{コマンドが処理されるアニメーション}
     }
-    +p{
-      \REMAINS{let-inlineによるエイリアス定義は糖衣構文}
-    }
-    +p{
-      \REMAINS{発展的なコマンド定義：line-break}
-    }
+    +section{コマンド定義の糖衣構文}<
+      +p{
+        ところで，インラインコマンドを定義する構文：
+
+        \d-codem{
+          let-inline \meta{ctx} \meta{cmd} \metasub(${1}){x} ${\cdots} \metasub(${n}){x} = \meta{expr}
+        }%
+
+        は\ref-chapter(`basic-command-definition`);で解説したlet式と同様に
+
+        \d-codem{
+          let-inline \meta{ctx} \meta{cmd} =
+            (fun \metasub(${1}){x} ${\cdots} \metasub(${n}){x} -\> \meta{expr})
+        }%
+
+        の糖衣構文である．これはあまり意識する必要はないが，知っていると部分適用などを駆使して
+        コマンド適用が簡潔に書けたりして便利である．
+        より詳しく知りたい場合は\ref-chapter(`specification`);を参照されたい．
+
+        さらに言うと，おそらくこちらは少し意外に感じられるかと思うが，
+        \ref-chapter(`basic-command-definition`);で登場した
+        テキスト処理文脈を受け取らない\codem{let-inline}によるコマンド定義の構文：
+
+        \d-codem{
+          let-inline \meta{cmd} \metasub(${1}){x} ${\cdots} \metasub(${n}){x} = \meta{expr}
+        }%
+
+        は，実は
+
+        \d-codem{
+          let-inline \meta{ctx} \meta{cmd} =
+            (fun \metasub(${1}){x} ${\cdots} \metasub(${n}){x} -\>
+              read-inline \meta{ctx} \meta{expr})
+        }%
+
+        の糖衣構文である．ただし，\codem{\meta{ctx}}は\codem{\meta{expr}}に自由出現しない変数名を
+        ひとつ選んだものである．
+        要するに外から渡されるテキスト処理文脈を
+        そのままインラインテキスト\codem{\meta{expr}}のインライン変換に使うだけ，ということである．
+        こちらの第0引数を取らない構文は
+        \codem{=}より前に書いてある変数の個数で\codem{read-inline}が “挿入” される場所が
+        決定されるので，
+
+        \d-codem{
+          let-inline \meta{cmd} =
+            (fun \metasub(${1}){x} ${\cdots} \metasub(${n}){x} -\>　\meta{expr})
+        }%
+
+        と書いても意図通りには脱糖衣されないことに注意されたい．
+      }
+    >
+    +section{行分割を行なうコマンド}<
+      +p{
+        \REMAINS{発展的なコマンド定義：line-break}
+      }
+    >
   >
   +chapter?:(`line-breaking`){行分割処理}< #line-breaking; >
   +chapter?:(`system-and-config`){システムと設定ファイル}< #system-and-config; >

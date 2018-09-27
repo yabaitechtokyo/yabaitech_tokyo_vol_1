@@ -476,8 +476,10 @@ end = struct
 %  let header-origin = (16mm, 15mm)
   let header-origin = (21mm, 15mm)
   let header-width = text-width
-  let footer-origin = (16mm, 240mm)
-  let footer-width = 150mm
+%  let footer-origin = (16mm, 240mm)
+%  let footer-width = 150mm
+  let footer-origin = (21mm, 240mm)
+  let footer-width = 140mm
   let footnote-indent = 6mm
 %  let doc-font-size = 12pt
 %  let doc-leading = 18pt
@@ -685,6 +687,47 @@ end = struct
         (chapter-heading ctx-doc None ib-bib-title) +++ bb-bib-main
     in
 
+    % -- okudzuke --
+    let bb-okudzuke =
+      let thick = 1pt in
+      let thin = 0.5pt in
+      let gap = 2pt in
+      let pads = (5pt, 5pt, 5pt, 5pt) in
+      let l it =
+        NormalCell(pads, read-inline ctx-doc it ++ inline-fil)
+      in
+      let tbl =
+        tabular [
+%          [ MultiCell(1, 2, pads, read-inline ctx-doc {The \SATySFi;book}); EmptyCell; ];
+          [ l {発行日}; l {2018年9月29日}; ];
+          [ l {発行}; l {Takashi SUWA / ヤバイテックトーキョー}; ];
+          [ l {連絡先}; l {\url{bd.gfngfn\@gmail.com}}; ];
+          [ l {印刷所}; l {株式会社ポプルス}; ];
+        ] (fun xs ys -> (
+          match (xs, List.reverse xs, ys, List.reverse ys) with
+          | (xL :: _, xR :: _, yT :: _, yB :: _) ->
+              [
+                stroke thick Color.black (Gr.line (xL, yT +' gap) (xR, yT +' gap));
+                stroke thin Color.black (Gr.line (xL, yT) (xR, yT));
+                stroke thin Color.black (Gr.line (xL, yB) (xR, yB));
+                stroke thick Color.black (Gr.line (xL, yB -' gap) (xR, yB -' gap));
+              ]
+
+          | _ ->
+              []
+        ))
+      in
+      let ib-title = read-inline ctx-doc {The \SATySFi;book} in
+      clear-page +++ block-skip 140mm +++
+        line-break false false ctx-doc
+          (inline-fil ++
+            line-stack-bottom [
+              ib-title ++ inline-fil;
+              inline-graphics 0pt 6pt 0pt (fun _ -> []) ++ inline-fil;
+              tbl ++ inline-fil;
+            ] ++ inline-fil)
+    in
+
     % -- page settings --
     let pagecontf pbinfo =
       let () = FootnoteScheme.start-page () in
@@ -735,17 +778,19 @@ end = struct
             block-nil
       in
       let (hdrorgx, hdrorgy) = hdrorg in
+      let (ftrorgx, ftrorgy) = ftrorg in
       let dx =
         if pageno mod 2 == 1 then parity-shift else 0pt -' parity-shift
       in
         (|
           header-origin  = (hdrorgx +' dx, hdrorgy);
           header-content = header;
-          footer-origin  = ftrorg;
+          footer-origin  = (ftrorgx +' dx, ftrorgy);
           footer-content = footer;
         |)
     in
-      page-break page pagecontf pagepartsf (bb-title +++ bb-preface +++ bb-toc +++ bb-main +++ bb-bib)
+      page-break page pagecontf pagepartsf
+        (bb-title +++ bb-preface +++ bb-toc +++ bb-main +++ bb-bib +++ bb-okudzuke)
 
 
   let-block ctx +p inner =

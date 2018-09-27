@@ -9,8 +9,8 @@ let system-and-config = '<
     次のような構造をもつ\dfnje{ライブラリルート}{library root}と呼ばれるディレクトリの
     下に収められている：
   }
-  +centered-graphics(15cm)(11cm)(fun r -> (
-    (stroke 0.5pt Color.black (Gr.rectangle (0cm, 0cm) (15cm, 11cm))) ::
+  +centered-graphics(14cm)(11cm)(fun r -> (
+    (stroke 0.5pt Color.black (Gr.rectangle (0cm, 0cm) (14cm, 11cm))) ::
     draw-directory-tree r (1cm, 10.5cm) 0.75cm 0.5cm
       (Directory({\path{\meta{LIBROOT/}}}, [
         Directory({\path{dist/}}, [
@@ -106,8 +106,15 @@ let system-and-config = '<
     }
     +p{
       \path{dist/packages/}はパッケージ類を格納する．
-      パッケージファイルを\path{dist/packages/\meta{path/to/foo}\meta-or{|.satyh|.satyg|}}
-      というパスに置くと，パッケージとして\codem{\@require: \meta{path/to/foo}}で読み込めるようになる．
+      パッケージファイルを
+      \quote{
+        \path{dist/packages/\meta{path/to/foo}\meta-or{|.satyh|.satyg|}}
+      }%
+      というパスに置くと，パッケージとして
+      \d-codem{
+        \@require: \meta{path/to/foo}
+      }%
+      で読み込めるようになる．
       拡張子が\path{.satyh}のものと\path{.satyg}のものが両方存在する場合は
       \path{.satyh}が優先される\footnote{
         拡張子\path{.satyg}は，
@@ -120,8 +127,10 @@ let system-and-config = '<
   +section{フォント設定}<
     +p{
       \SATySFi;で使用できるフォントは
-      \dfnje{フォントハッシュファイル}{font hash file}
-      \path{dist/hash/fonts.satysfi-hash}
+      \dfnje{フォントハッシュファイル}{font hash file}：
+      \quote{
+        \path{dist/hash/fonts.satysfi-hash}
+      }%
       に設定の記載のあるフォントである．
       ユーザが新しいフォントを\SATySFi;で使えるように設定したい場合は，
       \path{dist/fonts/}直下に所望のフォントファイル\path{\meta{bar}.otf}を置き，
@@ -142,8 +151,11 @@ let system-and-config = '<
       }%
 
       と記述することでやはり\codem{\`baz\`}という名前でそのフォントが使えるようになる．
-      数式フォントについても\dfnje{数式フォントハッシュファイル}{math font hash file}
-      \path{dist/hash/mathfonts.satysfi-hash}に設定を記載する．
+      数式フォントについても\dfnje{数式フォントハッシュファイル}{math font hash file}：
+      \quote{
+        \path{dist/hash/mathfonts.satysfi-hash}
+      }%
+      に設定を記載する．
       記述する形式はフォントハッシュファイルと同様である．
     }
   >
@@ -151,8 +163,11 @@ let system-and-config = '<
     +p{
       組版処理中で，特にフォント指定がない場合に使われるフォント\footnote{
         \codem{get-initial-context}が返すテキスト処理文脈に格納されているフォント設定の意．
-      }は\dfnje{デフォルトフォントハッシュファイル}{default font hash file}
-      \path{dist/hash/default-font.satysfi-hash}で設定されているものになる．
+      }は\dfnje{デフォルトフォントハッシュファイル}{default font hash file}：
+      \quote{
+        \path{dist/hash/default-font.satysfi-hash}
+      }%
+      で設定されているものになる．
       デフォルトフォントハッシュファイルの内容は文字体系ごとに初期値とするフォントを指定したディクショナリであり，
       現状では文字体系として漢字，かな，ラテン文字，その他，の4つが定められている．
       勿論今後より多くの文字体系をサポートする想定だが，
