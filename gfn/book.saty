@@ -1418,7 +1418,10 @@ document (|
           \codem{\meta{Ctr}}と書く構文もあり，
           これは\codem{\meta{Ctr} of unit}と等価である．
           \type(Type.unit);型は唯一の値\codem{()}をもつ型で，
-          \ref-subsection(`imperative`);で説明する手続き的処理などに援用される．
+          \ref-subsection(`imperative`);で説明するような手続き的処理の返り値や，
+          手続き的処理を行なう函数の引数などにダミー的に利用される\footnote{
+            このような用法を\dfnje{サンク}{thunk}などと呼ぶ．
+          }．
           \codem{\metasub(${j}){'a}}は\dfn{型引数}と呼ばれるものだが，
           今は触れず，${m = 0} とする．
         }
@@ -1561,21 +1564,341 @@ document (|
           ともかく，「再帰は再帰がわかるとわかる」のだ．
         }
         +p{
-          さて，もう一度代数的データ型の話をしよう．
-          実は，代数的データ型の重要な特徴として，再帰的なデータを扱う型を定義できるというものがある．
+          さて，ここで少し\dfnje{多相型}{polymorphic type}の話をしよう．
+          まず以下のような函数を見てほしい：
+
+          \d-code(```
+            let proj1 tuple =
+              let (x, _) = tuple in x
+          ```);%
+
+          この函数につく型はなんだろうか？\quad;
+          ひとまず，例えば\type(Type.(product [int; string] --> int));
+          などはつくはずであるが，よくよく見直すと
+          \type(Type.(product [tymtausub ${1}; tymtausub ${2}] --> tymtausub ${1}));%
+          という形の型は全部つくということがわかる．
+          これを反映して，let多相では上記の\codem{proj1}に
+
+          \quote{
+            \type(Type.(forall ${\alpha} (forall ${\beta} (product [tymalpha; tymbeta] --> tymalpha))));
+          }%
+
+          という型をつける．ここでの ${\alpha} や ${\beta} は\dfnje{型変数}{type variable}と呼ばれ，
+          実際に\codem{proj1}が使われるたびに（“整合する” 限り）適切な型をあてはめて使われる．
+          例えば上記の\codem{proj1}の定義以降で
+          \codem{(proj1 (1cm, 2cm), proj1 (\`foo\`, 1))}などと書いても
+          （ふたつの\codem{proj1}は異なる型の引数を受け取っているにもかかわらず）問題なく型がつく．
+          多相型をつける一般的な規則を述べると長くなるため事細かには述べないが，
+          基本的にはletで束縛される変数の型に関して型推論の結果特に型が決定しない部分は型変数として一般化され，
+          多相型がつくという仕組みになっている．
         }
         +p{
-          \REMAINS{itemize}
+          多相型について把握してもらったところで，代数的データ型で一旦無視していた型引数の説明をしよう．
+          型引数は，多相な代数的データ型を定義するための機構である．
+          例として，最初から備わっている代数的データ型のひとつである
+          \type(Type.(option tymalpha));型について見てみる．
+          この型は，以下のように定義できるものだ：
+
+          \d-code(```
+            type 'a option = None | Some of 'a
+          ```);%
+
+          \codem{'a}というひとつの型引数をとる定義である．
+          型引数は，その代数的データ型の定義中で型として使うことができる．
+          \type(Type.(option tymalpha));型は，直観的には
+          “\type(Type.tymalpha);型の値ひとつか，或いは何もないか” を表現する型である．
+          もう少し具体的な用途を挙げて直観を説明するなら，
+          “成功した時は\type(Type.tymalpha);型の値を返したいが，失敗するかもしれない函数”
+          の返り値の型として使ったりする．
+          例えば “実行時に失敗しない安全な除算” は以下のように定式化できる：
+
+          \d-code(```
+            let div-safe m n =
+              if n == 0 then None else Some(m / n)
+          ```);%
+
+          この\codem{div-safe}は\type(Type.(int --> (int --> option int)));型をもつ．
+        }
+        +p{
+          \codem{div-safe}は型引数に具体的に当てはまる型が\type(Type.int);型に決定していたが，
+          重要なのはこれを多相なままにできるということである．
+
+          \d-code(```
+            let from-option d opt =
+              match opt with None -> d | Some(v) -> v
+          ```);%
+
+          \codem{from-option}は，第2引数に与えられた値が\codem{None}のときは “デフォルト値” として
+          \codem{\meta{d}}を返し，\codem{Some(\meta{v})}の形のときはその\codem{\meta{v}}を
+          取り出して返すことで\type(Type.(option tymtau));型のデータを
+          \type(Type.tymtau);型へと “潰す” 函数である．
+          これは\type(Type.tymtau);という型によらず同様であり，実際
+          この\codem{from-option}には\type(Type.(tymalpha --> (option tymalpha --> tymalpha)));
+          という多相型がつく．
+        }
+        +p{
+          さらに代数的データ型の話を続けよう．
+          実は，代数的データ型の重要な特徴として，再帰的なデータを扱う型を定義できるというものがある．
+          例として，二分木を扱う代数的データ型は以下のように定義できる：
+
+          \d-code(```
+            type 'a bin-tree =
+              | Empty | Node of 'a * 'a bin-tree * 'a bin-tree
+          ```);%
+
+          \type(Type.(ctr-type {bin-tree} [tymalpha]));型の定義の中に
+          \type(Type.(ctr-type {bin-tree} [tymalpha]));型自身が現れている．
+          この型に基づく二分木を文字列に変換する函数\codem{show-tree}は
+          以下のように定義できる：
+
+          \d-code(```
+            let-rec show-tree pr tr =
+              match tr with
+              | Empty -> `_`
+              | Node(x, trL, trR) ->
+                  `(` ^ (pr x) ^ #` `# ^
+                    (show-tree pr trL) ^ #` `# ^ (show-tree pr trR) ^ `)`
+          ```);%
+
+          この\codem{show-tree}につく型は
+          \type(Type.(forall ${\alpha} ((tymalpha --> string) -->
+            (ctr-type {bin-tree} [tymalpha] --> string))));
+          である．引数\codem{pr}も函数であることに注目されたい．
+          \codem{show-tree}は函数を受け取ってそれを使う函数になっており，
+          このような函数を\dfnje{高階函数}{higher-order function}と呼ぶ．
+          型も，それに対応して\type(Type.(tymalpha --> string));が引数側にきている．
+        }
+        +p{
+          最も汎用性の高い再帰的なデータ型は，おそらく\dfnje{リスト}{list}だろう．
+          リストとは\codem{[3\; 1\; 4\; 1\; 5\; 9\; 2]}といったように
+          基本的に “同じ種類データが有限個並んだもの” であり，
+          \type(Type.tymtau);型のデータが並んだリストを
+          \type(Type.(list tymtau));型がつくものとして扱うのだが，
+          リストを構築・分解する方法の直観とは少し飛躍がある：\quad;
+          リストの構築方法は
+
+          \listing{
+            * 空リスト\codem{[]}
+            * 要素\codem{\meta{x}}とリスト\codem{\meta{xs}}の結合\codem{\meta{x} :: \meta{xs}}
+          }%
+
+          の2種類があり，\codem{[3\; 1\; 4\; 1\; 5\; 9\; 2]}は
+          \codem{3 :: (1 :: (4 :: 1 :: (5 :: 9 :: 2)))}の糖衣構文なのである\footnote{
+            \codem{::}は右結合なので，ここでつけている括弧は全て省略できる．
+          }．
+          要するに，リストとは（模擬的には）以下で定義される代数的データ型に相当する：
+
+          \d-code(```
+            type 'a list = [] | (::) of 'a * 'a list
+          ```);%
+
+          リストに対する簡単な処理をいくつか見てみる．
+          まずリストの長さを返す函数\codem{list-length}は以下のとおり：
+
+          \d-code(```
+            let-rec list-length l =
+              match l with
+              | []      -> 0
+              | x :: xs -> 1 + list-length xs
+          ```);%
+
+          ふたつのリストを結合する函数\codem{list-append}は以下のとおり：
+
+          \d-code(```
+            let-rec list-append l1 l2 =
+              match l1 with
+              | []      -> l2
+              | x :: xs -> x :: list-append xs l2
+          ```);%
+
+          リストを前後反転する函数\codem{list-reverse}は，
+          前2つの例に比べて少し技巧的だが以下のように実装できる：
+
+          \d-code(```
+            let list-reverse l =
+              let-rec aux acc l =
+                match l with
+                | []      -> acc
+                | x :: xs -> aux (x :: acc) xs
+              in
+              aux [] l
+          ```);%
+
+          かなり駆け足の説明のため基礎的な函数のみの紹介となってしまったが，
+          リストに対する操作，例えばマップ函数や畳み込み函数は，
+          内容の充実した函数型プログラミングの入門書では必ず触れるものなので，
+          是非参照されたい．
+          なお，リストに対する操作は\pkg{list}パッケージでいくつも定義されており，
+          ここで例示した\codem{list-length}，\codem{list-append}，\codem{list-reverse}も
+          \codem{List.length}，\codem{List.append}，\codem{List.reverse}として
+          それぞれ実装されている．
+        }
+        +p{
+          \ref-chapter(`getting-started`);で登場した\type(Type.itemize);型も，
+          実はあらかじめ定義されている以下のような再帰的な代数的データ型である：
+
+          \d-code(```
+            type itemize = Item of inline-text * itemize list
+          ```);%
+
+          そして，\codem{\\listing}などのコマンドに渡される
+
+          \d-code(```
+            { * 東京
+                ** 本郷  ** 弥生  ** 浅野  ** 駒場
+              * 千葉
+                ** 柏 }
+          ```);%
+
+          という記述は，以下のような構造の糖衣構文である：
+
+          \d-code(```
+            (Item(` `, [
+              Item({東京}, [
+                Item({本郷}, []); Item({弥生}, []);
+                Item({浅野}, []); Item({駒場}, []); ]);
+              Item({千葉}, [
+                Item({柏}, []); ]);
+            ]))
+          ```);%
+
+          \codem{\\listing}などのコマンドは，この再帰的なデータ構造の上を
+          走査して組版処理しているのである．
         }
       >
       +subsection{レコード}<
         +p{
-          \REMAINS{レコード}
+          \dfnje{レコード}{record}は，タプルと同様に “複数の式をまとめて扱う機構” なのだが，
+          タプルがデータを “何番目のデータか” に基づいて構築・分解していたのに対し，レコードでは
+          それぞれのデータに\dfnje{ラベル}{label}がつけられ，これに基づいて構築したり取り出したりする．
+          おおよそ，C言語でいうところの構造体にあたる概念である．
+          例として，人物の情報を扱うレコードをまず掲げよう：
+
+          \d-code(```
+            (| given-name = `Takashi`; family-name = `Suwa`; age = 25; |)
+          ```);%
+
+          ここでの\codem{given-name}，\codem{family-name}，\codem{age}がラベルである．
+          ラベルに使える文字列は変数名に使えるそれと同じ範囲である．
+          レコード\codem{\meta{r}}からの内容の取り出しは
+          \codem{\meta{r}\#\meta{label}}という式によって行なう．
+          例えば上記のレコードが\codem{r-tsuwa}という変数に格納されているとき，
+          \codem{r-tsuwa\#age}は\codem{25}へと評価される．
+          実は，レコードは\SATySFi;で文書を書くユーザならほぼ全員使っているはずである．
+          というのも，大抵のクラスファイルでは\codem{document}の直後に文書に関する情報を
+          レコードで渡すようなインターフェイスになっているからだ．
+          そう，以下の\codem{(\| ${\cdots} \|)}の部分はレコードだったのである．
+
+          \d-code(```
+            @require: stdjareport
+
+            document (|
+              title = {はじめての文書};
+              author = {組 版太郎};
+            |) '<
+            （以降略）
+          ```);%
+        }
+        +p{
+          レコードのラベルという仕組みは
+          タプルに比べて各要素がどのような役割を果たしているかが明瞭であり，
+          プログラムのドキュメント性を向上させる効能があるが，
+          型つけに関してさらに顕著な違いがある．
+          \SATySFi;でのレコードに関する型つけ規則は，
+          \dfn{SML\#}の基礎づける型 \cite[`Ohori1995`];を大々的に参考にしている．
+          この型システムについて定義をすべて述べるのはあまりにも長いので，
+          簡素に直観だけを与える．詳細は元論文 \cite[`Ohori1995`];を参照されたい．
+          まず，基本的にレコード：
+
+          \d-codem{
+            (\| \metasub(${1}){label} = \metasub(${1}){expr}\; ${\cdots}\;
+                \metasub(${n}){label} = \metasub(${n}){expr}\; \|)
+          }%
+
+          は，各式\codem{\metasub(${i}){expr}}に型\type(Type.tymtausub ${i});がつく下で
+
+          \quote{
+            \type(Type.(record [
+              ({\metasub(${1}){label}}, tymtausub ${1});
+              ({${\cdots}}, of-math ${\cdots});
+              ({\metasub(${n}){label}}, tymtausub ${n});
+            ]));
+          }%
+
+          という型をつけて扱う．レコードそのもののの型つけは単純なのだが，
+          重要なのはラベルへのアクセスに関する型つけである．
+          レコードを受け取り，そのレコードのラベル\codem{foo}にアクセスする函数を考える：
+
+          \d-code(```
+            (fun r -> r#foo + 1)
+          ```);%
+
+          この函数にどんな型をつければよいかをまず素朴に考えよう．
+          この函数の式が型の制約として要請するのは，
+          \codem{r}という変数が束縛されているレコードが\codem{foo}というラベルをもち，
+          かつそれに対応する値が\type(Type.int);型であるということだけである．
+          この函数を\SATySFi;では（SML\#に倣って）
+
+          \quote{
+            \type(Type.(forall-kinded ${\alpha} [({foo}, int)] (tymalpha --> int)));
+          }%
+
+          という型をつけて扱う．これは ${\alpha} が一般化されている或る種の多相型なのだが，
+          重要なのは「:: \type(Type.(record [({foo}, int)]));」の部分であり，
+          これは ${\alpha} が（任意の型ではなく）ラベルfooに\type(Type.int);型をもつ
+          レコードの型のみを動く型変数であるということを記述している．
+          同様にして
+
+          \d-code(```
+            (fun r -> (
+              let (x, _) = r#bar in r#foo + (round x)))
+          ```);%
+
+          には以下のような型がつく：
+
+          \quote{
+            \type(Type.(forall ${\beta} (forall-kinded ${\alpha} [
+              ({foo}, int);
+              ({bar}, product [float; tymbeta]);
+            ] (tymalpha --> int))));
+          }%
+
+          一般的な説明は煩雑なので省くが，おおよそこのような仕組みでレコードに関して
+          多相型がつけられる．
+
         }
       >
       +subsection?:(`imperative`){手続き}<
         +p{
-          \REMAINS{手続き}
+          いわゆる函数型言語ではあるものの，\SATySFi;にも手続き的処理を行なう機構は備わっている．
+          すなわち，書き換え可能な変数に相当する\dfnje{可変参照}{mutable reference}である．
+          可変参照は，次のような構文で宣言する：
+
+          \d-codem{
+            let-mutable \meta{x} \<- \metasub(${1}){expr} in \metasub(${2}){expr}
+          }%
+
+          \codem{\meta{x}}が宣言される可変参照であり，
+          \codem{\metasub(${1}){expr}}がその初期値，
+          \codem{\metasub(${2}){expr}}が\codem{\meta{x}}の使えるスコープである．
+          可変参照は基本的には通常の変数と同様の扱いであるものの，
+          \type(Type.(tymtau));型の値が格納される可変参照は
+          \type(Type.(ref tymtau));型がつけられる．
+          可変参照\codem{\meta{x}}の現在の内容は\codem{!\meta{x}}で取得することができ，
+          また内容を破壊的に書き換える処理は，
+          新たに格納させる内容に評価される式を\codem{\meta{expr}}として
+          \codem{\meta{x} \<- \meta{expr}}
+          と書く．この式が評価されて\codem{\meta{x}}の内容が上書きされると，
+          式全体はユニット値\codem{()}となる．
+        }
+        +p{
+          可変参照は，章節番号の挿入など，“本質的に手続き的な処理” をクラスファイル内で扱うのに利用されているので，
+          各種クラスファイルの中を覗くと多くの用例が確認できるだろう．
+          ただし，多くの場合可変参照を多用するとプログラムの挙動を把握困難にする要因となる\footnote{
+            だからこそいわゆる函数型プログラミングの流儀は
+            破壊的代入を積極的に避けるのである．
+          }ので，
+          止むを得ない場合を除いてできる限り使わないように心がけた方が良さそうである．
         }
       >
       +subsection?:(`arithmetic`){算術に関するプリミティヴ}<
@@ -1617,12 +1940,9 @@ document (|
           \vals-explain({|+.|-.|\*.|/.|})(tyarithF) {
             浮動小数点数の加算，減算，乗算，除算．
           }%
-          \vals-explain({|sin|cos|tan|})(tysine) {
-            正弦，余弦，正接函数．
-          }%
-          \vals-explain({|asin|acos|atan|})(tysine) {
-            アークサイン，アークコサイン，アークタンジェント．
-            すなわち，それぞれ正弦，余弦，正接函数の “逆函数” である．
+          \vals-explain({|sin|cos|tan|asin|acos|atan|})(tysine) {
+            正弦，余弦，正接函数，およびアークサイン，アークコサイン，アークタンジェント
+            （すなわち正弦，余弦，正接函数の “逆函数”）．
           }%
           \val-explain({atan2})(Type.(float --> (float --> float))) {
             \codem{atan2 \meta{y} \meta{x}}で
@@ -1775,8 +2095,7 @@ document (|
           \dfn{SML\#}と同様のもの \cite[`Ohori1995`];
           を採用しているからである（詳細は元論文を参照せよ）．
           これに加え，
-          OCamlに備わっているような，
-          特定のフィールドをmutableにするような機能はなく，
+          OCamlのように特定のフィールドをmutableにするような機能はなく，
           必ず全てのフィールドがimmutableである．
         }
         +desc{可変参照}{

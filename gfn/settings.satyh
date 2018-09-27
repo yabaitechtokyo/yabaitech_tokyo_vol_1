@@ -270,6 +270,11 @@ type geometry =
   | Circle    of (length * length) * length
 
 
+type 'a bin-tree =
+  | BTEmpty
+  | BTNode of 'a * 'a bin-tree * 'a bin-tree
+
+
 module Sample = struct
 
   let-inline ctx \enlarge it =
@@ -358,6 +363,17 @@ module Sample = struct
   let-rec fact n =
     if n <= 0 then 1 else
       n * fact (n - 1)
+
+
+  let-rec show-bin-tree pr tr =
+    match tr with
+    | BTEmpty ->
+        `_`
+
+    | BTNode(x, trL, trR) ->
+        `(` ^ (pr x) ^ #` `# ^
+          (show-bin-tree pr trL) ^ #` `# ^
+          (show-bin-tree pr trR) ^ `)`
 
 
   let-inline ctx \simple-frame it =
@@ -471,12 +487,13 @@ module Type : sig
   val of-math : math -> t
   val (-->) : t -> t -> t
   val base-type : inline-text -> t
+  val ctr-type : inline-text -> t list -> t
   val product : t list -> t
-  val record : (string * t) list -> t
+  val record : (inline-text * t) list -> t
   val cmdI : t list -> t
   val cmdB : t list -> t
   val forall : math -> t -> t
-  val forall-kinded : math -> (string * t) list -> t -> t
+  val forall-kinded : math -> (inline-text * t) list -> t -> t
   val star : t -> t
 
   val synt-paren : t -> t
@@ -507,6 +524,7 @@ module Type : sig
   val page : t
   val document : t
   val math : t
+  val itemize : t
 
   val list : t -> t
   val option : t -> t
@@ -529,8 +547,8 @@ end = struct
     | Func   of t * t
     | Prod   of t list
     | Cmd    of inline-text * t list
-    | Forall of math * ((string * t) list) option * t
-    | Record of (string * t) list
+    | Forall of math * ((inline-text * t) list) option * t
+    | Record of (inline-text * t) list
     | Paren  of t
 
 
@@ -645,7 +663,7 @@ end = struct
       let ms =
         assoc |> List.map (fun (key, ty) -> (
           let m = aux Normal ty in
-          ${\text!{\no-break(embed-string key);} : #m}
+          ${\text!{\no-break(key);} : #m}
         ))
       in
       Math.join ${\;#sep-record-glue} ms
@@ -660,6 +678,8 @@ end = struct
 
 
   let base-type it = Ctr(it, [])
+
+  let ctr-type it tys = Ctr(it, tys)
 
   let (-->) ty1 ty2 = Func(ty1, ty2)
 
@@ -706,6 +726,7 @@ end = struct
   let document     = base-type {document}
   let page         = base-type {page}
   let math         = base-type {math}
+  let itemize      = base-type {itemize}
 
 
   let list ty = Ctr({list}, [ty])

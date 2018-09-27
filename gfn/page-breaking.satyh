@@ -78,8 +78,8 @@ let page-breaking = '<
     \quote{
       \type(Type.(forall-kinded ${\alpha}
         [
-          (`title`, inline-text);
-          (`author`, inline-text);
+          ({title}, inline-text);
+          ({author}, inline-text);
         ]
         (tymalpha --> (block-text --> document))));
     }%
@@ -94,8 +94,8 @@ let page-breaking = '<
 
     \quote{
       \type(Type.(
-        record [(`page-number`, int)] -->
-          record [(`text-height`, length); (`text-origin`, point)]
+        record [({page-number}, int)] -->
+          record [({text-height}, length); ({text-origin}, point)]
       ));
     }%
 
@@ -133,12 +133,12 @@ let page-breaking = '<
 
     \quote{
       \type(Type.(
-        record [(`page-number`, int)] -->
+        record [({page-number}, int)] -->
           record [
-            (`header-content`, block-boxes);
-            (`header-origin`, point);
-            (`footer-content`, block-boxes);
-            (`footer-origin`, point);
+            ({header-content}, block-boxes);
+            ({header-origin}, point);
+            ({footer-content}, block-boxes);
+            ({footer-origin}, point);
           ]
       ));
     }%
@@ -221,7 +221,7 @@ let page-breaking = '<
         }%
 
       \val-explain?:(`hook-page-break`)({hook-page-break})%
-        (Type.(((record [(`page-number`, int)] --> (point --> unit))) --> inline-boxes)) {
+        (Type.(((record [({page-number}, int)] --> (point --> unit))) --> inline-boxes)) {
           \codem{hook-page-break \meta{f}}の形で使う．
           返り値はインラインボックス列であり，組版上の効能は\codem{inline-nil}と同等なのだが，
           ページ分割処理の最中にこれが挿入されている箇所がどのページに含まれるか確定したときに
