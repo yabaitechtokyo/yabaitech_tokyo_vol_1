@@ -10,6 +10,10 @@ document (|
   title = `yabaitech.tokyo vol.1`;
   venue = `技術書典5`;
   date = `2018.10.08`;
+  author = `yabaitech.tokyo`;
+  email = `admin@yabaitech.tokyo`;
+  website = `http://yabaitech.tokyo`;
+  publisher = `ポプルス`
   |) '<
   #maswag-article;
   #wasabiz-article;
