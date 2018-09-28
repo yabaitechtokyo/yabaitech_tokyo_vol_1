@@ -199,6 +199,29 @@ module BoxGraphics = struct
         (inline-graphics w h d (fun (x, y) -> []))
 
 
+  let-inline ctx \text m it =
+    let ctx =
+      ctx |> set-mono-font
+          |> set-font-size 5mm
+    in
+    let shift = 0.5cm in
+    let down0 = 0.5cm in
+    let down1 = 0.75cm in
+    let down2 = 1cm in
+    let pads = (0pt, 0pt, 0pt, 0pt) in
+    let deco (x, y) w h d =
+      List.concat [
+        [
+          stroke 1pt Color.black (Gr.line (x, y -' down2) (x, y +' h));
+          Gr.text-leftward (x -' shift, y -' down1) (embed-math ctx m);
+        ];
+        Gr.arrow 0.5pt Color.black 6pt 5pt 1.5pt (x -' shift, y -' down0) (x, y -' down0);
+      ]
+    in
+      inline-frame-inner pads deco (read-inline ctx it)
+        ++ inline-graphics 0pt 0pt down2 (fun _ -> [])
+
+
   let-inline ctx \glue =
     let h = 0.5cm in
     let d = 0cm in
@@ -636,8 +659,15 @@ end = struct
           )
 
       | mode (Cmd(it, tys)) =
-          let ms = List.map (aux Single) tys in
-          let m = Math.join ${\text!{・}} ms in
+          let m =
+            match tys with
+            | [] ->
+                ${\ }
+
+            | _ :: _ ->
+                let ms = List.map (aux Normal) tys in
+                  Math.join ${\;\ } ms
+          in
             ${\sqbracket{#m}\ \text!(it)}
 
       | mode (Forall(ma, assocopt, ty)) =
@@ -1056,6 +1086,16 @@ let draw-directory-tree r pt dx dy fe =
 let-block ctx +centering it =
   line-break true true ctx
     (inline-fil ++ read-inline ctx it ++ inline-fil)
+
+
+let-block ctx +centerings its =
+  let l = get-font-size ctx *' 0.25 in
+  let bbs =
+    its |> List.map (fun it ->
+      line-break true true (ctx |> set-paragraph-margin l l)
+        (inline-fil ++ read-inline ctx it ++ inline-fil))
+  in
+    bbs |> List.fold-left (+++) block-nil
 
 
 let-inline ctx \glue-between-tokens =

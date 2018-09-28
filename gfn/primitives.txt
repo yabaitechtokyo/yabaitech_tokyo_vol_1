@@ -9,20 +9,21 @@
 
  [ ] get-text-width
 
- [ ] set-manual-rising
  [/] raise-inline
 
 == コマンド定義：発展編 ==
 D[o] set-font-size
 D[o] get-font-size
-D[ ] set-text-color
-D[ ] get-text-color
+D[o] set-text-color
+D[o] get-text-color
+D[o] set-manual-rising
 D[o] ++
-D[ ] +++
-D[ ] inline-nil
+D[o] +++
+D[o] inline-nil
+D[o] block-nil
 D[ ] get-natural-metrics
 D[o] read-inline
-D[ ] read-block
+D[o] read-block
 D[o] line-break
 
 == 行分割 ==
