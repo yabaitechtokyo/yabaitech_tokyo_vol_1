@@ -37,13 +37,13 @@ L[o] inline-glue
 L[o] set-space-ratio
 L[/] set-hyphen-min
 L[o] set-hyphen-penalty
-L[ ] embed-block-breakable
+L[o] embed-block-breakable
 
 -- 段落方向の長さ --
-L[ ] set-leading
-L[ ] set-min-gap-of-lines
-L[ ] set-paragraph-margin
-L[ ] set-min-paragraph-ascender-and-descender
+L[o] set-leading
+L[o] set-min-gap-of-lines
+L[o] set-paragraph-margin
+L[/] set-min-paragraph-ascender-and-descender
 
 == 文字組版 ==
 C[o] set-font
