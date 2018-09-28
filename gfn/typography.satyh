@@ -93,11 +93,7 @@ let typography = '<
       現在の\SATySFi;は\code(`Hani`);，\code(`Kana`);，\code(`Latn`);と「それ以外」の4種類を
 
       \d-code(```
-        type script =
-          | HanIdeographic
-          | Kana
-          | Latin
-          | OtherScript
+        type script = HanIdeographic | Kana | Latin | OtherScript
       ```);%
 
       で定義されるような\type(Type.script);型で扱う．
@@ -228,7 +224,7 @@ let typography = '<
       と変更する．規則の読み方は\cite[`unicode-lb`];を参照されたい．
       なお，INBRクラスとSPクラスに該当する文字，つまり “改行文字” や “空白文字” は，
       行分割候補箇所を決定する前に以下に挙げるような規則に基づく正規化処理により除去される場合がある．
-      すなわち，\meta-or{|ID|CJ|IN|SA|JLOP|JLCP|JLFS|JLCM|JLPL|} を IDs と略記するとして，
+      すなわち，IDs という略記で \meta-or{|ID|CJ|IN|SA|JLOP|JLCP|JLFS|JLCM|JLPL|} を表すとして，
       各 SP または INBR の文字は前後が
       以下のどのパターンに（先に挙げたものほど高い優先度で）マッチするかによって，
       除去するか，残すか，置換するか等の処理を決定する．

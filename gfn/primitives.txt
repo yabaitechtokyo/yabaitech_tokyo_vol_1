@@ -94,27 +94,27 @@ G[o] tabular
 
 == 数式組版 ==
 -- 数式中の文字 --
-M[x] math-char
-M[x] math-big-char
-M[x] math-char-with-kern
-M[x] math-big-char-with-kern
-M[ ] set-math-variant-char
+M[o] math-char
+M[o] math-big-char
+M[/] math-char-with-kern
+M[/] math-big-char-with-kern
+M[/] set-math-variant-char
 M[/] convert-string-for-math
-M[ ] math-variant-char
-M[x] get-left-math-class
-M[x] get-right-math-class
-M[ ] space-between-maths
+M[o] math-variant-char
+M[o] get-left-math-class
+M[o] get-right-math-class
+M[/] space-between-maths
 
 -- 数式 --
 M[/] math-concat
-M[x] math-group
 M[/] math-sup
 M[/] math-sub
 M[o] math-frac
 M[o] math-upper
 M[o] math-lower
-M[x] math-pull-in-scripts
-M[x] text-in-math
+M[o] math-group
+M[o] math-pull-in-scripts
+M[o] text-in-math
 
 -- 括弧類 --
 M[o] math-radical
@@ -124,7 +124,7 @@ M[ ] get-axis-height
 
 -- スタイル --
 M[o] math-color
-M[x] math-char-class
+M[o] math-char-class
 
 -- 数式の使用 --
 M[o] embed-math

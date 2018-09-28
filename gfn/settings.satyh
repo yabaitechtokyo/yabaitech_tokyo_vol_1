@@ -36,6 +36,10 @@ let-inline ctx \REMAINS msg =
 let-math \BNFeq = ${\mathrel{: : =}}
 
 
+let-inline ctx \vskip len =
+  inline-fil ++ embed-block-breakable ctx (block-skip len)
+
+
 let-block ctx +ragged-right it =
   line-break true true ctx (inline-fil ++ read-inline ctx it)
 
@@ -308,6 +312,10 @@ type 'a bin-tree =
 
 module Sample = struct
 
+  let-math \opcls m1 m2 =
+    math-paren Math.paren-left Math.sqbracket-right ${#m1, #m2}
+
+
   let-inline ctx \enlarge it =
     let size = get-font-size ctx in
     let ctx-enlarge = set-font-size (size *' 1.5) ctx in
@@ -412,6 +420,16 @@ module Sample = struct
     let decoset = HDecoSet.simple-frame-stroke 1pt (Gray(0.5)) in
       inline-frame-breakable pads decoset (read-inline ctx it)
 
+
+  let-math \lim =
+    let m-lim = math-char MathOp `lim` in
+      math-pull-in-scripts MathOp MathOp (fun moptS moptT -> (
+        match (moptS, moptT) with
+        | (None    , None    ) -> m-lim
+        | (Some(mS), None    ) -> math-lower m-lim mS
+        | (None    , Some(mT)) -> math-upper m-lim mT
+        | (Some(mS), Some(mT)) -> math-upper (math-lower m-lim mS) mT
+      ))
 
 end
 
@@ -1153,3 +1171,47 @@ let tycompI = Type.(int --> (int --> bool))
 let tyarithF = Type.(float --> (float --> int))
 let tycompF = Type.(float --> (float --> bool))
 let tysine = Type.(float --> float)
+
+
+let paren-right-fake hgt dpt hgtaxis fontsize color =
+  let halflen = Math.half-length hgt dpt hgtaxis fontsize in
+  let w0 = fontsize *' 0.1 in
+  let w1 = fontsize *' 0.075 +' halflen *' 0.01 in
+  let w2 = halflen *' 0.25 in %temporary
+  let w-extra = fontsize *' 0.1 in
+  let t1 = 0pt -' fontsize *' 0.025 in
+  let t2 = fontsize *' 0.025 in
+
+  let qA = halflen *' 0.35 in
+  let p1 = 0pt -' (w1 +' w2) *' 0.75 in
+  let q1 = halflen *' 0.3 in
+
+  let qB = halflen *' 0.45 in
+  let p2 = 0pt -' w2 *' 0.5 in
+  let q2 = halflen *' 0.2 in
+
+  let path (xpos, ypos) =
+    let ycenter = ypos +' hgtaxis in
+    let x0 = xpos +' w-extra +' w2 +' w1 in
+    let x1 = xpos +' w-extra +' w2 in
+    let x2 = xpos +' w-extra in
+    start-path (x2, ycenter +' halflen)
+      |> bezier-to (x2 -' p1, ycenter +' halflen -' q1) (x0, ycenter +' qA) (x0, ycenter)
+      |> bezier-to (x0, ycenter -' qA) (x2 -' p1, ycenter -' halflen +' q1) (x2, ycenter -' halflen)
+      |> line-to (x2 +' t1, ycenter -' halflen +' t2)
+      |> bezier-to (x2 -' p2, ycenter -' halflen +' q2) (x1, ycenter -' qB) (x1, ycenter)
+      |> bezier-to (x1, ycenter +' qB) (x2 -' p2, ycenter +' halflen -' q2) (x2 +' t1, ycenter +' halflen -' t2)
+      |> close-with-line
+  in
+  let graphics point = [ fill color (path point); ] in
+  let widparen = w0 +' w1 +' w2 +' w-extra in
+  let kerninfo _ = 0pt in  % no kerning !
+    (inline-graphics widparen (hgtaxis +' halflen) (halflen -' hgtaxis) graphics, kerninfo)
+
+
+let-math \paren-fake = math-paren Math.paren-left paren-right-fake
+
+let-math \braket m1 m2 m3 =
+  math-paren-with-middle
+    (Math.angle-left 0.5pt) (Math.angle-right 0.5pt)
+      Math.bar-middle [m1; m2; m3]

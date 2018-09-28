@@ -100,10 +100,10 @@ let cross-reference = '<
 
     という文言とともにそのような\codem{\meta{key}}を列挙して報告する．
   }
-  +example{
-    \codem{register-cross-reference}と\codem{get-cross-reference}を用いた
-    相互参照コマンドの実装例は，
-    \SATySFi;のリポジトリの\path{lib-satysfi/dist/packages}
-    にある各種クラスファイルを参考にすると良いだろう．
-  }
+%  +example{
+%    \codem{register-cross-reference}と\codem{get-cross-reference}を用いた
+%    相互参照コマンドの実装例は，
+%    \SATySFi;のリポジトリの\path{lib-satysfi/dist/packages}
+%    にある各種クラスファイルを参考にすると良いだろう．
+%  }
 >
