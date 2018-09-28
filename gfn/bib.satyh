@@ -85,6 +85,12 @@ let bibliography = [
     url = `https://github.com/konn/satysfi-steamer`;
     year = 2018;
   |));
+  (`Kieda2018`, Book(|
+    author = {| 木枝 祐介 |};
+    title = {数式組版};
+    publisher = {ラムダノート};
+    year = 2018;
+  |));
   (`KnowlesFlanagan2007ESOP`, InProceedings(|
     author = {| Kenneth Knowles | Cormac Flanagan |};
     title = {Type reconstruction for general refinement types};

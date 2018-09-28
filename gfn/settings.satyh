@@ -558,7 +558,7 @@ module Type : sig
   val math : t
   val itemize : t
   val math-class : t
-  val math-style : t
+  val math-char-class : t
 
   val list : t -> t
   val option : t -> t
@@ -771,7 +771,7 @@ end = struct
   let math         = base-type {math}
   let itemize      = base-type {itemize}
   let math-class   = base-type {math-class}
-  let math-style   = base-type {math-style}
+  let math-char-class = base-type {math-char-class}
 
 
   let list ty = Ctr({list}, [ty])

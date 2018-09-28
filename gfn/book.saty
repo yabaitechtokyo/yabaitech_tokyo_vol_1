@@ -209,7 +209,7 @@ document (|
     >
     +section{数式を構築するプリミティヴ}<
       +p{
-        数式コマンドの定義に使える，数式を構築するためのプリミティヴである．
+        この節では，数式コマンドの定義に使える，数式を構築するためのプリミティヴを紹介する．
         用例は\pkg{math}パッケージの実装を見ると豊富にあるので参照されたい．
 
         \val-explain({math-frac})(Type.(math --> (math --> math))) {
@@ -231,12 +231,100 @@ document (|
           将来的には\codem{math-paren}のように根号をグラフィックスで指定できるようにする想定である．
         }%
 
+        \val-explain({math-color})(Type.(color --> (math --> math))) {
+          \REMAINS{}
+        }%
+
+        ところで，数式を構成する “アトム” たちには，スペーシングのために属性が与えられる．
+        それが以下で定義されるような代数的データ型，\type(Type.math-class);型である：
+
+        \d-code(```
+          type math-class =
+            | MathOrd | MathBin | MathRel | MathOp | MathPunct
+            | MathOpen | MathClose | MathPrefix | MathInner
+        ```);%
+
+        各コンストラクタはそれぞれ通常，2項演算子，関係子，作用子，パンクチュエーション，
+        開き括弧類，閉じ括弧類，接頭類，部分式という属性に対応する．
+        属性に基づくスペーシングは基本的に\TeX;による処理と同様になるようにしているので，
+        どのようにスペーシングが行なわれるかについては\cite[`TeXbyTopic`];や\cite[`Kieda2018`];を参照されたい．
+        ただし，新しい属性がひとつだけあり，\codem{MathPrefix}すなわち接頭類アトムである．
+        これは ${\ordd x} や ${\partial x} といった，
+        手前に通常アトムや閉じ括弧類アトムなどがきた場合に自動でスペースを挿入するための属性である．
+
+        \REMAINS{}
+
+        \val-explain({math-group})%
+          (Type.(math-class --> (math-class --> (math --> math)))) {
+            \REMAINS{}
+          }%
+
         \val-explain({math-pull-in-scripts})%
           (Type.(math-class --> (math-class --> ((option math --> (option math --> math)) --> math)))) {
+            \REMAINS{}
           }%
+
+        \val-explain({text-in-math})%
+          (Type.(math-class --> ((context --> inline-boxes) --> math))) {
+            \REMAINS{}
+          }%
+
+        \REMAINS{}
       }
     >
-    +p{ \REMAINS{} }
+    +section{文字の扱いと文字クラス}<
+      +p{
+        \REMAINS{}
+
+        \vals-explain({|math-char|math-big-char|})(Type.(math-class --> (string --> math))) {
+          \REMAINS{}
+        }%
+
+        \vals-explain({|math-char-with-kern|math-big-char-with-kern|})(Type.(math-class --> (string --> math))) {
+          \REMAINS{}
+        }%
+
+        \REMAINS{}
+
+        \d-code(```
+          type math-char-class =
+            | MathItalic | MathBoldItalic | MathRoman | MathBoldRoman | MathScript
+            | MathBoldScript | MathFraktur | MathBoldFraktur | MathDoubleStruck
+        ```);%
+
+        \REMAINS{}
+
+        \vals-explain({|get-left-math-class|get-right-math-class|})%
+          (Type.(context --> (math --> option math-class))) {
+            \REMAINS{}
+          }%
+
+        \val-explain({math-char-class})(Type.(math-char-class --> (math --> math))) {
+          \REMAINS{}
+        }%
+
+        \REMAINS{}
+
+      }
+    >
+    +section{括弧類}<
+      +p{
+        \SATySFi;に於ける数式の括弧の扱いはかなり大胆な方針を採っている．
+        括弧はグラフィックスで定義されるのである．
+
+        \REMAINS{}
+
+        \val-explain({math-paren})(Type.(paren --> (paren --> (math --> math)))) {
+          \REMAINS{}
+        }%
+
+        \val-explain({math-paren-with-middle})%
+          (Type.(paren --> (paren --> (paren --> (list math --> math))))) {
+            \REMAINS{}
+          }%
+      }
+      +p{ \REMAINS{} }
+    >
   >
   +chapter?:(`cross-reference`){相互参照}< #cross-reference; >
   +chapter?:(`page-breaking`){ページ分割処理}< #page-breaking; >
