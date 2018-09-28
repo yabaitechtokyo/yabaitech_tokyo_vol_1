@@ -248,13 +248,13 @@ let overall = '<
                 };
                 r#text-centering (7.5cm, 1.75cm) {
                   \BoxGraphics.roman{|T|h|e|}%
-                  \BoxGraphics.space;%
+                  \BoxGraphics.space(10mm);%
                   \BoxGraphics.roman{|q|u|i|c|k|}%
-                  \BoxGraphics.space;%
+                  \BoxGraphics.space(10mm);%
                   \BoxGraphics.roman{|b|r|o|w|n|}%
-                  \BoxGraphics.space;%
+                  \BoxGraphics.space(10mm);%
                   \BoxGraphics.roman{|f|o|x|}%
-                  \BoxGraphics.space;%
+                  \BoxGraphics.space(10mm);%
                   \BoxGraphics.roman{|j|u|m|p|s|}%
                   \ \size(20pt){${\cdots}}
                 };
@@ -294,13 +294,13 @@ let overall = '<
                 stroke 0.5pt Color.black (Gr.rectangle (0.5cm, 0cm) (14.5cm, 8cm));
                 r#text-centering (7.5cm, 6.5cm) {
                   \BoxGraphics.roman{|T|h|e|}%
-                  \BoxGraphics.space;%
+                  \BoxGraphics.space(10mm);%
                   \BoxGraphics.roman{|q|u|i|c|k|}%
-                  \BoxGraphics.space;%
+                  \BoxGraphics.space(10mm);%
                   \BoxGraphics.roman{|b|r|o|w|n|}%
-                  \BoxGraphics.space;%
+                  \BoxGraphics.space(10mm);%
                   \BoxGraphics.roman{|f|o|x|}%
-                  \BoxGraphics.space;%
+                  \BoxGraphics.space(10mm);%
                   \BoxGraphics.roman{|j|u|m|p|s|}%
                   \ \size(20pt){${\cdots}}
                 };

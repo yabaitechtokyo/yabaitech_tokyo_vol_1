@@ -194,7 +194,7 @@ document (|
         に変換する：
 
         \quote(open BoxGraphics in {
-          \roman?:(10mm){|T|h|e|}\space;\text(${C_1}){\\enlarge\{quick brown\} fox}
+          \roman?:(10mm){|T|h|e|}\space(10mm);\text(${C_1}){\\enlarge\{quick brown\} fox}
         });%
 
         コマンドに出会うと，そのコマンドの定義を “思い返す”：
@@ -216,25 +216,39 @@ document (|
           \text(${C_2}){quick brown}
         });%
 
-        そして ${C_2} は文字が大きくなっているので次のように変換される：
+        そして ${C_2} は文字サイズが大きくなっているので次のように変換され，
 
         \quote(open BoxGraphics in {
-          \roman?:(15mm){|q|u|i|c|k|}\space;\text(${C_2}){brown}
+          \roman?:(15mm){|q|u|i|c|k|}\space(15mm);\text(${C_2}){brown}
         });%
 
         やがて末尾まで到達する：
 
         \quote(open BoxGraphics in {
-          \roman?:(15mm){|q|u|i|c|k|}\space;\roman?:(15mm){|b|r|o|w|n|}\text(${C_2}){}
+          \roman?:(15mm){|q|u|i|c|k|}\space(15mm);\roman?:(15mm){|b|r|o|w|n|}\text(${C_2}){}
         });%
 
-        末尾まで到達すると，\codem{\\enlarge}がそれを返り値として戻す：
+        末尾まで到達すると，\codem{\\enlarge}がそれを返り値として戻し，
+        もともとコマンドの適用があった箇所に繋げられる：
+
+        \quote(open BoxGraphics in {
+          \roman?:(10mm){|T|h|e|}\space(10mm);\roman?:(15mm){|q|u|i|c|k|}\space(15mm);%
+            \roman?:(15mm){|b|r|o|w|n|}\text(${C_1}){\ fox}
+        });%
+
+        再びテキスト処理文脈 ${C_1} を用いたインライン変換に戻り，
+        継続する：
+
+        \quote(open BoxGraphics in {
+          \roman?:(10mm){|T|h|e|}\space(10mm);\roman?:(15mm){|q|u|i|c|k|}\space(15mm);%
+            \roman?:(15mm){|b|r|o|w|n|}\space(10mm);\roman?:(10mm){|f|o|x|}\text(${C_1}){}
+        });%
+
+        こうして末尾まで到達し，インライン変換の処理が再帰的に行なわれた結果のブロックボックス列が完成するのである．
+
       }
       +p{
-        \REMAINS{コマンドが処理されるアニメーション}
-      }
-      +p{
-        コマンドにつく型の話をすると，基本的に
+        さて，コマンドにつく型の話をすると，基本的に
 
         \d-codem{
           let-inline \meta{ctx} \meta{cmd} \metasub(${1}){x} \metasub(${2}){x} ${\cdots} \metasub(${n}){x} =

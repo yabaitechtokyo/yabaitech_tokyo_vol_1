@@ -183,7 +183,8 @@ module BoxGraphics = struct
       ) |> List.fold-left (++) inline-nil
 
 
-  let-inline ctx \space =
+  let-inline ctx \space len =
+    let r = len /' 10mm in
     let pads = (0pt, 0pt, 0pt, 0pt) in
     let deco (x, y) w h d =
       let rect = Gr.rectangle (x, y -' d) (x +' w, y +' h) in
@@ -192,8 +193,8 @@ module BoxGraphics = struct
         stroke 0.5pt Color.black rect;
       ]
     in
-    let w = 0.4cm in
-    let h = 0.5cm in
+    let w = 0.4cm *' r in
+    let h = 0.5cm *' r in
     let d = 0cm in
       inline-frame-inner pads deco
         (inline-graphics w h d (fun (x, y) -> []))
