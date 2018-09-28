@@ -64,10 +64,8 @@ document (|
       \TeX;/\LaTeX;が30年の長きに亘って使われ続けてきた大きな要因のひとつが，
       誰もが納得するような品質の数式組版機能を古くから提供している
       数少ない組版処理システムだったからであることにおそらく異論はないだろう．
-    }
-    +p{
-      \SATySFi;も，\TeX;/\LaTeX;に肩を並べられるくらいの品質の数式組版機能を提供している．
-      しかも，既に\ref-chapter(`getting-started`);で見たように，
+      \SATySFi;も，なかなかの品質の数式組版機能を有している．
+      そして，すでに\ref-chapter(`getting-started`);で見たように，
       \LaTeX;そっくりの構文で書くことができる．
       数式を多大に含む文書を執筆したいという動機で既に盛んに\LaTeX;に触れていた人にとって，
       少なくとも数式の記法が\SATySFi;への移行に関する心理的障壁となることはまずないだろう．
@@ -80,6 +78,164 @@ document (|
       かつ構文木も一切構築せずパターンマッチでトークン列を書き換えていくのに対し，
       \SATySFi;は静的に構文解析して数式を構文木の形で保持している．
     }
+    +section{数式の構文と扱い}<
+      +p{
+        数式は基本的にプログラム中で\codem{\$\{ ${\cdots} \}}という形で書かれ，
+        \type(Type.math);型をもつ．数式中では大小ラテン文字と数字のほか，
+        以下の記号類が通常の文字として直接書ける：
+
+        \tokens{|+|-|\*|/|:|=|\<|\>|~|.|,|?|\`|}%
+
+        数式として書けるのは\codem{\$\{\meta-star{\meta{me}}\}}という形であり，
+        \codem{\meta{me}}は以下のような構文定義に基づく：
+
+        \align[
+          ${|\text!{\codem{\meta{me}}} |\BNFeq
+            \text!{\codem{
+              \meta{ma}%
+              \meta-or{|${\epsilon}|^\meta{mg}|\meta-star{'}|_\meta{mg}^\meta{mg}|\meta-star{'}^\meta{mg}
+                       |^\meta{mg}_\meta{mg}|\meta-star{'}^\meta{mg}_\meta{mg}
+                       |\meta-star{'}_\meta{mg}|_\meta{mg}|}
+            }}
+          |};
+          ${|\text!{\codem{\meta{ma}}} |\BNFeq
+            \text!{\codem{
+              \meta-or{|\meta{ch}|\meta{mcapp}|\#\meta{x}|}
+            }}
+          |};
+          ${|\text!{\codem{\meta{mg}}} |\BNFeq
+            \text!{\codem{
+              \meta-or{|\meta{ma}|\{\meta-star{\meta{me}}\}|\{\|\meta-star{\meta-star{\meta{me}}\|}\}|}
+            }}
+          |};
+          ${|\text!{\codem{\meta{mcapp}}} |\BNFeq
+            \text!{\codem{
+              \meta{mcmd}\meta-star{
+                \meta-or{|\{\meta-star{\meta{me}}\}|!(\meta{expr})|!\{\meta{It}\}|!\<\meta{Bt}\>|}
+              }
+            }}
+          |};
+        ];%
+
+        ただしここで\codem{\meta{ch}}は数式中で文字として使えるもの1文字，
+        \codem{\meta{mcmd}}は数式コマンド（インラインコマンドと同一範疇のトークン），
+        \codem{\meta{expr}}は式，\codem{\meta{It}}はインラインテキスト，
+        \codem{\meta{Bt}}はブロックテキストを，\codem{\meta{x}}をそれぞれ動く．
+        \codem{\#\meta{x}}は変数\codem{\meta{x}}の内容である数式をそこに埋め込む機能の記法だが，
+        セミコロンは末尾につけないことに注意．
+        また，\codem{\meta{mcapp}}は数式コマンドの適用だが，
+        引数の種類にプログラム引数とインライン引数の差異のようなものはなく，
+        すべて一律に扱われ，こちらもいかなる場合も（引数がない場合も）末尾にセミコロンをつけない．
+        なお，数式中に数式コマンドの引数としてインラインテキストが出現しうるし，
+        インラインテキストの中でも当然プログラム引数または文中数式として数式が登場するので，
+        \codem{\{ ${\cdots} \}}の括弧が入り乱れて少しややこしいかもしれないが，
+        気持ちとしては “\codem{\$\{\}}の中では\codem{\{ ${\cdots} \}}が
+        数式扱い，\codem{!\{ ${\cdots} \}}の中では再び\codem{\{ ${\cdots} \}}が
+        インラインテキスト扱いに戻る” という構造になっている．
+%      }
+%      +p{
+        数式コマンドの定義は，次のような構文で行なう：
+
+        \d-codem{
+          let-math \meta{mcmd} \metasub(${1}){x} ${\cdots} \metasub(${n}){x} =
+            \meta{expr}
+        }%
+
+        インラインコマンドやブロックコマンドと違い，第0引数はとらない．
+        各変数\codem{\metasub(${i}){x}}に\type(Type.tymtausub ${i});がつく下で
+        式\codem{\meta{expr}}に\type(Type.math);型がつくとき，
+        この数式コマンド\codem{\meta{mcmd}}が定義されて
+        以下のような型をもつと定められている：
+
+        \quote{
+          \type(Type.(cmdM [tymtausub ${1}; tymtausub ${2}; of-math ${\cdots}; tymtausub ${n}]));
+        }%
+
+        例えば型の導出規則 ${\Gamma \vdash e : \tau} を
+        \codem{\\tj\{\\Gamma\}\{e\}\{\\tau\}}という具合に書くためのコマンド
+        \codem{\\tj} : \type(Type.(cmdM [math; math; math]));は
+        以下のようにして定義できる：
+
+        \d-code(```
+          let-math \tj mG me mty = ${#mG \vdash #me : #mty}
+        ```);%
+
+        \type(Type.math);型の値はインラインテキストに近いもので，単に数式の “構造” を保持しているだけである\footnote{
+          ただし “演算子がどのように結合しているか” というような情報は持っていない．
+          1つの “グループ” \codem{\{ ${\cdots} \}}内で文字は単に一列に並んでいるだけで，
+          “構造” として保持されているのはあくまで指数・添字・分数といったものである．
+          \SATySFi;での数式の定式化はいわば “指数・添字・分数などが正体の隠されたコンストラクタで，
+          構築のみができて分解ができない代数的データ型” といった具合だ．
+        }．
+        数式を “実際に組み上げる” のは次のプリミティヴが担う：
+
+        \val({embed-math})(Type.(context --> (math --> inline-boxes)));%
+
+        これを使った例を挙げてみる．
+        別行立て数式を記述するコマンド\codem{\\eqn}の実装の根幹は，次のようになっている：
+
+        \d-code(```
+          let-inline ctx \eqn math =
+            inline-fil ++ embed-block-breakable ctx
+              (line-break true true ctx
+                (inline-fil ++ (embed-math ctx math) ++ inline-fil))
+        ```);%
+
+        \codem{embed-block-breakable}については\ref-chapter(`line-breaking`);で説明したとおりである．
+        \codem{embed-math}が使う数式フォントの情報はテキスト処理文脈が保持しており，
+        数式フォントの変更には以下のプリミティヴを用いる．
+
+        \val({set-math-font})(Type.(string --> (context --> context)));%
+
+        数式フォントには拡大率とベースライン調整率の概念はなく，フォント名だけを与える．
+      }
+    >
+    +section{文中数式の扱い}<
+      +p{
+        \ref-chapter(`getting-started`);でも説明したように，数式\codem{\$\{ ${\cdots} \}}は
+        インラインテキスト中にいきなり書いても使えるのであった．これがどのような仕組みで実現されているのかというと，
+        実は文中数式は実行時に何らかの\type(Type.(cmdI [math]));型のコマンド\codem{\\\meta{math}}が補われており，
+        単に\codem{\$\{ ${\cdots} \}}と書いたものは\codem{\\\meta{math}(\$\{ ${\cdots} \})\;}と
+        扱われるのである．この文中数式用コマンド\codem{\\\meta{math}}はテキスト処理文脈に保持されており，
+        インライン変換時に補われる．文中数式用コマンドを変えたい場合は
+
+        \val({set-math-command})(Type.(cmdI [math] --> (context --> context)));%
+
+        というプリミティヴを使い，\codem{\meta{ctx} \|\> set-math-command (command \\\meta{math})}
+        のようにコマンドを渡す．\codem{(command ${\cdots})}は “コマンドそのもの” を受け渡しするための
+        特殊な構文だが，現在のところ\codem{set-math-command}と
+        \ref-chapter(`page-breaking`);で述べる\codem{get-initial-context}くらいでしか用いる必要がない．
+      }
+    >
+    +section{数式を構築するプリミティヴ}<
+      +p{
+        数式コマンドの定義に使える，数式を構築するためのプリミティヴである．
+        用例は\pkg{math}パッケージの実装を見ると豊富にあるので参照されたい．
+
+        \val-explain({math-frac})(Type.(math --> (math --> math))) {
+          第1引数を分子，第2引数を分母とする分数を返す．
+        }%
+
+        \vals-explain({|math-lower|math-upper|})(Type.(math --> (math --> math))) {
+          \codem{math-lower \metasub(${1}){m} \metasub(${2}){m}}で
+          数式\codem{\metasub(${1}){m}}の下に添字の大きさで数式\codem{\metasub(${2}){m}}を組む．
+          \codem{math-upper}は上．
+        }%
+
+        \val-explain({math-radical})(Type.(option math --> (math --> math))) {
+          第2引数に渡された数式に根号をつける．第1引数は根号の左肩に乗せる指数がある場合は
+          \codem{Some( ${\cdots} )}で与え，必要ない場合は\codem{None}で与えるつもりで用意したものだが，
+          現在の実装では\codem{None}の場合しか対応しておらず，\codem{Some( ${\cdots} )}を渡すと
+          実行時エラーになる．
+          また根号のグリフの形も（フォントのデータを用いるのではなく）決まった形しか出力できない．
+          将来的には\codem{math-paren}のように根号をグラフィックスで指定できるようにする想定である．
+        }%
+
+        \val-explain({math-pull-in-scripts})%
+          (Type.(math-class --> (math-class --> ((option math --> (option math --> math)) --> math)))) {
+          }%
+      }
+    >
     +p{ \REMAINS{} }
   >
   +chapter?:(`cross-reference`){相互参照}< #cross-reference; >

@@ -4,10 +4,6 @@
  [ ] embed-block-bottom
  [ ] line-stack-top
  [ ] line-stack-bottom
- [ ] get-natural-length
- [ ] block-skip
-
- [ ] get-text-width
 
  [/] raise-inline
 
@@ -21,7 +17,6 @@ D[o] ++
 D[o] +++
 D[o] inline-nil
 D[o] block-nil
-D[ ] get-natural-metrics
 D[o] read-inline
 D[o] read-block
 D[o] line-break
@@ -44,6 +39,10 @@ L[o] set-leading
 L[o] set-min-gap-of-lines
 L[o] set-paragraph-margin
 L[/] set-min-paragraph-ascender-and-descender
+L[o] block-skip
+L[o] get-natural-metrics
+L[o] get-natural-length
+L[o] get-text-width
 
 == 文字組版 ==
 C[o] set-font
@@ -100,25 +99,25 @@ M[ ] math-big-char
 M[ ] math-char-with-kern
 M[ ] math-big-char-with-kern
 M[ ] set-math-variant-char
-M[ ] convert-string-for-math
+M[/] convert-string-for-math
 M[ ] math-variant-char
 M[ ] get-left-math-class
 M[ ] get-right-math-class
 M[ ] space-between-maths
 
 -- 数式 --
-M[ ] math-concat
+M[/] math-concat
 M[ ] math-group
-M[ ] math-sup
-M[ ] math-sub
-M[ ] math-frac
-M[ ] math-upper
-M[ ] math-lower
+M[/] math-sup
+M[/] math-sub
+M[o] math-frac
+M[o] math-upper
+M[o] math-lower
 M[ ] math-pull-in-scripts
 M[ ] text-in-math
 
 -- 括弧類 --
-M[ ] math-radical
+M[o] math-radical
 M[ ] math-paren
 M[ ] math-paren-with-middle
 M[ ] get-axis-height
@@ -128,9 +127,9 @@ M[ ] math-color
 M[ ] math-char-class
 
 -- 数式の使用 --
-M[ ] embed-math
-M[ ] set-math-font
-M[ ] set-math-command
+M[o] embed-math
+M[o] set-math-font
+M[o] set-math-command
 
 == 相互参照 ==
 R[o] register-cross-reference

@@ -33,6 +33,9 @@ let-inline ctx \REMAINS msg =
       (read-inline ctx {要加筆： #msg;})
 
 
+let-math \BNFeq = ${\mathrel{: : =}}
+
+
 let-block ctx +ragged-right it =
   line-break true true ctx (inline-fil ++ read-inline ctx it)
 
@@ -134,7 +137,11 @@ let display-code-scheme ctx s =
 
 
 let-inline ctx \d-code s =
-  let bb = display-code-scheme ctx s in
+  let bb =
+    display-code-scheme
+      (ctx |> set-font-size 10pt
+           |> set-leading 13pt) s
+  in
     inline-fil ++ embed-block-breakable ctx bb
 
 
@@ -516,6 +523,7 @@ module Type : sig
   val record : (inline-text * t) list -> t
   val cmdI : t list -> t
   val cmdB : t list -> t
+  val cmdM : t list -> t
   val forall : math -> t -> t
   val forall-kinded : math -> (inline-text * t) list -> t -> t
   val star : t -> t
@@ -549,6 +557,8 @@ module Type : sig
   val document : t
   val math : t
   val itemize : t
+  val math-class : t
+  val math-style : t
 
   val list : t -> t
   val option : t -> t
@@ -722,6 +732,8 @@ end = struct
 
   let cmdB tys = Cmd({block-cmd}, tys)
 
+  let cmdM tys = Cmd({math-cmd}, tys)
+
   let forall ma ty = Forall(ma, None, ty)
 
   let forall-kinded ma kd ty = Forall(ma, Some(kd), ty)
@@ -758,6 +770,8 @@ end = struct
   let page         = base-type {page}
   let math         = base-type {math}
   let itemize      = base-type {itemize}
+  let math-class   = base-type {math-class}
+  let math-style   = base-type {math-style}
 
 
   let list ty = Ctr({list}, [ty])
