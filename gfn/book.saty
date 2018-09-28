@@ -112,9 +112,9 @@ document (|
           ${|\text!{\codem{\meta{me}}} |\BNFeq
             \text!{\codem{
               \meta{ma}%
-              \meta-or{|${\epsilon}|^\meta{mg}|\meta-star{'}|_\meta{mg}^\meta{mg}|\meta-star{'}^\meta{mg}
-                       |^\meta{mg}_\meta{mg}|\meta-star{'}^\meta{mg}_\meta{mg}
-                       |\meta-star{'}_\meta{mg}|_\meta{mg}|}
+              \meta-or{|\meta-star{'}|_\meta{mg}^\meta{mg}|\meta-star{'}^\meta{mg}
+                       |\meta-star{'}^\meta{mg}_\meta{mg}
+                       |\meta-star{'}_\meta{mg}|}
             }}
           |};
           ${|\text!{\codem{\meta{ma}}} |\BNFeq
@@ -334,9 +334,9 @@ document (|
         実際に以下のように添字が下につけかえられる．
 
         \d-code-and-block(```
-          +p{ ${\lim_{n \to \infty}} }
+          +p{ ${\lim_{n \to \infty} a_n} }
         ```)(open Sample in '<
-          +p{ ${\lim_{n \to \infty}} }
+          +p{ ${\lim_{n \to \infty} a_n} }
         >);%
         \vskip(-0.75cm);%
       }
