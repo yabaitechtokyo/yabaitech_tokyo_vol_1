@@ -1,6 +1,12 @@
 @import: settings
 
 let bibliography = [
+  (`PostScript`, Book(|
+    author = {| Adobe Systems |};
+    title = {PostScript Language Reference Manual};
+    publisher = {Addison Wesley Longman};
+    year = 1985;
+  |));
   (`Asai-OCaml`, Book(|
     author = {| 浅井 健一 |};
     title = {プログラミングの基礎};
@@ -12,6 +18,12 @@ let bibliography = [
     title = {An extended version of Otfm};
     url = `https://github.com/gfngfn/otfm`;
     year = 2017;
+  |));
+  (`TeXbyTopic`, Book(|
+    author = {| Victor Eijkhout |};
+    title = {\TeX; by Topic};
+    publisher = {Addison–Wesley};
+    year = 1991;
   |));
   (`LyX`, WebSite(|
     author = {| Matthias Ettrich |};
@@ -48,6 +60,13 @@ let bibliography = [
     pages = (29, 60);
     year = 1969;
   |));
+  (`IEEE754`, Book(|
+    author = {| IEEE Computer Society |};
+    title = {IEEE Standard for Floating-Point Arithmetic};
+    publisher = {IEEE};
+    year = 2008;
+    % August 29
+  |));
   (`Igarashi-OCaml`, Book(|
     author = {| 五十嵐 淳 |};
     title = {プログラミング in OCaml};
@@ -64,6 +83,12 @@ let bibliography = [
     author = {| Hiromi Ishii |};
     title = {Steamer: presentation in \SATySFi;};
     url = `https://github.com/konn/satysfi-steamer`;
+    year = 2018;
+  |));
+  (`Kieda2018`, Book(|
+    author = {| 木枝 祐介 |};
+    title = {数式組版};
+    publisher = {ラムダノート};
     year = 2018;
   |));
   (`KnowlesFlanagan2007ESOP`, InProceedings(|
@@ -91,6 +116,15 @@ let bibliography = [
     volume = Some(11);
     number = None;
     pages = (1119, 1184);
+  |));
+  (`Kuroki2015`, Article(|
+    author = {| 黒木 裕介 |};
+    title = {組版におけるオペレーションズ・リサーチ};
+    year = 2015;
+    journal = {オペレーションズ・リサーチ};
+    volume = Some(60);
+    number = Some({9});
+    pages = (536, 542);
   |));
   (`liang-knuth`, Book(|
     author = {| Franklin M. Liang |};

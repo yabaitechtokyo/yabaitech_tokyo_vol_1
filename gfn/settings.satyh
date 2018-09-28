@@ -33,12 +33,23 @@ let-inline ctx \REMAINS msg =
       (read-inline ctx {要加筆： #msg;})
 
 
+let-math \BNFeq = ${\mathrel{: : =}}
+
+
+let-inline ctx \vskip len =
+  inline-fil ++ embed-block-breakable ctx (block-skip len)
+
+
 let-block ctx +ragged-right it =
   line-break true true ctx (inline-fil ++ read-inline ctx it)
 
 
 let-inline ctx \new-line =
   mandatory-break ctx
+
+
+let-math \math-unit it =
+  ${\math-skip!(2pt)\text!(it)}
 
 
 let-inline ctx \quote it =
@@ -130,7 +141,11 @@ let display-code-scheme ctx s =
 
 
 let-inline ctx \d-code s =
-  let bb = display-code-scheme ctx s in
+  let bb =
+    display-code-scheme
+      (ctx |> set-font-size 10pt
+           |> set-leading 13pt) s
+  in
     inline-fil ++ embed-block-breakable ctx bb
 
 
@@ -179,7 +194,8 @@ module BoxGraphics = struct
       ) |> List.fold-left (++) inline-nil
 
 
-  let-inline ctx \space =
+  let-inline ctx \space len =
+    let r = len /' 10mm in
     let pads = (0pt, 0pt, 0pt, 0pt) in
     let deco (x, y) w h d =
       let rect = Gr.rectangle (x, y -' d) (x +' w, y +' h) in
@@ -188,11 +204,34 @@ module BoxGraphics = struct
         stroke 0.5pt Color.black rect;
       ]
     in
-    let w = 0.4cm in
-    let h = 0.5cm in
+    let w = 0.4cm *' r in
+    let h = 0.5cm *' r in
     let d = 0cm in
       inline-frame-inner pads deco
         (inline-graphics w h d (fun (x, y) -> []))
+
+
+  let-inline ctx \text m it =
+    let ctx =
+      ctx |> set-mono-font
+          |> set-font-size 5mm
+    in
+    let shift = 0.5cm in
+    let down0 = 0.5cm in
+    let down1 = 0.75cm in
+    let down2 = 1cm in
+    let pads = (0pt, 0pt, 0pt, 0pt) in
+    let deco (x, y) w h d =
+      List.concat [
+        [
+          stroke 1pt Color.black (Gr.line (x, y -' down2) (x, y +' h));
+          Gr.text-leftward (x -' shift, y -' down1) (embed-math ctx m);
+        ];
+        Gr.arrow 0.5pt Color.black 6pt 5pt 1.5pt (x -' shift, y -' down0) (x, y -' down0);
+      ]
+    in
+      inline-frame-inner pads deco (read-inline ctx it)
+        ++ inline-graphics 0pt 0pt down2 (fun _ -> [])
 
 
   let-inline ctx \glue =
@@ -261,7 +300,21 @@ let-block ctx +centered-graphics w h grf =
     (inline-fil ++ ib-gr ++ inline-fil)
 
 
+type geometry =
+  | Rectangle of (length * length) * (length * length)
+  | Circle    of (length * length) * length
+
+
+type 'a bin-tree =
+  | BTEmpty
+  | BTNode of 'a * 'a bin-tree * 'a bin-tree
+
+
 module Sample = struct
+
+  let-math \opcls m1 m2 =
+    math-paren Math.paren-left Math.sqbracket-right ${#m1, #m2}
+
 
   let-inline ctx \enlarge it =
     let size = get-font-size ctx in
@@ -319,11 +372,64 @@ module Sample = struct
       (float (m-yen)) /. rate
 
 
+  let to-dollar-2 rate m-yen =
+    (float m-yen) /. rate
+
+
+  let abs n =
+    if n < 0 then - n else n
+
+
+  let pi = 3.1415926535
+
+
+  let length-abs len =
+    if len <' 0pt then 0pt -' len else len
+
+
+  let area geom =
+    match geom with
+    | Rectangle((x1, y1), (x2, y2)) ->
+        let w = (length-abs (x1 -' x2) /' 1cm) in
+        let h = (length-abs (y1 -' y2) /' 1cm) in
+          w *. h
+
+    | Circle(_, r) ->
+        let rf = r /' 1cm in
+          rf *. rf *. pi
+
+
+  let-rec fact n =
+    if n <= 0 then 1 else
+      n * fact (n - 1)
+
+
+  let-rec show-bin-tree pr tr =
+    match tr with
+    | BTEmpty ->
+        `_`
+
+    | BTNode(x, trL, trR) ->
+        `(` ^ (pr x) ^ #` `# ^
+          (show-bin-tree pr trL) ^ #` `# ^
+          (show-bin-tree pr trR) ^ `)`
+
+
   let-inline ctx \simple-frame it =
     let pads = (2pt, 2pt, 2pt, 2pt) in
     let decoset = HDecoSet.simple-frame-stroke 1pt (Gray(0.5)) in
       inline-frame-breakable pads decoset (read-inline ctx it)
 
+
+  let-math \lim =
+    let m-lim = math-char MathOp `lim` in
+      math-pull-in-scripts MathOp MathOp (fun moptS moptT -> (
+        match (moptS, moptT) with
+        | (None    , None    ) -> m-lim
+        | (Some(mS), None    ) -> math-lower m-lim mS
+        | (None    , Some(mT)) -> math-upper m-lim mT
+        | (Some(mS), Some(mT)) -> math-upper (math-lower m-lim mS) mT
+      ))
 
 end
 
@@ -430,13 +536,17 @@ module Type : sig
   val of-math : math -> t
   val (-->) : t -> t -> t
   val base-type : inline-text -> t
+  val ctr-type : inline-text -> t list -> t
   val product : t list -> t
-  val record : (string * t) list -> t
+  val record : (inline-text * t) list -> t
   val cmdI : t list -> t
   val cmdB : t list -> t
+  val cmdM : t list -> t
   val forall : math -> t -> t
-  val forall-kinded : math -> (string * t) list -> t -> t
+  val forall-kinded : math -> (inline-text * t) list -> t -> t
   val star : t -> t
+
+  val synt-paren : t -> t
 
   val unit : t
   val bool : t
@@ -464,14 +574,19 @@ module Type : sig
   val page : t
   val document : t
   val math : t
+  val itemize : t
+  val math-class : t
+  val math-char-class : t
 
   val list : t -> t
   val option : t -> t
+  val ref : t -> t
 
   % ---- metavariables --
 
   val tymb : t
   val tymalpha : t
+  val tymbeta : t
   val tymsigma : t
   val tymtau : t
   val tymtaup : t
@@ -484,8 +599,9 @@ end = struct
     | Func   of t * t
     | Prod   of t list
     | Cmd    of inline-text * t list
-    | Forall of math * ((string * t) list) option * t
-    | Record of (string * t) list
+    | Forall of math * ((inline-text * t) list) option * t
+    | Record of (inline-text * t) list
+    | Paren  of t
 
 
   type paren-mode =
@@ -527,6 +643,7 @@ end = struct
     ))
 
 
+  let synt-paren ty = Paren(ty)
 
 
   let to-math is-inline =
@@ -566,13 +683,20 @@ end = struct
           let ms = List.map (aux Single) tys in
           let m = Math.join ${\mathbin{\ast}} ms in
           ( match mode with
-            | Single -> ${\paren{m}}
+            | Single -> ${\paren{#m}}
             | _      -> m
           )
 
       | mode (Cmd(it, tys)) =
-          let ms = List.map (aux Single) tys in
-          let m = Math.join ${\text!{・}} ms in
+          let m =
+            match tys with
+            | [] ->
+                ${\ }
+
+            | _ :: _ ->
+                let ms = List.map (aux Normal) tys in
+                  Math.join ${\;\ } ms
+          in
             ${\sqbracket{#m}\ \text!(it)}
 
       | mode (Forall(ma, assocopt, ty)) =
@@ -589,11 +713,16 @@ end = struct
           let m = make-record-math assoc in
             ${\record-paren{#m}}
 
+      | _ (Paren(ty)) =
+          let m = aux Normal ty in
+            ${\paren{#m}}
+
+
     and make-record-math assoc =
       let ms =
         assoc |> List.map (fun (key, ty) -> (
           let m = aux Normal ty in
-          ${\text!{\no-break(embed-string key);} : #m}
+          ${\text!{\no-break(key);} : #m}
         ))
       in
       Math.join ${\;#sep-record-glue} ms
@@ -609,6 +738,8 @@ end = struct
 
   let base-type it = Ctr(it, [])
 
+  let ctr-type it tys = Ctr(it, tys)
+
   let (-->) ty1 ty2 = Func(ty1, ty2)
 
   let product tys = Prod(tys)
@@ -618,6 +749,8 @@ end = struct
   let cmdI tys = Cmd({inline-cmd}, tys)
 
   let cmdB tys = Cmd({block-cmd}, tys)
+
+  let cmdM tys = Cmd({math-cmd}, tys)
 
   let forall ma ty = Forall(ma, None, ty)
 
@@ -654,10 +787,14 @@ end = struct
   let document     = base-type {document}
   let page         = base-type {page}
   let math         = base-type {math}
+  let itemize      = base-type {itemize}
+  let math-class   = base-type {math-class}
+  let math-char-class = base-type {math-char-class}
 
 
   let list ty = Ctr({list}, [ty])
   let option ty = Ctr({option}, [ty])
+  let ref ty = Ctr({ref}, [ty])
 
 
   % ---- metavariables --
@@ -665,6 +802,7 @@ end = struct
   let meta m = Ctr({${#m}}, [])
   let tymb = meta ${b}
   let tymalpha = meta ${\alpha}
+  let tymbeta = meta ${\beta}
   let tymsigma = meta ${\sigma}
   let tymtau = meta ${\tau}
   let tymtaup = meta ${\tau'}
@@ -673,12 +811,19 @@ end = struct
 end
 
 
-let val-scheme ctx indexopt it-cmd ty explainopt =
+let val-scheme ctx indexopt it-cmds ty explainopt =
   let m = Type.to-math false ty in
+  let it-cmd =
+    it-cmds |> List.fold-left-adjacent (fun itacc it prevopt _ -> (
+      match prevopt with
+      | None    -> {\codem{#it;}}
+      | Some(_) -> {#itacc;, \codem{#it;}}
+    )) {}
+  in
   let it =
     match indexopt with
-    | None    -> {\codem{#it-cmd;} : ${#m}}
-    | Some(s) -> {\index(s)?:({\code(s);}){\codem{#it-cmd;}} : ${#m}}
+    | None    -> {#it-cmd; : ${#m}}
+    | Some(s) -> {\index(s)?:({\code(s);}){#it-cmd;} : ${#m}}
   in
   let wid = get-text-width ctx in
   let len = quote-indent-1 +' quote-indent-2 in
@@ -732,11 +877,15 @@ let-block ctx +example ?:labelopt it =
 
 
 let-inline ctx \val ?:indexopt it-cmd ty =
-  val-scheme ctx indexopt it-cmd ty None
+  val-scheme ctx indexopt [it-cmd] ty None
+
+
+let-inline ctx \vals-explain it-cmds ty it =
+  val-scheme ctx None it-cmds ty (Some(it))
 
 
 let-inline ctx \val-explain ?:indexopt it-cmd ty it =
-  val-scheme ctx indexopt it-cmd ty (Some(it))
+  val-scheme ctx indexopt [it-cmd] ty (Some(it))
 
 
 let-inline ctx \type ty =
@@ -765,6 +914,10 @@ let-inline ctx \metasub msub it =
 
 let-inline ctx \meta-star it =
   embed-math ctx ${\sqbracket{\text!{#it;}}^{\ast}}
+
+
+let-inline ctx \meta-plus it =
+  embed-math ctx ${\sqbracket{\text!{#it;}}^{+}}
 
 
 let-inline ctx \meta-or its =
@@ -968,6 +1121,16 @@ let-block ctx +centering it =
     (inline-fil ++ read-inline ctx it ++ inline-fil)
 
 
+let-block ctx +centerings its =
+  let l = get-font-size ctx *' 0.25 in
+  let bbs =
+    its |> List.map (fun it ->
+      line-break true true (ctx |> set-paragraph-margin l l)
+        (inline-fil ++ read-inline ctx it ++ inline-fil))
+  in
+    bbs |> List.fold-left (+++) block-nil
+
+
 let-inline ctx \glue-between-tokens =
   let size = get-font-size ctx in
   discretionary 1000
@@ -1000,3 +1163,55 @@ let-inline ctx \tokens its =
     embed-block-breakable ctx
       (block-frame-breakable ctx pads display-code-decoset (fun ctx ->
         line-break true true ctx (ib ++ inline-fil)))
+
+
+let tylogical = Type.(bool --> (bool --> bool))
+let tyarithI = Type.(int --> (int --> int))
+let tycompI = Type.(int --> (int --> bool))
+let tyarithF = Type.(float --> (float --> int))
+let tycompF = Type.(float --> (float --> bool))
+let tysine = Type.(float --> float)
+
+
+let paren-right-fake hgt dpt hgtaxis fontsize color =
+  let halflen = Math.half-length hgt dpt hgtaxis fontsize in
+  let w0 = fontsize *' 0.1 in
+  let w1 = fontsize *' 0.075 +' halflen *' 0.01 in
+  let w2 = halflen *' 0.25 in %temporary
+  let w-extra = fontsize *' 0.1 in
+  let t1 = 0pt -' fontsize *' 0.025 in
+  let t2 = fontsize *' 0.025 in
+
+  let qA = halflen *' 0.35 in
+  let p1 = 0pt -' (w1 +' w2) *' 0.75 in
+  let q1 = halflen *' 0.3 in
+
+  let qB = halflen *' 0.45 in
+  let p2 = 0pt -' w2 *' 0.5 in
+  let q2 = halflen *' 0.2 in
+
+  let path (xpos, ypos) =
+    let ycenter = ypos +' hgtaxis in
+    let x0 = xpos +' w-extra +' w2 +' w1 in
+    let x1 = xpos +' w-extra +' w2 in
+    let x2 = xpos +' w-extra in
+    start-path (x2, ycenter +' halflen)
+      |> bezier-to (x2 -' p1, ycenter +' halflen -' q1) (x0, ycenter +' qA) (x0, ycenter)
+      |> bezier-to (x0, ycenter -' qA) (x2 -' p1, ycenter -' halflen +' q1) (x2, ycenter -' halflen)
+      |> line-to (x2 +' t1, ycenter -' halflen +' t2)
+      |> bezier-to (x2 -' p2, ycenter -' halflen +' q2) (x1, ycenter -' qB) (x1, ycenter)
+      |> bezier-to (x1, ycenter +' qB) (x2 -' p2, ycenter +' halflen -' q2) (x2 +' t1, ycenter +' halflen -' t2)
+      |> close-with-line
+  in
+  let graphics point = [ fill color (path point); ] in
+  let widparen = w0 +' w1 +' w2 +' w-extra in
+  let kerninfo _ = 0pt in  % no kerning !
+    (inline-graphics widparen (hgtaxis +' halflen) (halflen -' hgtaxis) graphics, kerninfo)
+
+
+let-math \paren-fake = math-paren Math.paren-left paren-right-fake
+
+let-math \braket m1 m2 m3 =
+  math-paren-with-middle
+    (Math.angle-left 0.5pt) (Math.angle-right 0.5pt)
+      Math.bar-middle [m1; m2; m3]

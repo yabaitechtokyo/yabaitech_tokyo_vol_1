@@ -356,14 +356,12 @@ let introduction = '<
 
       \d-code(```
         % -*- coding: utf-8 -*-
-        @require: stdja
+        @require: stdjareport
         @import: local
 
         document (|
           title = {Test Document};
           author = {Takashi SUWA};
-          show-title = false;
-          show-toc = false;
         |) '<
           +p{
             いろは歌：

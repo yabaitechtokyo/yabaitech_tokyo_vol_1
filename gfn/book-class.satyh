@@ -240,6 +240,8 @@ end = struct
 
   let get-standard-context wid =
     get-initial-context wid (command \math)
+      |> set-font-size 10pt
+      |> set-leading 16pt
       |> set-dominant-wide-script Kana
       |> set-language Kana Japanese
       |> set-language HanIdeographic Japanese
@@ -406,6 +408,12 @@ end = struct
   let-mutable num-theorems <- 0
 
 
+  let get-shifted-page-number pbinfo =
+    match !show-page-number-ref with
+    | None         -> 0
+    | Some(lastno) -> pbinfo#page-number - lastno + 1
+
+
   let chapter-scheme ctx label title inner =
     let () = increment num-chapter in
     let () = num-section <- 0 in
@@ -417,8 +425,9 @@ end = struct
     let ctx-title = make-chapter-title ctx in
     let ib-num =
       read-inline ctx-title (embed-string (`Chapter `# ^ s-num))
-        ++ hook-page-break (fun pbinfo _ ->
-             register-cross-reference (`chapter:` ^ label ^ `:page`) (arabic pbinfo#page-number))
+        ++ hook-page-break (fun pbinfo _ -> (
+             let pageno = get-shifted-page-number pbinfo in
+               register-cross-reference (`chapter:` ^ label ^ `:page`) (arabic pageno)))
     in
     let ib-title = read-inline ctx-title title in
     let bb-title = chapter-heading ctx (Some(ib-num)) ib-title in
@@ -436,8 +445,9 @@ end = struct
     let () = toc-acc-ref <- (TOCElementSection(label, title)) :: !toc-acc-ref in
     let ib-num =
       read-inline ctx-title (embed-string (s-num ^ `.`))
-        ++ hook-page-break (fun pbinfo _ ->
-             register-cross-reference (`section:` ^ label ^ `:page`) (arabic pbinfo#page-number))
+        ++ hook-page-break (fun pbinfo _ -> (
+             let pageno = get-shifted-page-number pbinfo in
+               register-cross-reference (`section:` ^ label ^ `:page`) (arabic pageno)))
     in
     let ib-title = read-inline ctx-title title in
     let bb-title = section-heading ctx (ib-num ++ (inline-skip 10pt) ++ ib-title ++ (inline-fil)) in
@@ -453,8 +463,9 @@ end = struct
     let ctx-title = make-subsection-title ctx in
     let ib-num =
       read-inline ctx-title (embed-string (s-num ^ `.`))
-        ++ hook-page-break (fun pbinfo _ ->
-             register-cross-reference (`subsection:` ^ label ^ `:page`) (arabic pbinfo#page-number))
+        ++ hook-page-break (fun pbinfo _ -> (
+             let pageno = get-shifted-page-number pbinfo in
+               register-cross-reference (`subsection:` ^ label ^ `:page`) (arabic pageno)))
     in
     let ib-title = read-inline ctx-title title in
     let bb-title =
@@ -466,14 +477,28 @@ end = struct
 
 
   let paper-size = UserDefinedPaper(182mm, 257mm)
-  let text-origin = (16mm, 30mm)
-  let text-width = 150mm
+%  let text-origin = (16mm, 30mm)
+%  let text-width = 150mm
+  let text-origin = (21mm, 30mm)
+  let text-width = 140mm
   let text-height = 200mm
-  let header-origin = (16mm, 15mm)
+%  let header-origin = (16mm, 15mm)
+  let header-origin = (21mm, 15mm)
   let header-width = text-width
-  let footer-origin = (16mm, 240mm)
-  let footer-width = text-width
+%  let footer-origin = (16mm, 240mm)
+%  let footer-width = 150mm
+  let footer-origin = (21mm, 240mm)
+  let footer-width = 140mm
   let footnote-indent = 6mm
+%  let doc-font-size = 12pt
+%  let doc-leading = 18pt
+  let doc-font-size = 11pt
+  let doc-leading = 16pt
+  let parity-shift = 5mm
+%  let paragraph-margin-top = 18pt
+%  let paragraph-margin-bottom = 18pt
+  let paragraph-margin-top = 16pt
+  let paragraph-margin-bottom = 16pt
 
 
   let-inline ctx \may-break =
@@ -496,8 +521,9 @@ end = struct
 
     let ctx-doc =
       get-standard-context txtwid
-        |> set-font-size 12pt
-        |> set-leading 18pt
+        |> set-font-size doc-font-size
+        |> set-leading doc-leading
+        |> set-paragraph-margin paragraph-margin-top paragraph-margin-bottom
         |> set-hyphen-penalty 1000
     in
 
@@ -670,13 +696,58 @@ end = struct
         (chapter-heading ctx-doc None ib-bib-title) +++ bb-bib-main
     in
 
+    % -- okudzuke --
+    let bb-okudzuke =
+      let thick = 1pt in
+      let thin = 0.5pt in
+      let gap = 2pt in
+      let pads = (5pt, 5pt, 5pt, 5pt) in
+      let l it =
+        NormalCell(pads, read-inline ctx-doc it ++ inline-fil)
+      in
+      let tbl =
+        tabular [
+%          [ MultiCell(1, 2, pads, read-inline ctx-doc {The \SATySFi;book}); EmptyCell; ];
+          [ l {発行日}; l {2018年9月29日}; ];
+          [ l {発行}; l {Takashi SUWA / ヤバイテックトーキョー}; ];
+          [ l {連絡先}; l {\url{bd.gfngfn\@gmail.com}}; ];
+          [ l {印刷所}; l {株式会社ポプルス}; ];
+        ] (fun xs ys -> (
+          match (xs, List.reverse xs, ys, List.reverse ys) with
+          | (xL :: _, xR :: _, yT :: _, yB :: _) ->
+              [
+                stroke thick Color.black (Gr.line (xL, yT +' gap) (xR, yT +' gap));
+                stroke thin Color.black (Gr.line (xL, yT) (xR, yT));
+                stroke thin Color.black (Gr.line (xL, yB) (xR, yB));
+                stroke thick Color.black (Gr.line (xL, yB -' gap) (xR, yB -' gap));
+              ]
+
+          | _ ->
+              []
+        ))
+      in
+      let ib-title = read-inline ctx-doc {The \SATySFi;book} in
+      clear-page +++ block-skip 140mm +++
+        line-break false false ctx-doc
+          (inline-fil ++
+            line-stack-bottom [
+              ib-title ++ inline-fil;
+              inline-graphics 0pt 6pt 0pt (fun _ -> []) ++ inline-fil;
+              tbl ++ inline-fil;
+            ] ++ inline-fil)
+    in
+
     % -- page settings --
     let pagecontf pbinfo =
       let () = FootnoteScheme.start-page () in
-      let hgtfb = height-of-float-boxes pbinfo#page-number in
+      let pageno = pbinfo#page-number in
+      let hgtfb = height-of-float-boxes pageno in
+      let dx =
+        if pageno mod 2 == 1 then parity-shift else 0mm -' parity-shift
+      in
       let (txtorgx, txtorgy) = txtorg in
       (|
-        text-origin = (txtorgx, txtorgy +' hgtfb);
+        text-origin = (txtorgx +' dx, txtorgy +' hgtfb);
         text-height = txthgt -' hgtfb;
       |)
     in
@@ -715,14 +786,20 @@ end = struct
         | None ->
             block-nil
       in
+      let (hdrorgx, hdrorgy) = hdrorg in
+      let (ftrorgx, ftrorgy) = ftrorg in
+      let dx =
+        if pageno mod 2 == 1 then parity-shift else 0pt -' parity-shift
+      in
         (|
-          header-origin  = hdrorg;
+          header-origin  = (hdrorgx +' dx, hdrorgy);
           header-content = header;
-          footer-origin  = ftrorg;
+          footer-origin  = (ftrorgx +' dx, ftrorgy);
           footer-content = footer;
         |)
     in
-      page-break page pagecontf pagepartsf (bb-title +++ bb-preface +++ bb-toc +++ bb-main +++ bb-bib)
+      page-break page pagecontf pagepartsf
+        (bb-title +++ bb-preface +++ bb-toc +++ bb-main +++ bb-bib +++ bb-okudzuke)
 
 
   let-block ctx +p inner =

@@ -182,6 +182,8 @@ let getting-started = '<
       これを
       \dfnje{\index(`インラインコマンド`){インラインコマンド}}{inline command}
       と呼ぶ（後述）．
+      いずれのコマンドの名前も，2文字目は大小ラテン文字，
+      3文字目以降は大小ラテン文字，数字，ハイフンのいずれかである．
     }
     +p{
       コマンドに与える引数の構文は
@@ -193,7 +195,11 @@ let getting-started = '<
       }%
 
       の3種類に大別される\footnote{
-        このうち式引数には\codem{( ${\cdots} )}の形ではない多少の変種があるが，
+        このうち式引数には\codem{( ${\cdots} )}の形ではない多少の変種があり，
+        \codem{([ ${\cdots} ])}および\codem{((\| ${\cdots} \|))}という具合に
+        直下が四角括弧であるものやレコード式であるものはそれぞれ単に
+        \codem{[ ${\cdots} ]}および\codem{(\| ${\cdots} \|)}と書いて
+        プログラム引数として扱わせることができるのだが，
         今は気にしなくてよい．
       }．
       コマンドに引数を与えることをコマンドの\dfnje{適用}{application}と呼び，
@@ -305,30 +311,79 @@ let getting-started = '<
       インラインコマンドの場合とは違い，引数のない数式コマンドの使用に\codem{\;}はつけない．
     }
     +p{
-      \LaTeX;の数式の記法とよく似ているものの，主に以下の節に挙げるような違いがある．
+      \LaTeX;の数式の記法とよく似ているもののいくつかの違いがあり，
+      特に括弧類の扱いは顕著に\LaTeX;とは異なる．
+      \LaTeX;の
+      \code(`\left`);・\code(`\right`);・\code(`\middle`);
+      に相当するものはなく，
+      代わりに括弧が左右合わせてひとつのコマンドとして定義されている．
+      丸括弧で囲いたい場合は\codem{\\paren\{（囲う式）\}}と記述する．
+      丸括弧のほか，集合の外延記法は\codem{\\set\{ ${\cdots} \}}，
+      内包記法は\codem{\\setsep\{ ${\cdots} \}\{ ${\cdots} \}}，
+      絶対値は\codem{\\abs\{ ${\cdots} \}}，
+      距離やノルムに使う2本線の括弧は\codem{\\dist\{ ${\cdots} \}}という数式コマンドにより提供されている．
+      また，函数の適用は\codem{\\app\{f\}\{x\}}という具合に書けるようになっている．
     }
-    +subsection{括弧}<
-      +p{
-        \LaTeX;の
-        \code(`\left`);・\code(`\right`);・\code(`\middle`);
-        に相当するものはなく，
-        代わりに括弧が左右合わせてひとつのコマンドとして定義されている．
-        丸括弧で囲いたい場合は\codem{\\paren\{（囲う式）\}}と記述する．
-        丸括弧のほか，集合の外延記法は\codem{\\set\{ ${\cdots} \}}，
-        内包記法は\codem{\\setsep\{ ${\cdots} \}\{ ${\cdots} \}}，
-        絶対値は\codem{\\abs\{ ${\cdots} \}}，
-        距離やノルムに使う2本線の括弧は\codem{\\dist\{ ${\cdots} \}}という数式コマンドにより提供されている．
-        また，函数の適用は\codem{\\app\{f\}\{x\}}という具合に書けるようになっている．
-      }
-      +p{
-        なお，四角括弧，（集合に限らない一般の）波括弧，三角括弧もそれぞれ
-        \codem{\\sqbracket\{ ${\cdots} \}}，\codem{\\brace\{ ${\cdots} \}}，
-        \codem{\\angle-bracket\{ ${\cdots} \}}
-        で書けるようになっているが，これらのコマンドは数式の “意味” を指しているわけではないので，
-        直接数式に書くことよりもユーザ定義コマンド（後述）の定義中で使うことを想定している．
-      }
-    >
-    +p{ \REMAINS{\LaTeX;と\SATySFi;の数式記法の違い} }
+    +p{
+      なお，四角括弧，（集合に限らない一般の）波括弧，三角括弧もそれぞれ
+      \codem{\\sqbracket\{ ${\cdots} \}}，\codem{\\brace\{ ${\cdots} \}}，
+      \codem{\\angle-bracket\{ ${\cdots} \}}
+      で書けるようになっているが，これらのコマンドは数式の “意味” を指しているわけではないので，
+      一応直接数式に書くというよりはユーザ定義コマンド（後述）の定義中で使うことを
+      主たる用法として想定している\footnote{
+        と言いつつ，次節の例で\codem{\\sqbracket}を数式中に直接書いているが．
+      }．
+    }
+    +p{
+      その他，数式について詳しくは\ref-chapter(`math`);で扱う．
+    }
+  >
+  +section{別行立て数式}<
+    +p{
+      \d-code-and-block(```
+        +p{
+          別行立て数式は，少し前後がゴチャッとしているが
+          \eqn(${
+            \int_a^b \frac{\ordd x}{\sqrt{x^2 + 1}}
+              = \sqbracket{\log \paren{x + \sqrt{x^2 + 1}}}_a^b
+          });%
+          という具合に書く．位置を揃えたい場合は，さらにゴチャッとするが
+          \align[
+            ${| \paren{x - a} \paren{x - b}
+                  |= x^2 - a x - b x + a b |};
+            ${|   |= x^2 - \paren{a + b} + a b |};
+          ];%
+          という要領で書く．
+        }
+      ```)(open Sample in '<
+        +p{
+          別行立て数式は，少し前後がゴチャッとしているが
+
+          \eqn(${
+            \int_a^b \frac{\ordd x}{\sqrt{x^2 + 1}}
+              = \sqbracket{\log \paren{x + \sqrt{x^2 + 1}}}_a^b
+          });%
+
+          という具合に書く．位置を揃えたい場合は，さらにゴチャッとするが
+
+          \align[
+            ${| \paren{x - a} \paren{x - b}
+                  |= x^2 - a x - b x + a b |};
+            ${|   |= x^2 - \paren{a + b} + a b |};
+          ];%
+
+          という要領で書く．
+        }
+      >);%
+
+      \codem{\\align}の引数の\codem{[ ${\cdots} ]}は
+      直下に四角括弧があるプログラム引数\codem{([ ${\cdots} ])}の略記であり，
+      プログラムに於ける\codem{[ ${\cdots} ]}は
+      \dfnje{リスト}{list}である\footnote{
+        リストといっても，箇条書きの意味のリストとは特に関係がないことに注意．
+        これについては\ref-chapter(`basic-command-definition`);で説明する．
+      }．
+    }
   >
   +section{コメントアウト}<
     +p{
@@ -403,19 +458,19 @@ let getting-started = '<
       オプション引数としてタイトルを与えることができる：
 
       \d-code-and-block(```
-        +theorem?:({Progress}){
-          If ${t} is well-typed, then one of the following holds:
+        +theorem?:({進行}){
+          ${t} が型のつく項ならば，以下のいずれかが成り立つ：
           \listing{
-            * ${t} is a value.
-            * ${t \to t'} for some ${t'}.
+            * ${t} は値．
+            * 或る ${t'} が存在して ${t \to t'} を満たす．
           }%
         }
       ```)<
-        +theorem?:({Progress}){
-          If ${t} is well-typed, then one of the following holds:
+        +theorem?:({進行}){
+          ${t} が型のつく項ならば，以下のいずれかが成り立つ：
           \listing{
-            * ${t} is a value.
-            * ${t \to t'} for some ${t'}.
+            * ${t} は値．
+            * 或る ${t'} が存在して ${t \to t'} を満たす．
           }%
         }
       >%
@@ -428,6 +483,7 @@ let getting-started = '<
       脚註の用法はほぼ\LaTeX;と同様で，インラインテキスト中に
       \codem{\\footnote\{ ${\cdots} \}}
       と記述することで挿入できる．
+      ただし，脚註の中にさらに脚註の記述を設けることなどはできない．
     }
   >
   +section{相互参照}<
@@ -450,16 +506,63 @@ let getting-started = '<
 
       \d-code-and-block(```
         +p{
-          既に\ref-chapter(`introduction`);で述べたように，
+          相互参照は\ref-chapter(`introduction`);でも述べたとおり
+          マークアップ方式の組版処理システムが
+          簡潔に実現することを得意としやすい機能だ．
           （以下略）
         }
       ```)<
         +p{
-          既に\ref-chapter(`introduction`);で述べたように，
+          相互参照は\ref-chapter(`introduction`);でも述べたとおり
+          マークアップ方式の組版処理システムが
+          簡潔に実現することを得意としやすい機能だ．
           （以下略）
+        }
+      >%
+
+      定理類のコマンドも，2番目のオプション引数として相互参照のラベルが挿入できる：
+
+      \d-code-and-block(```
+        +lemma?:({保存})?:(`preservation`){
+          ${\Gamma \vdash t : \tau} かつ ${t \to t'} ならば，
+          ${\Gamma \vdash t' : \tau} が成り立つ．
+        }
+      ```)<
+        +lemma?:({保存})?:(`preservation`){
+          ${\Gamma \vdash t : \tau} かつ ${t \to t'} ならば，
+          ${\Gamma \vdash t' : \tau} が成り立つ．
+        }
+      >%
+
+      連続するオプション引数でより手前側のものを省略し後ろ側のものを与えたい場合は，
+      オプション引数の “省略の明示” である\codem{?\*}を使う．
+      ここでは補題のタイトルが不要だが相互参照のラベルをつけたい場合は
+      以下のように改めればよい：
+
+      \d-code-and-block(```
+        +lemma?*?:(`preservation-without-title`){
+          ${\Gamma \vdash t : \tau} かつ ${t \to t'} ならば，
+          ${\Gamma \vdash t' : \tau} が成り立つ．
+        }
+      ```)<
+        +lemma?*?:(`preservation-without-title`){
+          ${\Gamma \vdash t : \tau} かつ ${t \to t'} ならば，
+          ${\Gamma \vdash t' : \tau} が成り立つ．
+        }
+      >%
+
+      そして実際に番号を挿入する場所では
+      \codem{\\ref-theorem}，\codem{\\ref-lemma}，…などを使う：
+
+      \d-code-and-block(```
+        +proof{
+          \ref-lemma(`preservation`);よりすみやかにしたがう．
+        }
+      ```)<
+        +proof{
+          \ref-lemma(`preservation`);よりすみやかにしたがう．
         }
       >%
     }
   >
-  +p{ \REMAINS{wikiをたたき台にして書く} }
 >
