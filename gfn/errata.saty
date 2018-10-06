@@ -1,0 +1,95 @@
+% -*- coding: utf-8 -*-
+@require: standalone
+@require: pervasives
+@import: settings
+
+
+let-inline ctx \embed f =
+  f ctx
+
+let-block ctx +pn it =
+  line-break true true ctx
+    (read-inline ctx it ++ inline-fil)
+
+let-inline ctx \important =
+  let ib = read-inline (ctx |> set-dominant-narrow-script Kana) {●} in
+  let (w, _, _) = get-natural-metrics ib in
+    inline-skip (-3pt -' w) ++ ib
+
+let-inline ctx \dummy-latin =
+  inline-skip 3pt
+in
+
+standalone '<
+  +centering{\Sample.enlarge{The \SATySFi;book 訂正表}}
+  +p{
+    \quad;\important;印のついているものは特に誤解をきたしやすい深刻な誤植です：
+  }
+  +centering{
+    \embed(fun ctx -> (
+      let pads = (10pt, 10pt, 5pt, 5pt) in
+      let c it = NormalCell(pads, inline-fil ++ read-inline ctx it ++ inline-fil) in
+      let l it = NormalCell(pads, read-inline ctx it ++ inline-fil) in
+      tabular [
+        [c {位置}; c {誤}; c {正}; ];
+
+        [l {12頁下から5行目}; l {\pkg{std-jareport}}; l {\pkg{stdjareport}}; ];
+        [l {15頁脚註8中}; l {プログラム引数}; l {式引数}; ];
+        [l {18頁3行目}; l {\codem{\\paren\{a + b\}}}; l {\codem{\\paren\{a + b\} x}}; ];
+        [l {18頁11行目}; l {${\paren{a + b}}}; l {${\paren{a + b} x}}; ];
+        [l {18頁13行目}; l {プログラム引数}; l {式引数}; ];
+        [l {20頁下から3行目}; l {\pkg{stdjare-port}}; l {\pkg{stdjareport}}; ];
+        [l {36頁下から4行目};
+          l {長さ\codem{\metasub(${1}){l}}\dummy-latin;が長さ\codem{\metasub(${1}){l}}\dummy-latin;の};
+          l {長さ\codem{\metasub(${1}){l}}\dummy-latin;が長さ\codem{\metasub(${2}){l}}\dummy-latin;の};
+        ];
+        [l {\important;39頁下から4行目};
+          l {\parbox(5.4cm)<+pn{
+            \type(Type.tymtausub ${1});型の第1引数と
+            \type(Type.tymtausub ${2});型の第2引数を受け取って
+            \type(Type.tymtau);型の値を返す函数は，
+            \type(Type.tymtausub ${1});型の第1引数を受け取って
+            「\type(Type.tymtausub ${2});型の第2引数を受け取って
+            \type(Type.tymtau);型の値を返す函数」を返す函数ともみなせる．
+          }>};
+          l {\parbox(5.4cm)<+pn{
+            \type(Type.tymtausub ${1});型の第1引数と
+            \type(Type.tymtausub ${2});型の第2引数を受け取って
+            \type(Type.tymtau);型の値を返す函数は，
+            \type(Type.tymtausub ${1});型の引数を受け取って
+            「\type(Type.tymtausub ${2});型の引数を受け取って
+            \type(Type.tymtau);型の値を返す函数」を返す函数ともみなせる．
+          }>};
+        ];
+        [l {49頁4行目};
+          l {\codem{\metasub(${n}){Ctr} of \metasub(${1}){ty}}};
+          l {\codem{\metasub(${n}){Ctr} of \metasub(${n}){ty}}};
+        ];
+        [l {\important;53頁11行目};
+          l {\type(Type.(tymalpha --> (option tymalpha --> tymalpha)));};
+          l {\type(Type.(forall ${\alpha} (tymalpha --> (option tymalpha --> tymalpha))));};
+        ];
+        [l {\important;54頁7行目};
+          l {\parbox(5.4cm)<+pn{\codem{3 :: (1 :: (4 :: 1 :: (5 :: 9 :: 2)))}}>};
+          l {\parbox(5.4cm)<+pn{\codem{3 :: (1 :: (4 :: 1 :: (5 :: (9 :: (2 :: [])))))}}>};
+        ];
+        [l {56頁下から5行目}; l {SML\#の基礎づける型}; l {SML\#を基礎づける型システム}; ];
+        [l {80頁15行目}; l {プログラム引数}; l {式引数}; ];
+        [l {\important;121頁12行目}; l {\codem{\meta{x}}\dummy-latin;を}; l {\codem{\meta{x}}\dummy-latin;は変数を}; ];
+        [l {121頁14, 17行目}; l {プログラム引数}; l {式引数}; ];
+      ] (fun xs ys -> (
+        match (xs, List.reverse xs, ys, List.reverse ys) with
+        | (xL :: _, xR :: _, yT :: y2 :: _, yB :: _) ->
+            [
+              stroke 1pt Color.black (Gr.line (xL, yT) (xR, yT));
+              stroke 0.5pt Color.black (Gr.line (xL, y2) (xR, y2));
+              stroke 1pt Color.black (Gr.line (xL, yB) (xR, yB));
+            ]
+        | _ -> []
+      ))
+    ));%
+  }
+  +ragged-right{
+    2018年10月6日\quad;Takashi SUWA
+  }
+>
