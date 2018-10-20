@@ -592,6 +592,8 @@ module Type : sig
   val tymtaup : t
   val tymtausub : math -> t
 
+  val \record-paren : [math] math-cmd
+
 end = struct
 
   type t =

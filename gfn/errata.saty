@@ -4,8 +4,21 @@
 @import: settings
 
 
-let-inline ctx \embed f =
-  f ctx
+let-inline ctx \local-table f =
+  let pads = (10pt, 10pt, 3pt, 3pt) in
+  let c it = NormalCell(pads, inline-fil ++ read-inline ctx it ++ inline-fil) in
+  let l it = NormalCell(pads, read-inline ctx it ++ inline-fil) in
+  f c l
+
+let top-and-bottom-rules xs ys =
+  match (xs, List.reverse xs, ys, List.reverse ys) with
+  | (xL :: _, xR :: _, yT :: y2 :: _, yB :: _) ->
+      [
+        stroke 1pt Color.black (Gr.line (xL, yT) (xR, yT));
+        stroke 0.5pt Color.black (Gr.line (xL, y2) (xR, y2));
+        stroke 1pt Color.black (Gr.line (xL, yB) (xR, yB));
+      ]
+  | _ -> []
 
 let-block ctx +pn it =
   line-break true true ctx
@@ -63,28 +76,30 @@ in
 
 standalone '<+small<
   +vskip(-2cm);
-  +centering{\Sample.enlarge{The \SATySFi;book 訂正表}}
+  +centering{\Sample.enlarge{The \SATySFi;book（第1版）訂正表第2版}}
   +p{
     \quad;\important;印のついているものは特に誤解をきたしやすい深刻な誤植です：
   }
   +centering{
-    \embed(fun ctx -> (
-      let pads = (10pt, 10pt, 3pt, 3pt) in
-      let c it = NormalCell(pads, inline-fil ++ read-inline ctx it ++ inline-fil) in
-      let l it = NormalCell(pads, read-inline ctx it ++ inline-fil) in
+    \local-table(fun c l -> (
       tabular [
         [c {位置}; c {誤}; c {正}; ];
 
+        [l {\important;1頁下から8行目}; l {前者}; l {後者}; ];
+        [l {\important;1頁下から7行目}; l {後者}; l {前者}; ];
         [l {12頁下から5行目}; l {\pkg{std-jareport}}; l {\pkg{stdjareport}}; ];
         [l {15頁脚註8中}; l {プログラム引数}; l {式引数}; ];
         [l {18頁3行目}; l {\codem{\\paren\{a + b\}}}; l {\codem{\\paren\{a + b\} x}}; ];
         [l {18頁11行目}; l {${\paren{a + b}}}; l {${\paren{a + b} x}}; ];
         [l {18頁13行目}; l {プログラム引数}; l {式引数}; ];
         [l {20頁下から3行目}; l {\pkg{stdjare-port}}; l {\pkg{stdjareport}}; ];
+        [l {24頁下から6行目}; l {\codem{\#t\;}}; l {\codem{\#it\;}}; ];
+        [l {35頁脚註19中}; l {なお．}; l {なお，}; ];
         [l {36頁下から4行目};
           l {長さ\codem{\metasub(${1}){l}}\dummy-latin;が長さ\codem{\metasub(${1}){l}}\dummy-latin;の};
           l {長さ\codem{\metasub(${1}){l}}\dummy-latin;が長さ\codem{\metasub(${2}){l}}\dummy-latin;の};
         ];
+        [ l {38頁15行目}; l {置き換えられたものの計算する}; l {置き換えられたものを計算する}];
         [l {\important;39頁下から4行目};
           l {\parbox(cell-wid)<+pn{
             \type(Type.tymtausub ${1});型の第1引数と
@@ -116,11 +131,40 @@ standalone '<+small<
           l {\parbox(cell-wid)<+pn{\codem{3 :: (1 :: (4 :: (1 :: (5 :: (9 :: (2 :: []))))))}}>};
         ];
         [l {56頁下から5行目}; l {SML\#の基礎づける型}; l {SML\#を基礎づける型システム}; ];
+        [l {57頁2行目}; l {
+          \type(Type.(record [
+            ({\metasub(${1}){label}}, tymtausub ${1});
+            ({${\cdots}}, of-math ${\cdots});
+            ({\metasub(${n}){label}}, tymtausub ${n});
+          ]));
+        }; l {
+          ${\Type.record-paren{
+            \text!{\metasub(${1}){label}} : \mtype!(Type.(tymtausub ${1}))\;
+            \ \cdots\;
+            \ \text!{\metasub(${n}){label}} : \mtype!(Type.(tymtausub ${n}))
+          }}
+        }];
+        [l {57頁3行目}; l {レコードそのもののの型つけ}; l {レコードそのものの型つけ}; ];
+        [l {64頁図4.1中}; l {評価用形式}; l {実行時表現}; ];
         [l {65頁最終行};
           l {\parbox(cell-wid)<+console(`! [Syntax error at Typechecker]`);>};
           l {\parbox(cell-wid)<+console(`! [Type Error]`);>};
         ];
+        [l {\important;72頁8行目}; l {\codem{get-font-size}}; l {\codem{set-font-size}}; ];
+        [l {76頁6行目}; l {\codem{\metasub(${1}){b}}；\quad;は}; l {\codem{\metasub(${1}){b}}：}; ];
+        [l {76頁8行目}; l {\codem{\meta{ctx}}；}; l {\codem{\meta{ctx}}：}; ];
         [l {80頁15行目}; l {プログラム引数}; l {式引数}; ];
+      ] top-and-bottom-rules
+    ));
+  }
+  +ragged-right{
+    （裏に続きます）
+  }
+  +centering{
+    \local-table(fun c l -> (
+      tabular [
+        [c {位置}; c {誤}; c {正}; ];
+
         [l {\important;81頁10行目};
           l {
             \parbox(cell-wid)<+p{\align[
@@ -173,22 +217,15 @@ standalone '<+small<
             ];}>
           };
         ];
+        [l {92頁2行目}; l {にはには}; l {には}; ];
         [l {95頁下から12行目}; l {SATySFi}; l {\SATySFi;}; ];
         [l {\important;121頁12行目}; l {\codem{\meta{x}}\dummy-latin;を}; l {\codem{\meta{x}}\dummy-latin;は変数を}; ];
         [l {121頁14, 17行目}; l {プログラム引数}; l {式引数}; ];
-      ] (fun xs ys -> (
-        match (xs, List.reverse xs, ys, List.reverse ys) with
-        | (xL :: _, xR :: _, yT :: y2 :: _, yB :: _) ->
-            [
-              stroke 1pt Color.black (Gr.line (xL, yT) (xR, yT));
-              stroke 0.5pt Color.black (Gr.line (xL, y2) (xR, y2));
-              stroke 1pt Color.black (Gr.line (xL, yB) (xR, yB));
-            ]
-        | _ -> []
-      ))
+        [l {126頁下から6行目}; l {\codem{\\bb}}; l {\codem{\\bm}}; ];
+      ] top-and-bottom-rules
     ));%
   }
   +ragged-right{
-    2018年10月8日\quad;Takashi SUWA
+    2018年10月20日\quad;Takashi SUWA
   }
 >>
