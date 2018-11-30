@@ -164,21 +164,26 @@ end = struct
 
   let-inline ctx \ref-chapter key =
     let key-pdf-loc = `chapter:` ^ key in
-    let opt = get-cross-reference (`chapter:` ^ key ^ `:num`) in
+    let key-num = `chapter:` ^ key ^ `:num` in
+    let opt = get-cross-reference key-num in
     let it = embed-string (Option.from `?` opt) in
       goto-frame key-pdf-loc (read-inline ctx {第#it;章})
 
 
   let-inline ctx \ref-section key =
-    let opt = get-cross-reference (`section:` ^ key ^ `:num`) in
+    let key-pdf-loc = `section:` ^ key in
+    let key-num = `section:` ^ key ^ `:num` in
+    let opt = get-cross-reference key-num in
     let it = embed-string (Option.from `?` opt) in
-      read-inline ctx {#it;節}
+      goto-frame key-pdf-loc (read-inline ctx {#it;節})
 
 
   let-inline ctx \ref-subsection key =
-    let opt = get-cross-reference (`subsection:` ^ key ^ `:num`) in
+    let key-pdf-loc = `subsection:` ^ key in
+    let key-num = `subsection:` ^ key ^ `:num` in
+    let opt = get-cross-reference key-num in
     let it = embed-string (Option.from `?` opt) in
-      read-inline ctx {#it;節}
+      goto-frame key-pdf-loc (read-inline ctx {#it;節})
 
 
   let-inline ctx \ref-figure key =
@@ -336,8 +341,9 @@ end = struct
       bb +++ line-break false false ctx ib +++ block-skip 36pt
 
 
-  let section-heading ctx ib-heading =
-    line-break true false (ctx |> set-paragraph-margin section-top-margin section-bottom-margin) ib-heading
+  let section-heading key-pdf-loc ctx ib-heading =
+    line-break true false (ctx |> set-paragraph-margin section-top-margin section-bottom-margin)
+      (location-frame key-pdf-loc ib-heading)
 
 
   let-inline ctx \dummy it =
@@ -473,7 +479,9 @@ end = struct
     let () = num-subsection <- 0 in
     let () = num-theorems <- 0 in
     let s-num = arabic (!num-chapter) ^ `.` ^ arabic (!num-section) in
-    let () = register-cross-reference (`section:` ^ label ^ `:num`) s-num in
+    let key-pdf-loc = `section:` ^ label in
+    let key-num = `section:` ^ label ^ `:num` in
+    let () = register-cross-reference key-num s-num in
     let () = toc-acc-ref <- (TOCElementSection(label, title)) :: !toc-acc-ref in
     let ib-num =
       read-inline ctx-title (embed-string (s-num ^ `.`))
@@ -482,7 +490,7 @@ end = struct
                register-cross-reference (`section:` ^ label ^ `:page`) (arabic pageno)))
     in
     let ib-title = read-inline ctx-title title in
-    let bb-title = section-heading ctx (ib-num ++ (inline-skip 10pt) ++ ib-title ++ (inline-fil)) in
+    let bb-title = section-heading key-pdf-loc ctx (ib-num ++ (inline-skip 10pt) ++ ib-title ++ (inline-fil)) in
     let bb-inner = read-block ctx inner in
       bb-title +++ bb-inner
 
@@ -490,7 +498,9 @@ end = struct
   let subsection-scheme ctx label title inner =
     let () = num-subsection <- !num-subsection + 1 in
     let s-num = arabic (!num-chapter) ^ `.` ^ arabic (!num-section) ^ `.` ^ arabic (!num-subsection) in
-    let () = register-cross-reference (`subsection:` ^ label ^ `:num`) s-num in
+    let key-pdf-loc = `subsection:` ^ label in
+    let key-num = `subsection:` ^ label ^ `:num` in
+    let () = register-cross-reference key-num s-num in
     let () = toc-acc-ref <- (TOCElementSubsection(label, title)) :: !toc-acc-ref in
     let ctx-title = make-subsection-title ctx in
     let ib-num =
@@ -502,7 +512,7 @@ end = struct
     let ib-title = read-inline ctx-title title in
     let bb-title =
       line-break true false (ctx |> set-paragraph-margin section-top-margin section-bottom-margin)
-        (ib-num ++ (inline-skip 10pt) ++ ib-title ++ (inline-fil))
+        (location-frame key-pdf-loc (ib-num ++ (inline-skip 10pt) ++ ib-title ++ (inline-fil)))
     in
     let bb-inner = read-block ctx inner in
       bb-title +++ bb-inner
