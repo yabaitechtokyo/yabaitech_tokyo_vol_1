@@ -1778,11 +1778,11 @@ let programming = '<
       は，各式\codem{\metasub(${i}){expr}}に型\type(Type.tymtausub ${i});がつく下で
 
       \quote{
-        \type(Type.(record [
-          ({\metasub(${1}){label}}, tymtausub ${1});
-          ({${\cdots}}, of-math ${\cdots});
-          ({\metasub(${n}){label}}, tymtausub ${n});
-        ]));
+          ${\Type.record-paren{
+            \text!{\metasub(${1}){label}} : \mtype!(Type.(tymtausub ${1}))\;
+            \ \cdots\;
+            \ \text!{\metasub(${n}){label}} : \mtype!(Type.(tymtausub ${n}))
+          }}
       }%
 
       という型をつけて扱う．レコードそのものの型つけは単純なのだが，
@@ -1790,10 +1790,10 @@ let programming = '<
       レコードを受け取り，そのレコードのラベル\codem{foo}にアクセスする函数を考える：
 
       \d-code(```
-        (fun r -> r#foo + 1)
+        let f r = r#foo + 1
       ```);%
 
-      この函数にどんな型をつければよいかをまず素朴に考えよう．
+      この函数\codem{f}にどんな型をつければよいかをまず素朴に考えよう．
       この函数の式が型の制約として要請するのは，
       \codem{r}という変数が束縛されているレコードが\codem{foo}というラベルをもち，
       かつそれに対応する値が\type(Type.int);型であるということだけである．
@@ -1810,11 +1810,11 @@ let programming = '<
       同様にして
 
       \d-code(```
-        (fun r -> (
-          let (x, _) = r#bar in r#foo + (round x)))
+        let g r =
+          let (x, _) = r#bar in r#foo + (round x)
       ```);%
 
-      には以下のような型がつく：
+      で定義される\codem{g}には以下のような型がつく：
 
       \quote{
         \type(Type.(forall ${\beta} (forall-kinded ${\alpha} [
@@ -1908,7 +1908,7 @@ let programming = '<
         \codem{atan2 \meta{y} \meta{x}}で
         \codem{\meta{y} /. \meta{x}}のアークタンジェントを返すが，
         \codem{\meta{y}}と\codem{\meta{x}}の符号が象限の決定に用いられる．
-        返される値は ${-\pi} から ${\pi} の間の値である．
+        返される値は ${\mathord{-}\pi} から ${\pi} の間の値である．
       }%
 
       % -- 長さ --

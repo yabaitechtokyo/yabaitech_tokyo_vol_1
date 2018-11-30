@@ -56,7 +56,7 @@ let overall = '<
           structure-arrow-left xL xF 8.625cm;
           structure-box r hwF (xF, 8.5cm) {型検査器};
           [
-            r#text-centering (xF, 7cm){評価用形式};
+            r#text-centering (xF, 7cm){実行時表現};
           ];
 
           structure-bend
@@ -191,7 +191,7 @@ let overall = '<
       何らかの不整合が含まれている場合，型検査器はその不整合を
 
       \console(`
-        ! [Syntax error at Typechecker] （エラー位置とその内容）
+        ! [Type error] （エラー位置とその内容）
       `);%
 
       という形で報告する．ユーザはこれにしたがってすみやかに修正することができる．

@@ -158,7 +158,7 @@ let advanced-command-definition = '<
 
         そしてこのコマンド定義に基づいて第0引数に現在のテキスト処理文脈（ここでは ${C_1}）を，
         第1引数以降もインラインテキスト中にユーザが与えたものを，それぞれ渡して評価する．
-        \codem{get-font-size}によって文字サイズが更新された ${C_1} を ${C_2} と書くことにすると，
+        \codem{set-font-size}によって文字サイズが更新された ${C_1} を ${C_2} と書くことにすると，
         続いて\codem{\\enlarge}の定義中にある\codem{read-inline}が再び
         インライン変換器をテキスト処理文脈を ${C_2} にして起動する：
 
@@ -359,13 +359,13 @@ let advanced-command-definition = '<
         }：
 
         \listing{
-          * \codem{\metasub(${1}){b}}；\quad;
-            は組み上がった段落の直前でページ分割してよいか否か
+          * \codem{\metasub(${1}){b}}：\quad;
+            組み上がった段落の直前でページ分割してよいか否か
 
           * \codem{\metasub(${2}){b}}：\quad;
             組み上がった段落の直後でページ分割してよいか否か
 
-          * \codem{\meta{ctx}}；\quad;
+          * \codem{\meta{ctx}}：\quad;
             行長や行送りなどを取り出すためのテキスト処理文脈
 
           * \codem{\meta{ib}}：\quad;
@@ -573,7 +573,7 @@ let advanced-command-definition = '<
         という新しい構文が出てきているが，これはそれほどヘンテコなものではなく，
         一種のインライン引数であって
         単にインラインテキストのリストを簡素に書くために用意されている糖衣構文であり，
-        以下のプログラム引数と等価である：
+        以下の式引数と等価である：
 
         \d-codem{
           [\{\metasub(${1}){text}\}\; ${\cdots}\; \{\metasub(${n}){text}\}]
@@ -619,21 +619,21 @@ let advanced-command-definition = '<
 
         \align[
           ${|| \text!{\codem{List.fold-left (${\oplus}) \meta{i}
-                [\metasub(${1}){v}\; \metasub(${2}){v}\; ${\cdots}\; \metasub(${n}){v}]}}
+                [\metasub(${1}){v}\; \metasub(${2}){v}\; \metasub(${3}){v}\; ${\cdots}\; \metasub(${n}){v}]}}
           |};${|
             |\longrightarrow
-              \text!{\codem{List.fold-left (\meta{i} ${\oplus} \metasub(${1}){v})
-                [\metasub(${2}){v}\; ${\cdots}\; \metasub(${n}){v}]}}
+              \text!{\codem{List.fold-left (${\oplus}) (\meta{i} ${\oplus} \metasub(${1}){v})
+                [\metasub(${2}){v}\; \metasub(${3}){v}\; ${\cdots}\; \metasub(${n}){v}]}}
           |};${|
             |\longrightarrow
-              \text!{\codem{List.fold-left ((\meta{i} ${\oplus} \metasub(${1}){v}) ${\oplus} \metasub(${2}){v})
-                [ ${\cdots}\; \metasub(${n}){v}]}}
+              \text!{\codem{List.fold-left (${\oplus}) ((\meta{i} ${\oplus} \metasub(${1}){v}) ${\oplus} \metasub(${2}){v})
+                [\metasub(${3}){v}\; ${\cdots}\; \metasub(${n}){v}]}}
           |};${|
             |\math-skip!(6pt)\vdots
           |};${|
             |\longrightarrow
               \text!{\codem{((${\cdots}(((\meta{i} ${\oplus} \metasub(${1}){v}) ${\oplus} \metasub(${2}){v})
-                ${\oplus} \metasub(${2}){v}) ${\oplus \cdots}) ${\oplus} \metasub(${n}){v})}}
+                ${\oplus} \metasub(${3}){v}) ${\oplus \cdots}) ${\oplus} \metasub(${n}){v})}}
           |};
         ];%
 
@@ -658,7 +658,7 @@ let advanced-command-definition = '<
         \codem{\meta{ib}}とがまったく等価になるようなプリミティヴである．
       }
       +p{
-        なお，\codem{+centerings}の定義の途中にあった
+        なお，\codem{+centerings}の定義中にあった
         \codem{set-paragraph-margin}は
         \codem{line-break}が返す段落の上下の\dfnje{マージン}{margin}を変更するプリミティヴであり，
         これについては\ref-chapter(`line-breaking`);で扱う．
@@ -669,7 +669,7 @@ let advanced-command-definition = '<
         ところで，\codem{+p}のようなブロックコマンドを含むブロックテキストは
         どのようにブロックボックス列へと変換されているのだろう？\quad;
         実はブロックテキストをブロックボックス列に変換するのも専用の機構があり，
-        \dfn{ブロック変換器}と呼ぶ．本文中では触れてこなかったが，
+        \dfnje{ブロック変換器}{block converter}と呼ぶ．本文中では触れてこなかったが，
         すでに\ref-figure(`overall-structure`);にチラッと登場しているので
         気づいた方もいるかもしれない．
         インライン変換器が\codem{read-inline}というプリミティヴで提供されているように，
