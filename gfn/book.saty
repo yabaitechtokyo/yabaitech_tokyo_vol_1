@@ -22,6 +22,13 @@ document (|
   author = {Takashi SUWA};
   preface = preface;
   bibliography = bibliography;
+  copyright-page = (|
+    title = {The \SATySFi;book};
+    author = {Takashi SUWA / ヤバイテックトーキョー};
+    date = {2018年11月30日};
+    contact = {\url{gfngfn.bd\@gmail.com}};
+    printed-by = None;
+  |);
 |) '<
   +chapter?:(`introduction`){\SATySFi;の開発動機}< #introduction; >
   +chapter?:(`getting-started`){\SATySFi;簡易入門}< #getting-started; >

@@ -58,11 +58,19 @@ type bib-item =
 module Book : sig
 
   val document : 'a -> block-text -> document
+    constraint 'b :: (|
+      title : inline-text;
+      author : inline-text;
+      contact : inline-text;
+      date : inline-text;
+      printed-by : inline-text option;
+    |)
     constraint 'a :: (|
       title : inline-text;
       author : inline-text;
       preface : block-text;
       bibliography : (string * bib-item) list;
+      copyright-page : 'b;
     |)
 
   val font-latin-roman  : string * float * float
@@ -106,6 +114,7 @@ module Book : sig
   direct \dfn : [inline-text] inline-cmd
   direct \roman : [inline-text] inline-cmd
   direct \footnote : [inline-text] inline-cmd
+  direct \url : [inline-text] inline-cmd
 
 end = struct
 
@@ -698,6 +707,7 @@ end = struct
 
     % -- okudzuke --
     let bb-okudzuke =
+      let copyright-page = record#copyright-page in
       let thick = 1pt in
       let thin = 0.5pt in
       let gap = 2pt in
@@ -706,13 +716,16 @@ end = struct
         NormalCell(pads, read-inline ctx-doc it ++ inline-fil)
       in
       let tbl =
-        tabular [
+        tabular (List.append [
 %          [ MultiCell(1, 2, pads, read-inline ctx-doc {The \SATySFi;book}); EmptyCell; ];
-          [ l {発行日}; l {2018年9月29日}; ];
-          [ l {発行}; l {Takashi SUWA / ヤバイテックトーキョー}; ];
-          [ l {連絡先}; l {\url{bd.gfngfn\@gmail.com}}; ];
-          [ l {印刷所}; l {株式会社ポプルス}; ];
-        ] (fun xs ys -> (
+          [ l {発行日}; l copyright-page#date; ];
+          [ l {発行}; l copyright-page#author; ];
+          [ l {連絡先}; l copyright-page#contact; ];
+        ] (
+          match copyright-page#printed-by with
+          | None     -> []
+          | Some(it) -> [[ l {印刷所}; l it; ]]
+        )) (fun xs ys -> (
           match (xs, List.reverse xs, ys, List.reverse ys) with
           | (xL :: _, xR :: _, yT :: _, yB :: _) ->
               [
@@ -726,7 +739,7 @@ end = struct
               []
         ))
       in
-      let ib-title = read-inline ctx-doc {The \SATySFi;book} in
+      let ib-title = read-inline ctx-doc copyright-page#title in
       clear-page +++ block-skip 140mm +++
         line-break false false ctx-doc
           (inline-fil ++
