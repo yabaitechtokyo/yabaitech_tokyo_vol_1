@@ -18,13 +18,13 @@
 @import: bib
 
 document (|
-  title = {The \SATySFi;book};
+  title = {The \SATySFi;book（Web公開版 第1版）};
   author = {Takashi SUWA};
   preface = preface;
   bibliography = bibliography;
   copyright-page = (|
-    title = {The \SATySFi;book};
-    author = {Takashi SUWA / ヤバイテックトーキョー};
+    title = {The \SATySFi;book（Web公開版 第1版）};
+    author = {Takashi SUWA\hskip(5cm);};
     date = {2018年11月30日};
     contact = {\url{gfngfn.bd\@gmail.com}};
     printed-by = None;
