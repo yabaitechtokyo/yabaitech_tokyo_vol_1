@@ -70,6 +70,7 @@ module Book : sig
       author : inline-text;
       preface : block-text;
       bibliography : (string * bib-item) list;
+      top-page : block-text option;
       copyright-page : 'b;
     |)
 
@@ -114,7 +115,7 @@ module Book : sig
   direct \dfn : [inline-text] inline-cmd
   direct \roman : [inline-text] inline-cmd
   direct \footnote : [inline-text] inline-cmd
-  direct \url : [inline-text] inline-cmd
+  direct \url : [string?; inline-text] inline-cmd
 
 end = struct
 
@@ -145,6 +146,15 @@ end = struct
     let pads = (0pt, 0pt, 0pt, 0pt) in
     let deco (x, y) w h d =
       let () = register-link-to-location key-pdf-loc (x, y) w h d (Some(1pt, Color.red)) in []
+    in
+    let decoset = (deco, deco, deco, deco) in
+    inline-frame-breakable pads decoset
+
+
+  let uri-frame uri =
+    let pads = (0pt, 0pt, 0pt, 0pt) in
+    let deco (x, y) w h d =
+      let () = register-link-to-uri uri (x, y) w h d (Some(1pt, Color.red)) in []
     in
     let decoset = (deco, deco, deco, deco) in
     inline-frame-breakable pads decoset
@@ -402,12 +412,15 @@ end = struct
     read-inline (ctx |> set-latin-font font-latin-italic) it
 
 
-  let-inline ctx \url it =
+  let-inline ctx \url ?:urlopt it =
     let ctx =
       ctx |> set-latin-font font-latin-mono
           |> set-font-size 11pt
     in
-    read-inline ctx it
+    let ib = read-inline ctx it in
+    match urlopt with
+    | None      -> ib
+    | Some(url) -> uri-frame url ib
 
 
   let make-volume-and-number optvol optnum optseries =
@@ -573,6 +586,13 @@ end = struct
         |> set-leading doc-leading
         |> set-paragraph-margin paragraph-margin-top paragraph-margin-bottom
         |> set-hyphen-penalty 1000
+    in
+
+    % -- top page --
+    let bb-top-page =
+      match record#top-page with
+      | None     -> block-nil
+      | Some(bt) -> read-block ctx-doc bt +++ clear-page
     in
 
     % -- title --
@@ -851,7 +871,7 @@ end = struct
         |)
     in
       page-break page pagecontf pagepartsf
-        (bb-title +++ bb-preface +++ bb-toc +++ bb-main +++ bb-bib +++ bb-okudzuke)
+        (bb-top-page +++ bb-title +++ bb-preface +++ bb-toc +++ bb-main +++ bb-bib +++ bb-okudzuke)
 
 
   let-block ctx +p inner =

@@ -1,5 +1,6 @@
 % -*- coding: utf-8 -*-
 @import: settings
+@import: top-page
 @import: preface
 @import: introduction
 @import: getting-started
@@ -22,10 +23,11 @@ document (|
   author = {Takashi SUWA};
   preface = preface;
   bibliography = bibliography;
+  top-page = Some(top-page);
   copyright-page = (|
     title = {The \SATySFi;book（Web公開版 第1版）};
     author = {Takashi SUWA\hskip(5cm);};
-    date = {2018年11月30日};
+    date = {2018年12月5日};
     contact = {\url{gfngfn.bd\@gmail.com}};
     printed-by = None;
   |);
