@@ -144,7 +144,7 @@ end = struct
   let goto-frame key-pdf-loc =
     let pads = (0pt, 0pt, 0pt, 0pt) in
     let deco (x, y) w h d =
-      let () = register-link-to-location key-pdf-loc (x, y) w h d 1pt (Some(Color.red)) in []
+      let () = register-link-to-location key-pdf-loc (x, y) w h d (Some(1pt, Color.red)) in []
     in
     let decoset = (deco, deco, deco, deco) in
     inline-frame-breakable pads decoset
@@ -332,13 +332,19 @@ end = struct
 
 
   let chapter-heading key-pdf-loc ctx ib-num-opt ib-title =
-    let bb =
+    let (bb, ib) =
       match ib-num-opt with
-      | None         -> block-nil
-      | Some(ib-num) -> line-break false false ctx (ib-num ++ inline-fil)
+      | None ->
+          let bb = block-nil in
+          let ib = location-frame key-pdf-loc (ib-title ++ inline-fil) in
+          (bb, ib)
+
+      | Some(ib-num) ->
+          let bb = line-break false false ctx (location-frame key-pdf-loc (ib-num ++ inline-fil)) in
+          let ib = ib-title ++ inline-fil in
+          (bb, ib)
     in
-    let ib = location-frame key-pdf-loc (ib-title ++ inline-fil) in
-      bb +++ line-break false false ctx ib +++ block-skip 36pt
+    bb +++ line-break false false ctx ib +++ block-skip 36pt
 
 
   let section-heading key-pdf-loc ctx ib-heading =
