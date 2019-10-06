@@ -58,11 +58,20 @@ type bib-item =
 module Book : sig
 
   val document : 'a -> block-text -> document
+    constraint 'b :: (|
+      title : inline-text;
+      author : inline-text;
+      contact : inline-text;
+      date : inline-text;
+      printed-by : inline-text option;
+    |)
     constraint 'a :: (|
       title : inline-text;
       author : inline-text;
       preface : block-text;
       bibliography : (string * bib-item) list;
+      top-page : block-text option;
+      copyright-page : 'b;
     |)
 
   val font-latin-roman  : string * float * float
@@ -106,6 +115,7 @@ module Book : sig
   direct \dfn : [inline-text] inline-cmd
   direct \roman : [inline-text] inline-cmd
   direct \footnote : [inline-text] inline-cmd
+  direct \url : [string?; inline-text] inline-cmd
 
 end = struct
 
@@ -123,6 +133,33 @@ end = struct
       ))
 
 
+  let location-frame key-pdf-loc =
+    let pads = (0pt, 0pt, 0pt, 0pt) in
+    let decoR (x, y) _ h _ =
+      let () = register-destination key-pdf-loc (x, y +' h) in []
+    in
+    let decoI _ _ _ _ = [] in
+    inline-frame-breakable pads (decoR, decoI, decoI, decoI)
+
+
+  let goto-frame key-pdf-loc =
+    let pads = (0pt, 0pt, 0pt, 0pt) in
+    let deco (x, y) w h d =
+      let () = register-link-to-location key-pdf-loc (x, y) w h d (Some(1pt, Color.red)) in []
+    in
+    let decoset = (deco, deco, deco, deco) in
+    inline-frame-breakable pads decoset
+
+
+  let uri-frame uri =
+    let pads = (0pt, 0pt, 0pt, 0pt) in
+    let deco (x, y) w h d =
+      let () = register-link-to-uri uri (x, y) w h d (Some(1pt, Color.red)) in []
+    in
+    let decoset = (deco, deco, deco, deco) in
+    inline-frame-breakable pads decoset
+
+
   let-inline ctx \ref key =
     let opt = get-cross-reference (key ^ `:num`) in
     let it = embed-string (Option.from `?` opt) in
@@ -136,21 +173,27 @@ end = struct
 
 
   let-inline ctx \ref-chapter key =
-    let opt = get-cross-reference (`chapter:` ^ key ^ `:num`) in
+    let key-pdf-loc = `chapter:` ^ key in
+    let key-num = `chapter:` ^ key ^ `:num` in
+    let opt = get-cross-reference key-num in
     let it = embed-string (Option.from `?` opt) in
-      read-inline ctx {第#it;章}
+      goto-frame key-pdf-loc (read-inline ctx {第#it;章})
 
 
   let-inline ctx \ref-section key =
-    let opt = get-cross-reference (`section:` ^ key ^ `:num`) in
+    let key-pdf-loc = `section:` ^ key in
+    let key-num = `section:` ^ key ^ `:num` in
+    let opt = get-cross-reference key-num in
     let it = embed-string (Option.from `?` opt) in
-      read-inline ctx {#it;節}
+      goto-frame key-pdf-loc (read-inline ctx {#it;節})
 
 
   let-inline ctx \ref-subsection key =
-    let opt = get-cross-reference (`subsection:` ^ key ^ `:num`) in
+    let key-pdf-loc = `subsection:` ^ key in
+    let key-num = `subsection:` ^ key ^ `:num` in
+    let opt = get-cross-reference key-num in
     let it = embed-string (Option.from `?` opt) in
-      read-inline ctx {#it;節}
+      goto-frame key-pdf-loc (read-inline ctx {#it;節})
 
 
   let-inline ctx \ref-figure key =
@@ -298,17 +341,25 @@ end = struct
     | Some(s) -> s
 
 
-  let chapter-heading ctx ib-num-opt ib-title =
-    let bb =
+  let chapter-heading key-pdf-loc ctx ib-num-opt ib-title =
+    let (bb, ib) =
       match ib-num-opt with
-      | None         -> block-nil
-      | Some(ib-num) -> line-break false false ctx (ib-num ++ inline-fil)
+      | None ->
+          let bb = block-nil in
+          let ib = location-frame key-pdf-loc (ib-title ++ inline-fil) in
+          (bb, ib)
+
+      | Some(ib-num) ->
+          let bb = line-break false false ctx (location-frame key-pdf-loc (ib-num ++ inline-fil)) in
+          let ib = ib-title ++ inline-fil in
+          (bb, ib)
     in
-      bb +++ line-break false false ctx (ib-title ++ inline-fil) +++ block-skip 36pt
+    bb +++ line-break false false ctx ib +++ block-skip 36pt
 
 
-  let section-heading ctx ib-heading =
-    line-break true false (ctx |> set-paragraph-margin section-top-margin section-bottom-margin) ib-heading
+  let section-heading key-pdf-loc ctx ib-heading =
+    line-break true false (ctx |> set-paragraph-margin section-top-margin section-bottom-margin)
+      (location-frame key-pdf-loc ib-heading)
 
 
   let-inline ctx \dummy it =
@@ -361,12 +412,15 @@ end = struct
     read-inline (ctx |> set-latin-font font-latin-italic) it
 
 
-  let-inline ctx \url it =
+  let-inline ctx \url ?:urlopt it =
     let ctx =
       ctx |> set-latin-font font-latin-mono
           |> set-font-size 11pt
     in
-    read-inline ctx it
+    let ib = read-inline ctx it in
+    match urlopt with
+    | None      -> ib
+    | Some(url) -> uri-frame url ib
 
 
   let make-volume-and-number optvol optnum optseries =
@@ -420,17 +474,20 @@ end = struct
     let () = num-subsection <- 0 in
     let () = num-figure <- 0 in
     let s-num = arabic (!num-chapter) in
-    let () = register-cross-reference (`chapter:` ^ label ^ `:num`) s-num in
+    let key-pdf-loc = `chapter:` ^ label in
+    let key-num = `chapter:` ^ label ^ `:num` in
+    let key-page = `chapter:` ^ label ^ `:page` in
+    let () = register-cross-reference key-num s-num in
     let () = toc-acc-ref <- (TOCElementChapter(label, title)) :: !toc-acc-ref in
     let ctx-title = make-chapter-title ctx in
     let ib-num =
       read-inline ctx-title (embed-string (`Chapter `# ^ s-num))
         ++ hook-page-break (fun pbinfo _ -> (
              let pageno = get-shifted-page-number pbinfo in
-               register-cross-reference (`chapter:` ^ label ^ `:page`) (arabic pageno)))
+               register-cross-reference key-page (arabic pageno)))
     in
     let ib-title = read-inline ctx-title title in
-    let bb-title = chapter-heading ctx (Some(ib-num)) ib-title in
+    let bb-title = chapter-heading key-pdf-loc ctx (Some(ib-num)) ib-title in
     let bb-inner = read-block ctx inner in
       bb-title +++ bb-inner +++ clear-page
 
@@ -441,7 +498,9 @@ end = struct
     let () = num-subsection <- 0 in
     let () = num-theorems <- 0 in
     let s-num = arabic (!num-chapter) ^ `.` ^ arabic (!num-section) in
-    let () = register-cross-reference (`section:` ^ label ^ `:num`) s-num in
+    let key-pdf-loc = `section:` ^ label in
+    let key-num = `section:` ^ label ^ `:num` in
+    let () = register-cross-reference key-num s-num in
     let () = toc-acc-ref <- (TOCElementSection(label, title)) :: !toc-acc-ref in
     let ib-num =
       read-inline ctx-title (embed-string (s-num ^ `.`))
@@ -450,7 +509,7 @@ end = struct
                register-cross-reference (`section:` ^ label ^ `:page`) (arabic pageno)))
     in
     let ib-title = read-inline ctx-title title in
-    let bb-title = section-heading ctx (ib-num ++ (inline-skip 10pt) ++ ib-title ++ (inline-fil)) in
+    let bb-title = section-heading key-pdf-loc ctx (ib-num ++ (inline-skip 10pt) ++ ib-title ++ (inline-fil)) in
     let bb-inner = read-block ctx inner in
       bb-title +++ bb-inner
 
@@ -458,7 +517,9 @@ end = struct
   let subsection-scheme ctx label title inner =
     let () = num-subsection <- !num-subsection + 1 in
     let s-num = arabic (!num-chapter) ^ `.` ^ arabic (!num-section) ^ `.` ^ arabic (!num-subsection) in
-    let () = register-cross-reference (`subsection:` ^ label ^ `:num`) s-num in
+    let key-pdf-loc = `subsection:` ^ label in
+    let key-num = `subsection:` ^ label ^ `:num` in
+    let () = register-cross-reference key-num s-num in
     let () = toc-acc-ref <- (TOCElementSubsection(label, title)) :: !toc-acc-ref in
     let ctx-title = make-subsection-title ctx in
     let ib-num =
@@ -470,7 +531,7 @@ end = struct
     let ib-title = read-inline ctx-title title in
     let bb-title =
       line-break true false (ctx |> set-paragraph-margin section-top-margin section-bottom-margin)
-        (ib-num ++ (inline-skip 10pt) ++ ib-title ++ (inline-fil))
+        (location-frame key-pdf-loc (ib-num ++ (inline-skip 10pt) ++ ib-title ++ (inline-fil)))
     in
     let bb-inner = read-block ctx inner in
       bb-title +++ bb-inner
@@ -527,6 +588,13 @@ end = struct
         |> set-hyphen-penalty 1000
     in
 
+    % -- top page --
+    let bb-top-page =
+      match record#top-page with
+      | None     -> block-nil
+      | Some(bt) -> read-block ctx-doc bt +++ clear-page
+    in
+
     % -- title --
     let bb-title =
       let ctx-title =
@@ -555,7 +623,7 @@ end = struct
       let ib-preface-title =
         read-inline (make-chapter-title ctx-doc) {序文} ++ inline-fil
       in
-      let bb-preface-title = (chapter-heading ctx-doc None ib-preface-title) in
+      let bb-preface-title = (chapter-heading `preface` ctx-doc None ib-preface-title) in
       let bb-preface-main = read-block ctx-doc record#preface in
         bb-preface-title +++ bb-preface-main +++ clear-page
     in
@@ -568,7 +636,7 @@ end = struct
         let ib-toc-title =
           read-inline (make-chapter-title ctx-doc) {目次} ++ inline-fil
         in
-        let bb-toc-title = (chapter-heading ctx-doc None ib-toc-title) in
+        let bb-toc-title = (chapter-heading `toc` ctx-doc None ib-toc-title) in
         let bb-toc-main =
           let lbf-chapter ctx =
             line-break true true (ctx |> set-paragraph-margin 24pt 6pt)
@@ -693,11 +761,12 @@ end = struct
 
         )) block-nil
       in
-        (chapter-heading ctx-doc None ib-bib-title) +++ bb-bib-main
+        (chapter-heading `bibliography` ctx-doc None ib-bib-title) +++ bb-bib-main
     in
 
     % -- okudzuke --
     let bb-okudzuke =
+      let copyright-page = record#copyright-page in
       let thick = 1pt in
       let thin = 0.5pt in
       let gap = 2pt in
@@ -706,13 +775,16 @@ end = struct
         NormalCell(pads, read-inline ctx-doc it ++ inline-fil)
       in
       let tbl =
-        tabular [
+        tabular (List.append [
 %          [ MultiCell(1, 2, pads, read-inline ctx-doc {The \SATySFi;book}); EmptyCell; ];
-          [ l {発行日}; l {2018年9月29日}; ];
-          [ l {発行}; l {Takashi SUWA / ヤバイテックトーキョー}; ];
-          [ l {連絡先}; l {\url{bd.gfngfn\@gmail.com}}; ];
-          [ l {印刷所}; l {株式会社ポプルス}; ];
-        ] (fun xs ys -> (
+          [ l {発行日}; l copyright-page#date; ];
+          [ l {発行}; l copyright-page#author; ];
+          [ l {連絡先}; l copyright-page#contact; ];
+        ] (
+          match copyright-page#printed-by with
+          | None     -> []
+          | Some(it) -> [[ l {印刷所}; l it; ]]
+        )) (fun xs ys -> (
           match (xs, List.reverse xs, ys, List.reverse ys) with
           | (xL :: _, xR :: _, yT :: _, yB :: _) ->
               [
@@ -726,7 +798,7 @@ end = struct
               []
         ))
       in
-      let ib-title = read-inline ctx-doc {The \SATySFi;book} in
+      let ib-title = read-inline ctx-doc copyright-page#title in
       clear-page +++ block-skip 140mm +++
         line-break false false ctx-doc
           (inline-fil ++
@@ -799,7 +871,7 @@ end = struct
         |)
     in
       page-break page pagecontf pagepartsf
-        (bb-title +++ bb-preface +++ bb-toc +++ bb-main +++ bb-bib +++ bb-okudzuke)
+        (bb-top-page +++ bb-title +++ bb-preface +++ bb-toc +++ bb-main +++ bb-bib +++ bb-okudzuke)
 
 
   let-block ctx +p inner =

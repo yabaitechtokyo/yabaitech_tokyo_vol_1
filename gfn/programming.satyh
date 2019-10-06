@@ -531,7 +531,7 @@ let programming = '<
         今のところ公開されている\SATySFi;の処理系は
         著者が実装した1つ（およびそれを他者がforkし長さの扱いに関係しない箇所を改変したもの）
         しかないと思われるのでひとまず気にしなくてよい．
-        なお．現在の処理系の実装では（後述する）DTPポイント単位の
+        なお，現在の処理系の実装では（後述する）DTPポイント単位の
         浮動小数点数で内部的に表現されている．
       }が，
       “長さ同士を乗算したものを長さとして使う” といった
@@ -588,7 +588,7 @@ let programming = '<
         * JIS Z 8305に基づくもの（1962年）：\quad;
           厳密に${0.3514\math-unit!{mm}}．
 
-        * \dfn{\TeX;ポイント}\code(`pt`);（1982年）：\quad;
+        * \TeX;ポイント\code(`pt`);（1982年）：\quad;
           国際インチの厳密に${\paren{1/72.27}}倍．
 
         * \TeX;でのDidotポイント\code(`dd`);（1964年）：\quad;
@@ -599,7 +599,7 @@ let programming = '<
           \dfn{PostScript} \cite[`PostScript`];
           の仕様で導入され，\dfnje{PostScriptポイント}{PostScript point}とも呼ばれる．
           CSSで扱われる\code(`pt`);，および
-          \TeX;の\dfnje{ビッグポイント}{big point}\code(`bp`);も，
+          \TeX;の\dfnje{ビッグポイント}{big point} \code(`bp`);も，
           これに等しい\footnote{
             ただし，\TeX;での長さの扱いは
             \dfnje{スケールドポイント}{scaled point} \code(`sp`);
@@ -635,7 +635,7 @@ let programming = '<
 
         * \codem{\metasub(${1}){l} /' \metasub(${2}){l}}：\quad;
           長さ\codem{\metasub(${1}){l}}が
-          長さ\codem{\metasub(${1}){l}}の
+          長さ\codem{\metasub(${2}){l}}の
           “何倍の長さであるか” の浮動小数点数を返す．
       }%
     }
@@ -729,7 +729,7 @@ let programming = '<
       }%
 
       不正確ながら大雑把に言ってしまえば，
-      函数定義中の仮引数が実引数で置き換えられたものの計算するのが函数適用である．
+      函数定義中の仮引数が実引数で置き換えられたものを計算するのが函数適用である．
       さて，実際に\codem{to-dollar}を適用したのが以下だ：
 
       \d-code-and-block(```
@@ -811,8 +811,8 @@ let programming = '<
         \type(Type.tymtausub ${1});型の第1引数と
         \type(Type.tymtausub ${2});型の第2引数を受け取って
         \type(Type.tymtau);型の値を返す函数は，
-        \type(Type.tymtausub ${1});型の第1引数を受け取って
-        「\type(Type.tymtausub ${2});型の第2引数を受け取って
+        \type(Type.tymtausub ${1});型の引数を受け取って
+        「\type(Type.tymtausub ${2});型の引数を受け取って
         \type(Type.tymtau);型の値を返す函数」を返す函数ともみなせる．
       }%
 
@@ -1292,7 +1292,7 @@ let programming = '<
     +p{
       代数的データ型を扱う必要性を感じるために，
       まず「長方形または円からなる図形のデータを扱いたい」という場面を考える．
-      長方形は対角線となる2点を記録すればよく，
+      長方形は対角線をなす2点を記録すればよく，
       円は中心座標と半径を記録すればよいだろう．
       それぞれ図形に対して一意的な表現方法にはなっていないが，それは特に問題にせず，
       単にデータとして不足なく保持できればよい．
@@ -1354,7 +1354,7 @@ let programming = '<
         type \metasub(${1}){'a} ${\cdots} \metasub(${m}){'a} \meta{tyname} =
           \| \metasub(${1}){Ctr} of \metasub(${1}){ty}
           \| ${\cdots}
-          \| \metasub(${n}){Ctr} of \metasub(${1}){ty}
+          \| \metasub(${n}){Ctr} of \metasub(${n}){ty}
       }%
 
       ただし ${m \geq 0} かつ ${n \geq 1}で，また\codem{=}の直後の\codem{\|}は省略でき，
@@ -1584,11 +1584,11 @@ let programming = '<
       ```);%
 
       \codem{from-option}は，第2引数に与えられた値が\codem{None}のときは “デフォルト値” として
-      \codem{\meta{d}}を返し，\codem{Some(\meta{v})}の形のときはその\codem{\meta{v}}を
+      第1引数\codem{\meta{d}}を返し，\codem{Some(\meta{v})}の形のときはその\codem{\meta{v}}を
       取り出して返すことで\type(Type.(option tymtau));型のデータを
       \type(Type.tymtau);型へと “潰す” 函数である．
       これは\type(Type.tymtau);という型によらず同様であり，実際
-      この\codem{from-option}には\type(Type.(tymalpha --> (option tymalpha --> tymalpha)));
+      この\codem{from-option}には\type(Type.(forall ${\alpha} (tymalpha --> (option tymalpha --> tymalpha))));
       という多相型がつく．
     }
     +p{
@@ -1638,7 +1638,7 @@ let programming = '<
       }%
 
       の2種類があり，\codem{[3\; 1\; 4\; 1\; 5\; 9\; 2]}は
-      \codem{3 :: (1 :: (4 :: 1 :: (5 :: 9 :: 2)))}の糖衣構文なのである\footnote{
+      \codem{3 :: (1 :: (4 :: (1 :: (5 :: (9 :: (2 :: []))))))}の糖衣構文なのである\footnote{
         \codem{::}は右結合なので，ここでつけている括弧は全て省略できる．
       }．
       要するに，リストとは（模擬的には）以下で定義される代数的データ型に相当する：
@@ -1648,7 +1648,7 @@ let programming = '<
       ```);%
 
       リストに対する簡単な処理をいくつか見てみる．
-      まずリストの長さを返す函数\codem{list-length}は以下のとおり：
+      まずリストを受け取ってその長さを返す函数\codem{list-length}は以下のとおり：
 
       \d-code(```
         let-rec list-length l =
@@ -1765,7 +1765,7 @@ let programming = '<
       プログラムのドキュメント性を向上させる効能があるが，
       型つけに関してさらに顕著な違いがある．
       \SATySFi;でのレコードに関する型つけ規則は，
-      \dfn{SML\#}の基礎づける型 \cite[`Ohori1995`];を大々的に参考にしている．
+      \dfn{SML\#}を基礎づける型システム \cite[`Ohori1995`];を大々的に参考にしている．
       この型システムについて定義をすべて述べるのはあまりにも長いので，
       簡素に直観だけを与える．詳細は元論文 \cite[`Ohori1995`];を参照されたい．
       まず，基本的にレコード：
@@ -1778,22 +1778,22 @@ let programming = '<
       は，各式\codem{\metasub(${i}){expr}}に型\type(Type.tymtausub ${i});がつく下で
 
       \quote{
-        \type(Type.(record [
-          ({\metasub(${1}){label}}, tymtausub ${1});
-          ({${\cdots}}, of-math ${\cdots});
-          ({\metasub(${n}){label}}, tymtausub ${n});
-        ]));
+          ${\Type.record-paren{
+            \text!{\metasub(${1}){label}} : \mtype!(Type.(tymtausub ${1}))\;
+            \ \cdots\;
+            \ \text!{\metasub(${n}){label}} : \mtype!(Type.(tymtausub ${n}))
+          }}
       }%
 
-      という型をつけて扱う．レコードそのもののの型つけは単純なのだが，
+      という型をつけて扱う．レコードそのものの型つけは単純なのだが，
       重要なのはラベルへのアクセスに関する型つけである．
       レコードを受け取り，そのレコードのラベル\codem{foo}にアクセスする函数を考える：
 
       \d-code(```
-        (fun r -> r#foo + 1)
+        let f r = r#foo + 1
       ```);%
 
-      この函数にどんな型をつければよいかをまず素朴に考えよう．
+      この函数\codem{f}にどんな型をつければよいかをまず素朴に考えよう．
       この函数の式が型の制約として要請するのは，
       \codem{r}という変数が束縛されているレコードが\codem{foo}というラベルをもち，
       かつそれに対応する値が\type(Type.int);型であるということだけである．
@@ -1810,11 +1810,11 @@ let programming = '<
       同様にして
 
       \d-code(```
-        (fun r -> (
-          let (x, _) = r#bar in r#foo + (round x)))
+        let g r =
+          let (x, _) = r#bar in r#foo + (round x)
       ```);%
 
-      には以下のような型がつく：
+      で定義される\codem{g}には以下のような型がつく：
 
       \quote{
         \type(Type.(forall ${\beta} (forall-kinded ${\alpha} [
@@ -1908,7 +1908,7 @@ let programming = '<
         \codem{atan2 \meta{y} \meta{x}}で
         \codem{\meta{y} /. \meta{x}}のアークタンジェントを返すが，
         \codem{\meta{y}}と\codem{\meta{x}}の符号が象限の決定に用いられる．
-        返される値は ${-\pi} から ${\pi} の間の値である．
+        返される値は ${\mathord{-}\pi} から ${\pi} の間の値である．
       }%
 
       % -- 長さ --
