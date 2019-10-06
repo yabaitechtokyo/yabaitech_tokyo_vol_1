@@ -1,5 +1,6 @@
 % -*- coding: utf-8 -*-
 @import: settings
+@import: top-page
 @import: preface
 @import: introduction
 @import: getting-started
@@ -19,10 +20,18 @@
 @import: dummy-1
 
 document (|
-  title = {The \SATySFi;book};
+  title = {The \SATySFi;book（Web公開版 第1版）};
   author = {Takashi SUWA};
   preface = preface;
   bibliography = bibliography;
+  top-page = Some(top-page);
+  copyright-page = (|
+    title = {The \SATySFi;book（Web公開版 第1版）};
+    author = {Takashi SUWA\hskip(5cm);};
+    date = {2018年12月5日};
+    contact = {\url{gfngfn.bd\@gmail.com}};
+    printed-by = None;
+  |);
 |) '<
   +chapter?:(`introduction`){\SATySFi;の開発動機}< #introduction; >
   +chapter?:(`getting-started`){\SATySFi;簡易入門}< #getting-started; >
@@ -140,14 +149,14 @@ document (|
         ただしここで\codem{\meta{ch}}は数式中で文字として使えるもの1文字，
         \codem{\meta{mcmd}}は数式コマンド（インラインコマンドと同一範疇のトークン），
         \codem{\meta{expr}}は式，\codem{\meta{It}}はインラインテキスト，
-        \codem{\meta{Bt}}はブロックテキストを，\codem{\meta{x}}をそれぞれ動く．
+        \codem{\meta{Bt}}はブロックテキストを，\codem{\meta{x}}は変数をそれぞれ動く．
         \codem{\#\meta{x}}は変数\codem{\meta{x}}の内容である数式をそこに埋め込む機能の記法だが，
         セミコロンは末尾につけないことに注意．
         また，\codem{\meta{mcapp}}は数式コマンドの適用だが，
-        引数の種類にプログラム引数とインライン引数の差異のようなものはなく，
+        引数の種類に式引数とインライン引数の差異のようなものはなく，
         すべて一律に扱われ，こちらもいかなる場合も（引数がない場合も）末尾にセミコロンをつけない．
         なお，数式中に数式コマンドの引数としてインラインテキストが出現しうるし，
-        インラインテキストの中でも当然プログラム引数または文中数式として数式が登場するので，
+        インラインテキストの中でも当然式引数または文中数式として数式が登場するので，
         \codem{\{ ${\cdots} \}}の括弧が入り乱れて少しややこしいかもしれないが，
         気持ちとしては “\codem{\$\{\}}の中では\codem{\{ ${\cdots} \}}が
         数式扱い，\codem{!\{ ${\cdots} \}}の中では再び\codem{\{ ${\cdots} \}}が
@@ -387,7 +396,7 @@ document (|
           }%
       }
       +example{
-        \LaTeX;での同名コマンドに対応する\codem{\\mathrm}と\codem{\\bb}は
+        \LaTeX;での同名コマンドに対応する\codem{\\mathrm}と\codem{\\bm}は
 
         \d-code(```
           let-math \mathrm m = math-char-class MathRoman m

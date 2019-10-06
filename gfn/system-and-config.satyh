@@ -74,7 +74,7 @@ let system-and-config = '<
       （すなわち，ユーザが手で内容物を変更するべきでない）ことを意識して
       “distribution” から命名されている．
       現在はこのディレクトリ以下の内容をユーザが操作することは非推奨ではなく，
-      また（カレントディレクトリが\path{\meta{LIBROOT/}}以下の状態でSATySFiを起動しない限り）
+      また（カレントディレクトリが\path{\meta{LIBROOT/}}以下の状態で\SATySFi;を起動しない限り）
       \SATySFi;が内容を変更することはない．
       将来的には\path{dist/}の他に\path{local/}を設け，
       これにユーザが自身が作成したパッケージ類を格納できるようにすることを想定している．
@@ -141,7 +141,7 @@ let system-and-config = '<
       }%
 
       というエントリを追記する．
-      この設定を加えることでフォント名\codem{\`bar\`}が\SATySFi;で使えるようになる．
+      この設定を加えることでフォント名\codem{\`\meta{bar}\`}が\SATySFi;で使えるようになる．
       フォントの（拡張子を除いた）ファイル名とフォント名は一致していなくても構わない．
       所望のフォントがTrueType Collectionのフォントファイル
       \path{\meta{baz}.ttc}の ${n} 番目の要素\footnote{番号は ${1}-originである．}である場合は
@@ -150,7 +150,7 @@ let system-and-config = '<
         "\meta{baz}": \<Collection \{"src-dist": "\meta{baz}.ttc", "index": \meta{n}\}\>
       }%
 
-      と記述することでやはり\codem{\`baz\`}という名前でそのフォントが使えるようになる．
+      と記述することでやはり\codem{\`\meta{baz}\`}という名前でそのフォントが使えるようになる．
       数式フォントについても\dfnje{数式フォントハッシュファイル}{math font hash file}：
       \quote{
         \path{dist/hash/mathfonts.satysfi-hash}

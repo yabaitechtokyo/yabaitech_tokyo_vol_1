@@ -58,7 +58,7 @@ let alias-command-definition = '<
       \newcommand{\newWord}[1]{\dfn{#1}}
     ```);
 
-    この定義中の\code(`#1`);が\SATySFi;での\codem{\#t\;}に相当するのである．
+    この定義中の\code(`#1`);が\SATySFi;での\codem{\#it\;}に相当するのである．
     引数を要しないコマンドも同様に定義できる．例えば
 
     \d-code(```
