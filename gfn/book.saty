@@ -16,6 +16,7 @@
 @import: future-work
 @import: specification
 @import: bib
+@import: dummy-1
 
 document (|
   title = {The \SATySFi;book};
@@ -507,4 +508,12 @@ document (|
   +chapter?:(`page-breaking`){ページ分割処理}< #page-breaking; >
   +chapter?:(`future-work`){Future Work}< #future-work; >
   +chapter?:(`specification`){言語仕様}< #specification; >
+  +chapter{ダミー}<
+    +p{
+      プリプロセス機能の実例を確かめる実験．
+    }
+    +p{
+      \header@(~`Content-Type application/json`);
+    }
+  >
 >

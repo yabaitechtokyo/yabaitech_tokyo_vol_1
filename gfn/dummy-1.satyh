@@ -1,0 +1,43 @@
+@require: color
+@require: gr
+@import: dummy-0
+
+let w-extra = 6pt
+let name-paddings = (2pt, 2pt +' w-extra, 2pt, 2pt)
+
+let name-deco (x, y) w h d =
+  let path =
+    Gr.polygon (x, y -' d) [
+      (x, y +' h);
+      (x +' w -' w-extra, y +' h);
+      (x +' w, y +' (h -' d) *' 0.5);
+      (x +' w -' w-extra, y -' d);
+    ]
+  in
+  [ fill (Color.gray 0.2) path ]
+
+let set-mono-font =
+  set-font Latin (`Menlo`, 1., 0.)
+
+let-inline ctx \header-name it =
+  let ctx =
+    ctx |> set-text-color Color.white
+        |> set-mono-font
+  in
+  inline-frame-outer name-paddings name-deco
+    (read-inline ctx it)
+
+let-inline ctx \header-value it =
+  read-inline (ctx |> set-mono-font) it
+
+let-inline-macro \header@(~s) =
+  ~(match small-parser |> Parser.run s with
+    | None ->
+        error `parse error (1)`
+
+    | Some((sp1, sp2), _) ->
+        &(let it1 = embed-string (~(lift-string sp1)) in
+          let it2 = embed-string (~(lift-string sp2)) in
+          {\header-name{#it1;} \header-value{#it2;}}
+        )
+  )
