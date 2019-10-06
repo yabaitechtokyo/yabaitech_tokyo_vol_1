@@ -37,7 +37,7 @@ let-math \BNFeq = ${\mathrel{: : =}}
 
 
 let-inline ctx \vskip len =
-  inline-fil ++ embed-block-breakable ctx (block-skip len)
+  inline-fil ++ embed-block-breakable ctx (block-skip len) ++ omit-skip-after
 
 
 let-block ctx +ragged-right it =
@@ -58,6 +58,7 @@ let-inline ctx \quote it =
       embed-block-breakable ctx
         (block-frame-breakable ctx pads VDecoSet.empty (fun ctx ->
           (line-break true true ctx (read-inline ctx it ++ inline-fil))))
+      ++ omit-skip-after
 
 
 let-math \defeq = ${\coloneq}
@@ -147,18 +148,20 @@ let-inline ctx \d-code s =
            |> set-leading 13pt) s
   in
     inline-fil ++ embed-block-breakable ctx bb
+      ++ omit-skip-after
 
 
 let-inline ctx \d-code-and-block s bt =
   let pads = (5pt, 5pt, 5pt, 5pt) in
   let wid = get-text-width ctx in
   let bb =
-    display-code-scheme ctx s +++ block-skip -26pt +++
+    display-code-scheme ctx s +++ % block-skip -26pt +++
       block-frame-breakable ctx pads VDecoSet.paper (fun ctx ->
         read-block ctx bt
       )
   in
     inline-fil ++ embed-block-breakable ctx bb
+      ++ omit-skip-after
 
 
 let-inline ctx \d-codem it =
@@ -171,6 +174,7 @@ let-inline ctx \d-codem it =
   in
     inline-fil ++
       embed-block-breakable ctx bb
+        ++ omit-skip-after
 
 
 module BoxGraphics = struct
@@ -861,10 +865,11 @@ let val-scheme ctx indexopt it-cmds ty explainopt =
     inline-fil ++
       embed-block-breakable ctx
         (bb-head +++ bb-explain)
+          ++ omit-skip-after
 
 
 let-block ctx +example ?:labelopt it =
-  let pads = (15pt, 15pt, 0pt, 0pt) in
+  let pads = (15pt, 15pt, 10pt, 10pt) in
   let decoset = VDecoSet.simple-frame-stroke 1pt (Gray(0.75)) in
   let bt =
     match labelopt with
@@ -872,9 +877,7 @@ let-block ctx +example ?:labelopt it =
     | Some(label) -> '<+Book.example?*?:(label){#it;}>
   in
     block-frame-breakable ctx pads decoset (fun ctx ->
-      block-skip 0pt
-        +++ read-block ctx bt
-        +++ line-break false true (ctx |> set-paragraph-margin 0pt 0pt) inline-fil
+      read-block ctx bt
     )
 
 
@@ -950,6 +953,7 @@ let-block ctx +d-block content =
 let-inline ctx \d-block content =
   inline-fil ++
     embed-block-breakable ctx (read-block ctx '<+d-block(content);>)
+      ++ omit-skip-after
 
 
 let-inline ctx \fbox it =
@@ -1165,6 +1169,7 @@ let-inline ctx \tokens its =
     embed-block-breakable ctx
       (block-frame-breakable ctx pads display-code-decoset (fun ctx ->
         line-break true true ctx (ib ++ inline-fil)))
+    ++ omit-skip-after
 
 
 let tylogical = Type.(bool --> (bool --> bool))
