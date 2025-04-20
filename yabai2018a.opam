@@ -1,0 +1,35 @@
+opam-version: "2.0"
+name: "yabai2018A"
+version: "0.0.1"
+synopsis: "yabaitech.tokyo vol.1"
+description: """
+yabaitech.tokyo vol.1
+"""
+maintainer: "Yuito Murase <yuito@acupof.coffee>"
+authors: [
+    "Masaki Waga"
+    "Ryuichi Kiryo"
+    "Yuichi Nishiwaki"
+    "Yuito Murase"
+]
+license: "MIT"
+homepage: "https://github.com/yabaitechtokyo/yabai2018a"
+bug-reports: "https://github.com/yabaitechtokyo/yabai2018a/issues"
+dev-repo: "git+https://github.com/yabaitechtokyo/yabai2018a.git"
+depends: [
+  "satysfi" {= "0.0.10"}
+  "satyrographos" {>= "0.0.2.7" & < "0.0.3"}
+  "satysfi-base" {>= "1.2.1" & < "2.0.0"}
+  "satysfi-class-yabaitech" {= "0.0.9"}
+  "satysfi-easytable" {>= "1.1.1" & < "2.0.0"}
+  "satysfi-ruby" {= "0.1.2"}
+  "satysfi-latexcmds" {>= "0.1.1"}
+  "satysfi-azmath" {= "0.0.3"}
+]
+build: [ ]
+install: [
+  ["satyrographos" "opam" "install"
+   "--name" "yabai2018A"
+   "--prefix" "%{prefix}%"
+   "--script" "%{build}%/Satyristes"]
+]
